@@ -1712,24 +1712,23 @@ const struct file_operations proc_pagemap_operations = {
 #endif /* CONFIG_PROC_PAGE_MONITOR */
 
 #ifdef CONFIG_PROCESS_RECLAIM
-enum reclaim_type {
-	RECLAIM_FILE,
-	RECLAIM_ANON,
-	RECLAIM_ALL,
-};
-
-static int reclaim_pmd_range(pmd_t *pmd, unsigned long addr,
+static int reclaim_pte_range(pmd_t *pmd, unsigned long addr,
 				unsigned long end, struct mm_walk *walk)
 {
-	pte_t *orig_pte, *pte, ptent;
+	struct vm_area_struct *vma = walk->private;
+	pte_t *pte, ptent;
 	spinlock_t *ptl;
-	LIST_HEAD(page_list);
 	struct page *page;
-	int isolated = 0;
-	struct vm_area_struct *vma = walk->vma;
+	LIST_HEAD(page_list);
+	int isolated;
 
-	orig_pte = pte_offset_map_lock(vma->vm_mm, pmd, addr, &ptl);
-	for (pte = orig_pte; addr < end; pte++, addr += PAGE_SIZE) {
+	split_huge_pmd(vma, addr, pmd);
+	if (pmd_trans_unstable(pmd))
+		return 0;
+cont:
+	isolated = 0;
+	pte = pte_offset_map_lock(vma->vm_mm, pmd, addr, &ptl);
+	for (; addr != end; pte++, addr += PAGE_SIZE) {
 		ptent = *pte;
 		if (!pte_present(ptent))
 			continue;
@@ -1737,45 +1736,32 @@ static int reclaim_pmd_range(pmd_t *pmd, unsigned long addr,
 		page = vm_normal_page(vma, addr, ptent);
 		if (!page)
 			continue;
-		/*
-		 * XXX: we don't handle compound page at this moment but
-		 * it should revisit for THP page before upstream.
-		 */
-		if (PageCompound(page)) {
-			unsigned int order = compound_order(page);
-			unsigned int nr_pages = (1 << order) - 1;
-
-			addr += (nr_pages * PAGE_SIZE);
-			pte += nr_pages;
-			continue;
-		}
-
-		if (!PageLRU(page))
-			continue;
-
-		if (page_mapcount(page) > 1)
-			continue;
 
 		if (isolate_lru_page(page))
 			continue;
 
-		isolated++;
 		list_add(&page->lru, &page_list);
-		if (isolated >= SWAP_CLUSTER_MAX) {
-			pte_unmap_unlock(orig_pte, ptl);
-			reclaim_pages(&page_list);
-			isolated = 0;
-			pte = pte_offset_map_lock(vma->vm_mm, pmd, addr, &ptl);
-			orig_pte = pte;
-		}
+		inc_node_page_state(page, NR_ISOLATED_ANON +
+				page_is_file_cache(page));
+		isolated++;
+		if (isolated >= SWAP_CLUSTER_MAX)
+			break;
 	}
-
-	pte_unmap_unlock(orig_pte, ptl);
-	reclaim_pages(&page_list);
+	pte_unmap_unlock(pte - 1, ptl);
+	reclaim_pages_from_list(&page_list);
+	if (addr != end)
+		goto cont;
 
 	cond_resched();
 	return 0;
 }
+
+enum reclaim_type {
+	RECLAIM_FILE,
+	RECLAIM_ANON,
+	RECLAIM_ALL,
+	RECLAIM_RANGE,
+};
 
 static ssize_t reclaim_write(struct file *file, const char __user *buf,
 				size_t count, loff_t *ppos)
@@ -1786,9 +1772,6 @@ static ssize_t reclaim_write(struct file *file, const char __user *buf,
 	struct vm_area_struct *vma;
 	enum reclaim_type type;
 	char *type_buf;
-
-	if (!capable(CAP_SYS_NICE))
-		return -EPERM;
 
 	memset(buffer, 0, sizeof(buffer));
 	if (count > sizeof(buffer) - 1)
@@ -1814,21 +1797,20 @@ static ssize_t reclaim_write(struct file *file, const char __user *buf,
 	mm = get_task_mm(task);
 	if (mm) {
 		struct mm_walk reclaim_walk = {
-			.pmd_entry = reclaim_pmd_range,
+			.pmd_entry = reclaim_pte_range,
 			.mm = mm,
 		};
 
 		down_read(&mm->mmap_sem);
 		for (vma = mm->mmap; vma; vma = vma->vm_next) {
+			reclaim_walk.private = vma;
+
 			if (is_vm_hugetlb_page(vma))
 				continue;
 
-			if (vma->vm_flags & VM_LOCKED)
+			if (type == RECLAIM_ANON && vma->vm_file)
 				continue;
-
-			if (type == RECLAIM_ANON && !vma_is_anonymous(vma))
-				continue;
-			if (type == RECLAIM_FILE && vma_is_anonymous(vma))
+			if (type == RECLAIM_FILE && !vma->vm_file)
 				continue;
 
 			walk_page_range(vma->vm_start, vma->vm_end,

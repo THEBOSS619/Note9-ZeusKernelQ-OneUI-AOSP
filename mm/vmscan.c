@@ -958,7 +958,7 @@ static unsigned long shrink_page_list(struct list_head *page_list,
 				      unsigned long *ret_nr_congested,
 				      unsigned long *ret_nr_writeback,
 				      unsigned long *ret_nr_immediate,
-				      bool skip_reference_check)
+				      bool force_reclaim)
 {
 	LIST_HEAD(ret_pages);
 	LIST_HEAD(free_pages);
@@ -976,7 +976,7 @@ static unsigned long shrink_page_list(struct list_head *page_list,
 		struct address_space *mapping;
 		struct page *page;
 		int may_enter_fs;
-		enum page_references references = PAGEREF_RECLAIM;
+		enum page_references references = PAGEREF_RECLAIM_CLEAN;
 		bool dirty, writeback;
 		bool lazyfree = false;
 		int ret = SWAP_SUCCESS;
@@ -1107,7 +1107,7 @@ static unsigned long shrink_page_list(struct list_head *page_list,
 			}
 		}
 
-		if (!skip_reference_check)
+		if (!force_reclaim)
 			references = page_check_references(page, sc);
 
 		switch (references) {
@@ -1408,13 +1408,33 @@ void reclaim_contig_migrate_range(unsigned long start,
 }
 
 #ifdef CONFIG_PROCESS_RECLAIM
-unsigned long reclaim_pages(struct list_head *page_list)
+static unsigned long shrink_page(struct page *page,
+					struct zone *zone,
+					struct scan_control *sc,
+					enum ttu_flags ttu_flags,
+					unsigned long *dummy1,
+					unsigned long *dummy2,
+					unsigned long *dummy3,
+					unsigned long *dummy4,
+					unsigned long *dummy5,
+					bool force_reclaim,
+					struct list_head *ret_pages)
 {
-	unsigned long dummy1, dummy2, dummy3, dummy4, dummy5;
-	unsigned long nr_reclaimed;
-	struct page *page;
-	unsigned long nr_isolated[2] = {0, };
-	struct pglist_data *pgdat = NULL;
+	int reclaimed;
+	LIST_HEAD(page_list);
+	list_add(&page->lru, &page_list);
+
+	reclaimed = shrink_page_list(&page_list, zone->zone_pgdat, sc,
+				ttu_flags, dummy1, dummy2, dummy3, dummy4,
+				dummy5, force_reclaim);
+	if (!reclaimed)
+		list_splice(&page_list, ret_pages);
+
+	return reclaimed;
+}
+
+unsigned long reclaim_pages_from_list(struct list_head *page_list)
+{
 	struct scan_control sc = {
 		.gfp_mask = GFP_KERNEL,
 		.priority = DEF_PRIORITY,
@@ -1423,36 +1443,29 @@ unsigned long reclaim_pages(struct list_head *page_list)
 		.may_swap = 1,
 	};
 
-	if (list_empty(page_list))
-		return 0;
-
-	list_for_each_entry(page, page_list, lru) {
-		ClearPageActive(page);
-		if (pgdat == NULL)
-			pgdat = page_pgdat(page);
-		/* XXX: It could be multiple node in other config */
-		WARN_ON_ONCE(pgdat != page_pgdat(page));
-		if (!page_is_file_cache(page))
-			nr_isolated[0]++;
-		else
-			nr_isolated[1]++;
-	}
-
-	mod_node_page_state(pgdat, NR_ISOLATED_ANON, nr_isolated[0]);
-	mod_node_page_state(pgdat, NR_ISOLATED_FILE, nr_isolated[1]);
-
-	nr_reclaimed = shrink_page_list(page_list, pgdat, &sc,
-			TTU_UNMAP|TTU_IGNORE_ACCESS,
-			&dummy1, &dummy2, &dummy3, &dummy4, &dummy5, true);
+	LIST_HEAD(ret_pages);
+	struct page *page;
+	unsigned long dummy1, dummy2, dummy3, dummy4, dummy5;
+	unsigned long nr_reclaimed = 0;
 
 	while (!list_empty(page_list)) {
 		page = lru_to_page(page_list);
 		list_del(&page->lru);
-		putback_lru_page(page);
+
+		ClearPageActive(page);
+		nr_reclaimed += shrink_page(page, page_zone(page), &sc,
+			TTU_UNMAP|TTU_IGNORE_ACCESS,
+			&dummy1, &dummy2, &dummy3, &dummy4, &dummy5, true,
+			&ret_pages);
 	}
 
-	mod_node_page_state(pgdat, NR_ISOLATED_ANON, -nr_isolated[0]);
-	mod_node_page_state(pgdat, NR_ISOLATED_FILE, -nr_isolated[1]);
+	while (!list_empty(&ret_pages)) {
+		page = lru_to_page(&ret_pages);
+		list_del(&page->lru);
+		dec_node_page_state(page, NR_ISOLATED_ANON +
+				page_is_file_cache(page));
+		putback_lru_page(page);
+	}
 
 	return nr_reclaimed;
 }

@@ -754,6 +754,7 @@ do {									\
 #define P(n) SEQ_printf(m, "  .%-30s: %d\n", #n, schedstat_val(rq->n));
 	if (schedstat_enabled()) {
 		P(yld_count);
+		P(yield_sleep_count);
 		P(sched_count);
 		P(sched_goidle);
 		P(ttwu_count);

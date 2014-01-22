@@ -145,6 +145,19 @@ __read_mostly int scheduler_running;
  */
 int sysctl_sched_rt_runtime = 950000;
 
+/*
+ * Number of sched_yield calls that result in a thread yielding
+ * to itself before a sleep is injected in its next sched_yield call
+ * Setting this to -1 will disable adding sleep in sched_yield
+ */
+const_debug int sysctl_sched_yield_sleep_threshold = 4;
+
+/*
+ * Sleep duration in us used when sched_yield_sleep_threshold
+ * is exceeded.
+ */
+const_debug unsigned int sysctl_sched_yield_sleep_duration = 50;
+
 /* cpus with isolated domains */
 cpumask_var_t cpu_isolated_map;
 
@@ -4584,6 +4597,7 @@ static void __sched notrace __schedule(bool preempt)
 		 * smp_mb__after_unlock_lock() before
 		 * finish_lock_switch().
 		 */
+		prev->yield_count = 0;
 		++*switch_count;
 
 		psi_sched_switch(prev, next, !task_on_rq_queued(prev));
@@ -4591,6 +4605,7 @@ static void __sched notrace __schedule(bool preempt)
 		trace_sched_switch(preempt, prev, next);
 		rq = context_switch(rq, prev, next, &rf); /* unlocks the rq */
 	} else {
+		prev->yield_count++;
 		rq->clock_skip_update = 0;
 		rq_unlock_irq(rq, &rf);
 	}
@@ -6192,6 +6207,8 @@ SYSCALL_DEFINE0(sched_yield)
 	rq_lock(rq, &rf);
 
 	schedstat_inc(rq->yld_count);
+	if (rq->curr->yield_count == sysctl_sched_yield_sleep_threshold)
+		schedstat_inc(rq->yield_sleep_count);
 	current->sched_class->yield_task(rq);
 
 	/*
@@ -6202,7 +6219,11 @@ SYSCALL_DEFINE0(sched_yield)
 	rq_unlock(rq, &rf);
 	sched_preempt_enable_no_resched();
 
-	schedule();
+	if (rq->curr->yield_count == sysctl_sched_yield_sleep_threshold)
+		usleep_range(sysctl_sched_yield_sleep_duration,
+				sysctl_sched_yield_sleep_duration + 5);
+	else
+		schedule();
 
 	return 0;
 }

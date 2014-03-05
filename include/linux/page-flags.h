@@ -107,7 +107,15 @@ enum pageflags {
 	PG_young,
 	PG_idle,
 #endif
+#ifdef CONFIG_KSM_CHECK_PAGE
+	PG_ksm_scan0,		/* page has been scanned by even KSM cycle */
+#endif
 	__NR_PAGEFLAGS,
+
+#ifdef CONFIG_KSM_CHECK_PAGE
+	/* page has been scanned by odd KSM cycle */
+	PG_ksm_scan1 = PG_owner_priv_1,
+#endif
 
 	/* Filesystems */
 	PG_checked = PG_owner_priv_1,
@@ -288,6 +296,11 @@ PAGEFLAG(Reserved, reserved, PF_NO_COMPOUND)
 PAGEFLAG(SwapBacked, swapbacked, PF_NO_TAIL)
 	__CLEARPAGEFLAG(SwapBacked, swapbacked, PF_NO_TAIL)
 	__SETPAGEFLAG(SwapBacked, swapbacked, PF_NO_TAIL)
+
+#ifdef CONFIG_KSM_CHECK_PAGE
+CLEARPAGEFLAG(KsmScan0, ksm_scan0, PF_ANY) TESTSETFLAG(KsmScan0, ksm_scan0, PF_ANY)
+CLEARPAGEFLAG(KsmScan1, ksm_scan1, PF_ANY) TESTSETFLAG(KsmScan1, ksm_scan1, PF_ANY)
+#endif
 
 /*
  * Private page markings that may be used by the filesystem that owns the page

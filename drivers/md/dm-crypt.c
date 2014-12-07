@@ -2257,13 +2257,13 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		if (test_bit(DM_CRYPT_SAME_CPU, &cc->flags))
 			cc->crypt_queue = alloc_workqueue("kcryptd",
 							  WQ_HIGHPRI |
-							  WQ_MEM_RECLAIM, 1);
+							  WQ_MEM_RECLAIM,  num_possible_cpus() * 2);
 		else
 			cc->crypt_queue = alloc_workqueue("kcryptd",
 							  WQ_HIGHPRI |
 							  WQ_MEM_RECLAIM |
 							  WQ_UNBOUND,
-							  num_online_cpus());
+							   num_possible_cpus() * 2);
 		if (!cc->crypt_queue) {
 			ti->error = "Couldn't create kcryptd queue";
 			goto bad;

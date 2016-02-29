@@ -347,6 +347,9 @@ irq_set_affinity_notifier(unsigned int irq, struct irq_affinity_notify *notify)
 	desc->affinity_notify = notify;
 	raw_spin_unlock_irqrestore(&desc->lock, flags);
 
+	if (!notify && old_notify)
+		cancel_work_sync(&old_notify->work);
+
 	if (old_notify) {
 		if (cancel_work_sync(&old_notify->work)) {
 			/* Pending work had a ref, put that one too */

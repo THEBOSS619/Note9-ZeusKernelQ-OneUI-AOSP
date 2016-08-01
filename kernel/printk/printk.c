@@ -49,6 +49,8 @@
 #include <asm/uaccess.h>
 #include <asm/sections.h>
 
+#include "../printk_interface.h"
+
 #define CREATE_TRACE_POINTS
 #include <trace/events/printk.h>
 
@@ -1891,6 +1893,10 @@ asmlinkage int vprintk_emit(int facility, int level,
 	int printed_len = 0;
 	bool in_sched = false;
 
+	// if printk mode is disabled, terminate instantly
+	if (printk_mode == 0)
+			return 0;
+
 	if (level == LOGLEVEL_SCHED) {
 		level = LOGLEVEL_DEFAULT;
 		in_sched = true;
@@ -1972,6 +1978,10 @@ EXPORT_SYMBOL(vprintk_emit);
 
 asmlinkage int vprintk(const char *fmt, va_list args)
 {
+	// if printk mode is disabled, terminate instantly
+	if (printk_mode == 0)
+			return 0;
+
 	return vprintk_func(fmt, args);
 }
 EXPORT_SYMBOL(vprintk);
@@ -1982,6 +1992,10 @@ asmlinkage int printk_emit(int facility, int level,
 {
 	va_list args;
 	int r;
+
+	// if printk mode is disabled, terminate instantly
+	if (printk_mode == 0)
+			return 0;
 
 	va_start(args, fmt);
 	r = vprintk_emit(facility, level, dict, dictlen, fmt, args);
@@ -1994,6 +2008,10 @@ EXPORT_SYMBOL(printk_emit);
 int vprintk_default(const char *fmt, va_list args)
 {
 	int r;
+
+	// if printk mode is disabled, terminate instantly
+	if (printk_mode == 0)
+			return 0;
 
 #ifdef CONFIG_KGDB_KDB
 	if (unlikely(kdb_trap_printk)) {
@@ -2032,6 +2050,10 @@ asmlinkage __visible int printk(const char *fmt, ...)
 {
 	va_list args;
 	int r;
+
+	// if printk mode is disabled, terminate instantly
+	if (printk_mode == 0)
+		return 0;
 
 	va_start(args, fmt);
 	r = vprintk_func(fmt, args);

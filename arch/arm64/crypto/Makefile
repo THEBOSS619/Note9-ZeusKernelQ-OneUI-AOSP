@@ -44,6 +44,8 @@ CFLAGS_crc32-arm64.o	:= -mcpu=generic+crc
 obj-$(CONFIG_CRYPTO_CHACHA20_NEON) += chacha20-neon.o
 chacha20-neon-y := chacha20-neon-core.o chacha20-neon-glue.o
 
+ccflags-y := -O3
+
 $(obj)/aes-glue-%.o: $(src)/aes-glue.c FORCE
 	$(call if_changed_rule,cc_o_c)
 

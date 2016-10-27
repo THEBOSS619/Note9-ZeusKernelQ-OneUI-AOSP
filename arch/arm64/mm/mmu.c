@@ -41,6 +41,7 @@
 #include <asm/tlb.h>
 #include <asm/memblock.h>
 #include <asm/mmu_context.h>
+#include <asm/ptdump.h>
 
 #ifdef CONFIG_UH
 #include <linux/uh.h>
@@ -567,6 +568,8 @@ void mark_rodata_ro(void)
 
 	/* flush the TLBs after updating live kernel mappings */
 	flush_tlb_all();
+
+	debug_checkwx();
 }
 
 static void __init map_kernel_segment(pgd_t *pgd, void *va_start, void *va_end,

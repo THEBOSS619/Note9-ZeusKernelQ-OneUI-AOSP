@@ -22,7 +22,6 @@
 #ifdef __KERNEL__
 
 #include <linux/types.h>
-#include <linux/blk_types.h>
 #include <linux/exynos-ss.h>
 
 #include <asm/byteorder.h>

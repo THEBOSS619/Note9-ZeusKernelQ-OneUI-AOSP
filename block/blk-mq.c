@@ -117,6 +117,33 @@ void blk_mq_unfreeze_queue(struct request_queue *q)
 }
 EXPORT_SYMBOL_GPL(blk_mq_unfreeze_queue);
 
+/**
+ * blk_mq_quiesce_queue() - wait until all ongoing queue_rq calls have finished
+ * @q: request queue.
+ *
+ * Note: this function does not prevent that the struct request end_io()
+ * callback function is invoked. Additionally, it is not prevented that
+ * new queue_rq() calls occur unless the queue has been stopped first.
+ */
+void blk_mq_quiesce_queue(struct request_queue *q)
+{
+	struct blk_mq_hw_ctx *hctx;
+	unsigned int i;
+	bool rcu = false;
+
+	blk_mq_stop_hw_queues(q);
+
+	queue_for_each_hw_ctx(q, hctx, i) {
+		if (hctx->flags & BLK_MQ_F_BLOCKING)
+			synchronize_srcu(&hctx->queue_rq_srcu);
+		else
+			rcu = true;
+	}
+	if (rcu)
+		synchronize_rcu();
+}
+EXPORT_SYMBOL_GPL(blk_mq_quiesce_queue);
+
 void blk_mq_wake_waiters(struct request_queue *q)
 {
 	struct blk_mq_hw_ctx *hctx;
@@ -821,7 +848,7 @@ static inline unsigned int queued_to_index(unsigned int queued)
  * of IO. In particular, we'd like FIFO behaviour on handling existing
  * items on the hctx->dispatch list. Ignore that for now.
  */
-static void __blk_mq_run_hw_queue(struct blk_mq_hw_ctx *hctx)
+static void blk_mq_process_rq_list(struct blk_mq_hw_ctx *hctx)
 {
 	struct request_queue *q = hctx->queue;
 	struct request *rq;
@@ -832,9 +859,6 @@ static void __blk_mq_run_hw_queue(struct blk_mq_hw_ctx *hctx)
 
 	if (unlikely(blk_mq_hctx_stopped(hctx)))
 		return;
-
-	WARN_ON(!cpumask_test_cpu(raw_smp_processor_id(), hctx->cpumask) &&
-		cpu_online(hctx->next_cpu));
 
 	hctx->run++;
 
@@ -923,6 +947,24 @@ static void __blk_mq_run_hw_queue(struct blk_mq_hw_ctx *hctx)
 		 * blk_mq_run_hw_queue() already checks the STOPPED bit
 		 **/
 		blk_mq_run_hw_queue(hctx, true);
+	}
+}
+
+static void __blk_mq_run_hw_queue(struct blk_mq_hw_ctx *hctx)
+{
+	int srcu_idx;
+
+	WARN_ON(!cpumask_test_cpu(raw_smp_processor_id(), hctx->cpumask) &&
+		cpu_online(hctx->next_cpu));
+
+	if (!(hctx->flags & BLK_MQ_F_BLOCKING)) {
+		rcu_read_lock();
+		blk_mq_process_rq_list(hctx);
+		rcu_read_unlock();
+	} else {
+		srcu_idx = srcu_read_lock(&hctx->queue_rq_srcu);
+		blk_mq_process_rq_list(hctx);
+		srcu_read_unlock(&hctx->queue_rq_srcu, srcu_idx);
 	}
 }
 
@@ -1328,7 +1370,7 @@ static blk_qc_t blk_mq_make_request(struct request_queue *q, struct bio *bio)
 	const int is_flush_fua = bio->bi_opf & (REQ_PREFLUSH | REQ_FUA);
 	struct blk_mq_alloc_data data;
 	struct request *rq;
-	unsigned int request_count = 0;
+	unsigned int request_count = 0, srcu_idx;
 	struct blk_plug *plug;
 	struct request *same_queue_rq = NULL;
 	blk_qc_t cookie;
@@ -1378,7 +1420,7 @@ static blk_qc_t blk_mq_make_request(struct request_queue *q, struct bio *bio)
 		blk_mq_bio_to_request(rq, bio);
 
 		/*
-		 * We do limited pluging. If the bio can be merged, do that.
+		 * We do limited plugging. If the bio can be merged, do that.
 		 * Otherwise the existing request in the plug list will be
 		 * issued. So the plug list will have one request at most
 		 */
@@ -1398,7 +1440,16 @@ static blk_qc_t blk_mq_make_request(struct request_queue *q, struct bio *bio)
 		blk_mq_put_ctx(data.ctx);
 		if (!old_rq)
 			goto done;
-		blk_mq_try_issue_directly(data.hctx, old_rq, &cookie);
+
+		if (!(data.hctx->flags & BLK_MQ_F_BLOCKING)) {
+			rcu_read_lock();
+			blk_mq_try_issue_directly(data.hctx, old_rq, &cookie);
+			rcu_read_unlock();
+		} else {
+			srcu_idx = srcu_read_lock(&data.hctx->queue_rq_srcu);
+			blk_mq_try_issue_directly(data.hctx, old_rq, &cookie);
+			srcu_read_unlock(&data.hctx->queue_rq_srcu, srcu_idx);
+		}
 		goto done;
 	}
 
@@ -1771,6 +1822,9 @@ static int blk_mq_init_hctx(struct request_queue *q,
 				   hctx->fq->flush_rq, hctx_idx,
 				   flush_start_tag + hctx_idx, node))
 		goto free_fq;
+
+	if (hctx->flags & BLK_MQ_F_BLOCKING)
+		init_srcu_struct(&hctx->queue_rq_srcu);
 
 	return 0;
 

@@ -2392,7 +2392,7 @@ static void rb_start_commit(struct ring_buffer_per_cpu *cpu_buffer)
 	local_inc(&cpu_buffer->commits);
 }
 
-static void
+static __always_inline void
 rb_set_commit_to_write(struct ring_buffer_per_cpu *cpu_buffer)
 {
 	unsigned long max_count;
@@ -2447,7 +2447,7 @@ rb_set_commit_to_write(struct ring_buffer_per_cpu *cpu_buffer)
 		goto again;
 }
 
-static inline void rb_end_commit(struct ring_buffer_per_cpu *cpu_buffer)
+static __always_inline void rb_end_commit(struct ring_buffer_per_cpu *cpu_buffer)
 {
 	unsigned long commits;
 

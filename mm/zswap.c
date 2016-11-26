@@ -536,70 +536,28 @@ static struct zswap_entry *zswap_entry_find_get(struct btree_head *head,
 **********************************/
 static DEFINE_PER_CPU(u8 *, zswap_dstmem);
 
-static int __zswap_cpu_dstmem_notifier(unsigned long action, unsigned long cpu)
+static int zswap_dstmem_prepare(unsigned int cpu)
 {
 	u8 *dst;
 
-	switch (action & ~CPU_TASKS_FROZEN) {
-	case CPU_UP_PREPARE:
-		dst = kmalloc_node(PAGE_SIZE * 2, GFP_KERNEL, cpu_to_node(cpu));
-		if (!dst) {
-			pr_err("can't allocate compressor buffer\n");
-			return NOTIFY_BAD;
-		}
-		per_cpu(zswap_dstmem, cpu) = dst;
-		break;
-	case CPU_DEAD:
-	case CPU_UP_CANCELED:
-		dst = per_cpu(zswap_dstmem, cpu);
-		kfree(dst);
-		per_cpu(zswap_dstmem, cpu) = NULL;
-		break;
-	default:
-		break;
+	dst = kmalloc_node(PAGE_SIZE * 2, GFP_KERNEL, cpu_to_node(cpu));
+	if (!dst) {
+		pr_err("can't allocate compressor buffer\n");
+		return -ENOMEM;
 	}
-	return NOTIFY_OK;
-}
-
-static int zswap_cpu_dstmem_notifier(struct notifier_block *nb,
-				     unsigned long action, void *pcpu)
-{
-	return __zswap_cpu_dstmem_notifier(action, (unsigned long)pcpu);
-}
-
-static struct notifier_block zswap_dstmem_notifier = {
-	.notifier_call =	zswap_cpu_dstmem_notifier,
-};
-
-static int __init zswap_cpu_dstmem_init(void)
-{
-	unsigned long cpu;
-
-	cpu_notifier_register_begin();
-	for_each_online_cpu(cpu)
-		if (__zswap_cpu_dstmem_notifier(CPU_UP_PREPARE, cpu) ==
-		    NOTIFY_BAD)
-			goto cleanup;
-	__register_cpu_notifier(&zswap_dstmem_notifier);
-	cpu_notifier_register_done();
+	per_cpu(zswap_dstmem, cpu) = dst;
 	return 0;
-
-cleanup:
-	for_each_online_cpu(cpu)
-		__zswap_cpu_dstmem_notifier(CPU_UP_CANCELED, cpu);
-	cpu_notifier_register_done();
-	return -ENOMEM;
 }
 
-static void zswap_cpu_dstmem_destroy(void)
+static int zswap_dstmem_dead(unsigned int cpu)
 {
-	unsigned long cpu;
+	u8 *dst;
 
-	cpu_notifier_register_begin();
-	for_each_online_cpu(cpu)
-		__zswap_cpu_dstmem_notifier(CPU_UP_CANCELED, cpu);
-	__unregister_cpu_notifier(&zswap_dstmem_notifier);
-	cpu_notifier_register_done();
+	dst = per_cpu(zswap_dstmem, cpu);
+	kfree(dst);
+	per_cpu(zswap_dstmem, cpu) = NULL;
+
+	return 0;
 }
 
 static int __zswap_cpu_comp_notifier(struct zswap_pool *pool,
@@ -1419,6 +1377,7 @@ static struct notifier_block zswap_size_nb = {
 static int __init init_zswap(void)
 {
 	struct zswap_pool *pool;
+	int ret;
 
 	zswap_init_started = true;
 
@@ -1438,7 +1397,9 @@ static int __init init_zswap(void)
 		goto handlecachefail;
 	}
 #endif
-	if (zswap_cpu_dstmem_init()) {
+	ret = cpuhp_setup_state(CPUHP_MM_ZSWP_MEM_PREPARE, "mm/zswap:prepare",
+				zswap_dstmem_prepare, zswap_dstmem_dead);
+	if (ret) {
 		pr_err("dstmem alloc failed\n");
 		goto dstmem_fail;
 	}
@@ -1461,7 +1422,7 @@ static int __init init_zswap(void)
 	return 0;
 
 pool_fail:
-	zswap_cpu_dstmem_destroy();
+	cpuhp_remove_state(CPUHP_MM_ZSWP_MEM_PREPARE);
 dstmem_fail:
 #ifdef CONFIG_ZSWAP_SAME_PAGE_SHARING
 	zswap_handle_cache_destroy();

@@ -7205,6 +7205,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
 		goto drop;
 
 	tcp_rsk(req)->af_specific = af_ops;
+	tcp_rsk(req)->ts_off = 0;
 
 	tcp_clear_options(&tmp_opt);
 	tmp_opt.mss_clamp = af_ops->mss_clamp;
@@ -7234,6 +7235,9 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
 
 	if (security_inet_conn_request(sk, skb, req))
 		goto drop_and_free;
+
+	if (isn && tmp_opt.tstamp_ok)
+		af_ops->init_seq(skb, &tcp_rsk(req)->ts_off);
 
 	if (!want_cookie && !isn) {
 		/* VJ's idea. We save last timestamp seen
@@ -7275,7 +7279,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
 			goto drop_and_release;
 		}
 
-		isn = af_ops->init_seq(skb);
+		isn = af_ops->init_seq(skb, &tcp_rsk(req)->ts_off);
 	}
 	if (!dst) {
 		dst = af_ops->route_req(sk, &fl, req, NULL);
@@ -7291,6 +7295,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
 #else
 		isn = cookie_init_sequence(af_ops, sk, skb, &req->mss);
 #endif
+		tcp_rsk(req)->ts_off = 0;
 		req->cookie_ts = tmp_opt.tstamp_ok;
 		if (!tmp_opt.tstamp_ok)
 			inet_rsk(req)->ecn_ok = 0;

@@ -114,12 +114,12 @@ void inet6_sk_rx_dst_set(struct sock *sk, const struct sk_buff *skb)
 #ifndef CONFIG_MPTCP
 static
 #endif
-__u32 tcp_v6_init_sequence(const struct sk_buff *skb)
+u32 tcp_v6_init_sequence(const struct sk_buff *skb, u32 *tsoff)
 {
 	return secure_tcpv6_sequence_number(ipv6_hdr(skb)->daddr.s6_addr32,
 					    ipv6_hdr(skb)->saddr.s6_addr32,
 					    tcp_hdr(skb)->dest,
-					    tcp_hdr(skb)->source);
+					    tcp_hdr(skb)->source, tsoff);
 }
 
 #ifndef CONFIG_MPTCP
@@ -314,7 +314,8 @@ int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
 		tp->write_seq = secure_tcpv6_sequence_number(np->saddr.s6_addr32,
 							     sk->sk_v6_daddr.s6_addr32,
 							     inet->inet_sport,
-							     inet->inet_dport);
+							     inet->inet_dport,
+							     &tp->tsoffset);
 
 	if (tcp_fastopen_defer_connect(sk, &err))
 		return err;
@@ -1120,7 +1121,8 @@ void tcp_v6_reqsk_send_ack(const struct sock *sk, struct sk_buff *skb,
 			tcp_rsk(req)->snt_isn + 1 : tcp_sk(sk)->snd_nxt,
 			tcp_rsk(req)->rcv_nxt,
 			req->rsk_rcv_wnd >> inet_rsk(req)->rcv_wscale,
-			tcp_time_stamp, req->ts_recent, sk->sk_bound_dev_if,
+			tcp_time_stamp + tcp_rsk(req)->ts_off,
+			req->ts_recent, sk->sk_bound_dev_if,
 			tcp_v6_md5_do_lookup(sk, &ipv6_hdr(skb)->saddr),
 			0, 0);
 #endif

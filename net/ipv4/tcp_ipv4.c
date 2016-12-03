@@ -478,7 +478,7 @@ void tcp_v4_err(struct sk_buff *icmp_skb, u32 info)
 #endif
 				tcp_v4_mtu_reduced(sk);
 			} else {
-				if (!test_and_set_bit(TCP_MTU_REDUCED_DEFERRED, &tp->tsq_flags))
+				if (!test_and_set_bit(TCP_MTU_REDUCED_DEFERRED, &sk->sk_tsq_flags))
 					sock_hold(sk);
 #ifdef CONFIG_MPTCP
 				if (mptcp(tp))

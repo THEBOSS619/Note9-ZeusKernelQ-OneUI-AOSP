@@ -345,7 +345,7 @@ static inline u64 timekeeping_delta_to_ns(struct tk_read_base *tkr,
 	return nsec + arch_gettimeoffset();
 }
 
-static inline s64 timekeeping_get_ns(struct tk_read_base *tkr)
+static inline u64 timekeeping_get_ns(struct tk_read_base *tkr)
 {
 	cycle_t delta;
 
@@ -353,8 +353,8 @@ static inline s64 timekeeping_get_ns(struct tk_read_base *tkr)
 	return timekeeping_delta_to_ns(tkr, delta);
 }
 
-static inline s64 timekeeping_cycles_to_ns(struct tk_read_base *tkr,
-					    cycle_t cycles)
+static inline u64 timekeeping_cycles_to_ns(struct tk_read_base *tkr,
+					   cycle_t cycles)
 {
 	cycle_t delta;
 
@@ -720,7 +720,7 @@ int __getnstimeofday64(struct timespec64 *ts)
 {
 	struct timekeeper *tk = &tk_core.timekeeper;
 	unsigned long seq;
-	s64 nsecs = 0;
+	u64 nsecs;
 
 	do {
 		seq = read_seqcount_begin(&tk_core.seq);
@@ -760,7 +760,7 @@ ktime_t ktime_get(void)
 	struct timekeeper *tk = &tk_core.timekeeper;
 	unsigned int seq;
 	ktime_t base;
-	s64 nsecs;
+	u64 nsecs;
 
 	WARN_ON(timekeeping_suspended);
 
@@ -803,7 +803,7 @@ ktime_t ktime_get_with_offset(enum tk_offsets offs)
 	struct timekeeper *tk = &tk_core.timekeeper;
 	unsigned int seq;
 	ktime_t base, *offset = offsets[offs];
-	s64 nsecs;
+	u64 nsecs;
 
 	WARN_ON(timekeeping_suspended);
 
@@ -847,7 +847,7 @@ ktime_t ktime_get_raw(void)
 	struct timekeeper *tk = &tk_core.timekeeper;
 	unsigned int seq;
 	ktime_t base;
-	s64 nsecs;
+	u64 nsecs;
 
 	do {
 		seq = read_seqcount_begin(&tk_core.seq);
@@ -872,8 +872,8 @@ void ktime_get_ts64(struct timespec64 *ts)
 {
 	struct timekeeper *tk = &tk_core.timekeeper;
 	struct timespec64 tomono;
-	s64 nsec;
 	unsigned int seq;
+	u64 nsec;
 
 	WARN_ON(timekeeping_suspended);
 
@@ -961,8 +961,8 @@ void ktime_get_snapshot(struct system_time_snapshot *systime_snapshot)
 	unsigned long seq;
 	ktime_t base_raw;
 	ktime_t base_real;
-	s64 nsec_raw;
-	s64 nsec_real;
+	u64 nsec_raw;
+	u64 nsec_real;
 	cycle_t now;
 
 	WARN_ON_ONCE(timekeeping_suspended);
@@ -1119,7 +1119,7 @@ int get_device_system_crosststamp(int (*get_time_fn)
 	cycle_t cycles, now, interval_start;
 	unsigned int clock_was_set_seq = 0;
 	ktime_t base_real, base_raw;
-	s64 nsec_real, nsec_raw;
+	u64 nsec_real, nsec_raw;
 	u8 cs_was_changed_seq;
 	unsigned long seq;
 	bool do_interp;
@@ -1431,7 +1431,7 @@ void getrawmonotonic64(struct timespec64 *ts)
 {
 	struct timekeeper *tk = &tk_core.timekeeper;
 	unsigned long seq;
-	s64 nsecs;
+	u64 nsecs;
 
 	do {
 		seq = read_seqcount_begin(&tk_core.seq);

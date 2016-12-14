@@ -1463,7 +1463,7 @@ static void collapse_shmem(struct mm_struct *mm,
 		radix_tree_replace_slot(&mapping->page_tree, slot,
 				new_page + (index % HPAGE_PMD_NR));
 
-		slot = radix_tree_iter_next(&iter);
+		slot = radix_tree_iter_resume(slot, &iter);
 		index++;
 		continue;
 out_unlock:
@@ -1565,7 +1565,6 @@ tree_unlocked:
 				/* Put holes back where they were */
 				radix_tree_delete(&mapping->page_tree,
 						  iter.index);
-				slot = radix_tree_iter_next(&iter);
 				continue;
 			}
 
@@ -1576,11 +1575,11 @@ tree_unlocked:
 			page_ref_unfreeze(page, 2);
 			radix_tree_replace_slot(&mapping->page_tree,
 						slot, page);
+			slot = radix_tree_iter_resume(slot, &iter);
 			spin_unlock_irq(&mapping->tree_lock);
 			unlock_page(page);
 			putback_lru_page(page);
 			spin_lock_irq(&mapping->tree_lock);
-			slot = radix_tree_iter_next(&iter);
 		}
 		VM_BUG_ON(nr_none);
 		spin_unlock_irq(&mapping->tree_lock);
@@ -1659,8 +1658,8 @@ static void khugepaged_scan_shmem(struct mm_struct *mm,
 		present++;
 
 		if (need_resched()) {
+			slot = radix_tree_iter_resume(slot, &iter);
 			cond_resched_rcu();
-			slot = radix_tree_iter_next(&iter);
 		}
 	}
 	rcu_read_unlock();

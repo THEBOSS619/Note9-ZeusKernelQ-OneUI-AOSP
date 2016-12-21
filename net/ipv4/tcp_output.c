@@ -834,6 +834,7 @@ static void tcp_tasklet_func(unsigned long data)
 		list_del(&tp->tsq_node);
 
 		sk = (struct sock *)tp;
+		smp_mb__before_atomic();
 		clear_bit(TSQ_QUEUED, &sk->sk_tsq_flags);
 #ifdef CONFIG_MPTCP
 		meta_sk = mptcp(tp) ? mptcp_meta_sk(sk) : sk;

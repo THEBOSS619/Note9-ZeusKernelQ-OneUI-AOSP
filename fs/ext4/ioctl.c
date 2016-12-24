@@ -15,12 +15,12 @@
 #include <linux/file.h>
 #include <linux/quotaops.h>
 #include <linux/uuid.h>
-#include <asm/uaccess.h>
 #include <linux/quotaops.h>
 #include <linux/random.h>
 #include <linux/uuid.h>
 #include <linux/uaccess.h>
 #include <linux/delay.h>
+#include <linux/uaccess.h>
 #include "ext4_jbd2.h"
 #include "ext4.h"
 

@@ -51,7 +51,7 @@
 #include <linux/freezer.h>
 #include <linux/exynos-ss.h>
 
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 #include <trace/events/timer.h>
 

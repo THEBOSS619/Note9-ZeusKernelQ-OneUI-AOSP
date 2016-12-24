@@ -20,7 +20,7 @@
 #include <linux/fs.h>
 #include "internal.h"
 
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <asm/unistd.h>
 
 #ifdef CONFIG_SECURITY_DEFEX

@@ -37,10 +37,11 @@
 #include <linux/hash.h>
 #include <linux/bitops.h>
 #include <linux/init_task.h>
-#include <asm/uaccess.h>
 #ifdef CONFIG_FSCRYPT_SDP
 #include <linux/fscrypto_sdp_name.h>
 #endif
+#include <linux/uaccess.h>
+
 #include "internal.h"
 #include "mount.h"
 

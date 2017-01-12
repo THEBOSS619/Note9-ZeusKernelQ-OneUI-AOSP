@@ -273,27 +273,55 @@ enum req_op {
 #define REQ_OP_BITS 3
 
 typedef unsigned int blk_qc_t;
-#define BLK_QC_T_NONE	-1U
-#define BLK_QC_T_SHIFT	16
+#define BLK_QC_T_NONE		-1U
+#define BLK_QC_T_SHIFT		16
+#define BLK_QC_T_INTERNAL	(1U << 31)
 
 static inline bool blk_qc_t_valid(blk_qc_t cookie)
 {
 	return cookie != BLK_QC_T_NONE;
 }
 
-static inline blk_qc_t blk_tag_to_qc_t(unsigned int tag, unsigned int queue_num)
+static inline blk_qc_t blk_tag_to_qc_t(unsigned int tag, unsigned int queue_num,
+				       bool internal)
 {
-	return tag | (queue_num << BLK_QC_T_SHIFT);
+	blk_qc_t ret = tag | (queue_num << BLK_QC_T_SHIFT);
+
+	if (internal)
+		ret |= BLK_QC_T_INTERNAL;
+
+	return ret;
 }
 
 static inline unsigned int blk_qc_t_to_queue_num(blk_qc_t cookie)
 {
-	return cookie >> BLK_QC_T_SHIFT;
+	return (cookie & ~BLK_QC_T_INTERNAL) >> BLK_QC_T_SHIFT;
 }
 
 static inline unsigned int blk_qc_t_to_tag(blk_qc_t cookie)
 {
 	return cookie & ((1u << BLK_QC_T_SHIFT) - 1);
+}
+
+struct blk_issue_stat {
+	u64 time;
+};
+
+#define BLK_RQ_STAT_BATCH	64
+
+struct blk_rq_stat {
+	s64 mean;
+	u64 min;
+	u64 max;
+	s32 nr_samples;
+	s32 nr_batch;
+	u64 batch;
+	s64 time;
+};
+
+static inline bool blk_qc_t_is_internal(blk_qc_t cookie)
+{
+	return (cookie & BLK_QC_T_INTERNAL) != 0;
 }
 
 struct blk_issue_stat {

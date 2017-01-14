@@ -1934,7 +1934,6 @@ static int filename_trans_read(struct policydb *p, void *fp)
 	nel = le32_to_cpu(buf[0]);
 
 	for (i = 0; i < nel; i++) {
-		ft = NULL;
 		otype = NULL;
 		name = NULL;
 

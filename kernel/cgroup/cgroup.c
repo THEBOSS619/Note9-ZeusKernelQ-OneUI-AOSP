@@ -165,7 +165,7 @@ static bool cgrp_dfl_visible;
 static u16 cgrp_dfl_inhibit_ss_mask;
 
 /* some controllers are implicitly enabled on the default hierarchy */
-static unsigned long cgrp_dfl_implicit_ss_mask;
+static u16 cgrp_dfl_implicit_ss_mask;
 
 unsigned int sysctl_iosched_boost_top_app = 0;
 
@@ -186,13 +186,13 @@ static DEFINE_IDR(cgroup_hierarchy_idr);
 static u64 css_serial_nr_next = 1;
 
 /*
- * These bitmask flags indicate whether tasks in the fork and exit paths have
- * fork/exit handlers to call. This avoids us having to do extra work in the
- * fork/exit path to check which subsystems have fork/exit callbacks.
+ * These bitmasks identify subsystems with specific features to avoid
+ * having to do iterative checks repeatedly.
  */
 static u16 have_fork_callback __read_mostly;
 static u16 have_exit_callback __read_mostly;
 static u16 have_free_callback __read_mostly;
+static u16 have_canfork_callback __read_mostly;
 
 /* cgroup namespace for init task */
 struct cgroup_namespace init_cgroup_ns = {
@@ -202,9 +202,6 @@ struct cgroup_namespace init_cgroup_ns = {
 	.ns.inum	= PROC_CGROUP_INIT_INO,
 	.root_cset	= &init_css_set,
 };
-
-/* Ditto for the can_fork callback. */
-static u16 have_canfork_callback __read_mostly;
 
 static struct file_system_type cgroup2_fs_type;
 static struct cftype cgroup_base_files[];

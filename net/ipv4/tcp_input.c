@@ -5145,6 +5145,8 @@ end:
 		 */
 		if (tcp_is_sack(tp))
 			tcp_grow_window(sk, skb);
+
+		skb_condense(skb);
 		skb_set_owner_r(skb, sk);
 	}
 }

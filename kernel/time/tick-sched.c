@@ -1339,3 +1339,8 @@ void restore_pcpu_tick(int cpu)
 	ts->idle_calls = saved_pcpu_ts[cpu].idle_calls;
 }
 EXPORT_SYMBOL(restore_pcpu_tick);
+
+ktime_t *get_next_event_cpu(unsigned int cpu)
+{
+	return &(per_cpu(tick_cpu_device, cpu).evtdev->next_event);
+}

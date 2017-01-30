@@ -1323,7 +1323,7 @@ static int ibmveth_poll(struct napi_struct *napi, int budget)
 	ibmveth_replenish_task(adapter);
 
 	if (frames_processed < budget) {
-		napi_complete(napi);
+		napi_complete_done(napi, frames_processed);
 
 		/* We think we are done - reenable interrupts,
 		 * then check once more to make sure we are done.

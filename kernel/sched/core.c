@@ -1116,7 +1116,7 @@ void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask)
 		 * holding rq->lock.
 		 */
 		lockdep_assert_held(&rq->lock);
-		dequeue_task(rq, p, DEQUEUE_SAVE);
+		dequeue_task(rq, p, DEQUEUE_SAVE | DEQUEUE_NOCLOCK);
 	}
 	if (running)
 		put_prev_task(rq, p);
@@ -2661,7 +2661,7 @@ void wake_up_new_task(struct task_struct *p)
 
 	walt_mark_task_starting(p);
 
-	activate_task(rq, p, ENQUEUE_WAKEUP_NEW);
+	activate_task(rq, p, ENQUEUE_WAKEUP_NEW | ENQUEUE_NOCLOCK);
 	p->on_rq = TASK_ON_RQ_QUEUED;
 	trace_sched_wakeup_new(p);
 	check_preempt_curr(rq, p, WF_FORK);
@@ -3842,7 +3842,7 @@ static inline int rt_effective_prio(struct task_struct *p, int prio)
 void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task)
 {
 	int prio, oldprio, queued, running, queue_flag =
-		DEQUEUE_SAVE | DEQUEUE_MOVE;
+		DEQUEUE_SAVE | DEQUEUE_MOVE | DEQUEUE_NOCLOCK;
 	const struct sched_class *prev_class;
 	struct rq_flags rf;
 	struct rq *rq;
@@ -3991,7 +3991,7 @@ void set_user_nice(struct task_struct *p, long nice)
 	queued = task_on_rq_queued(p);
 	running = task_current(rq, p);
 	if (queued)
-		dequeue_task(rq, p, DEQUEUE_SAVE);
+		dequeue_task(rq, p, DEQUEUE_SAVE | DEQUEUE_NOCLOCK);
 	if (running)
 		put_prev_task(rq, p);
 
@@ -4314,7 +4314,7 @@ static int __sched_setscheduler(struct task_struct *p,
 	const struct sched_class *prev_class;
 	struct rq_flags rf;
 	int reset_on_fork;
-	int queue_flags = DEQUEUE_SAVE | DEQUEUE_MOVE;
+	int queue_flags = DEQUEUE_SAVE | DEQUEUE_MOVE | DEQUEUE_NOCLOCK;
 	struct rq *rq;
 
 	/* May grab non-irq protected spin_locks: */
@@ -8455,7 +8455,8 @@ static void sched_change_group(struct task_struct *tsk, int type)
  */
 void sched_move_task(struct task_struct *tsk)
 {
-	int queued, running;
+	int queued, running, queue_flags =
+		DEQUEUE_SAVE | DEQUEUE_MOVE | DEQUEUE_NOCLOCK;
 	struct rq_flags rf;
 	struct rq *rq;
 
@@ -8466,14 +8467,14 @@ void sched_move_task(struct task_struct *tsk)
 	queued = task_on_rq_queued(tsk);
 
 	if (queued)
-		dequeue_task(rq, tsk, DEQUEUE_SAVE | DEQUEUE_MOVE);
+		dequeue_task(rq, tsk, queue_flags);
 	if (running)
 		put_prev_task(rq, tsk);
 
 	sched_change_group(tsk, TASK_MOVE_GROUP);
 
 	if (queued)
-		enqueue_task(rq, tsk, ENQUEUE_RESTORE | ENQUEUE_MOVE | ENQUEUE_NOCLOCK);
+		enqueue_task(rq, tsk, queue_flags);
 	if (running)
 		set_curr_task(rq, tsk);
 

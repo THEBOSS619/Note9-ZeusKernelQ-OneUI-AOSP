@@ -2259,7 +2259,7 @@ static int fib_triestat_seq_show(struct seq_file *seq, void *v)
 
 	seq_printf(seq,
 		   "Basic info: size of leaf:"
-		   " %Zd bytes, size of tnode: %Zd bytes.\n",
+		   " %zd bytes, size of tnode: %zd bytes.\n",
 		   LEAF_SIZE, TNODE_SIZE(0));
 
 	rcu_read_lock();

@@ -2188,7 +2188,6 @@ struct task_struct {
 	int lockdep_depth;
 	unsigned int lockdep_recursion;
 	struct held_lock held_locks[MAX_LOCK_DEPTH];
-	gfp_t lockdep_reclaim_gfp;
 #endif
 #ifdef CONFIG_UBSAN
 	unsigned int in_ubsan;
@@ -2818,6 +2817,14 @@ static inline gfp_t memalloc_noio_flags(gfp_t flags)
 		flags &= ~(__GFP_IO | __GFP_FS);
 	return flags;
 }
+
+#ifdef CONFIG_LOCKDEP
+extern void fs_reclaim_acquire(gfp_t gfp_mask);
+extern void fs_reclaim_release(gfp_t gfp_mask);
+#else
+static inline void fs_reclaim_acquire(gfp_t gfp_mask) { }
+static inline void fs_reclaim_release(gfp_t gfp_mask) { }
+#endif
 
 static inline unsigned int memalloc_noio_save(void)
 {

@@ -4278,7 +4278,7 @@ int perf_event_release_kernel(struct perf_event *event)
 
 	raw_spin_lock_irq(&ctx->lock);
 	/*
-	 * Mark this even as STATE_DEAD, there is no external reference to it
+	 * Mark this event as STATE_DEAD, there is no external reference to it
 	 * anymore.
 	 *
 	 * Anybody acquiring event->child_mutex after the below loop _must_
@@ -10543,7 +10543,12 @@ const struct perf_event_attr *perf_event_attrs(struct perf_event *event)
 }
 
 /*
- * inherit a event from parent task to child task:
+ * Inherit a event from parent task to child task.
+ *
+ * Returns:
+ *  - valid pointer on success
+ *  - NULL for orphaned events
+ *  - IS_ERR() on error
  */
 static struct perf_event *
 inherit_event(struct perf_event *parent_event,
@@ -10637,6 +10642,16 @@ inherit_event(struct perf_event *parent_event,
 	return child_event;
 }
 
+/*
+ * Inherits an event group.
+ *
+ * This will quietly suppress orphaned events; !inherit_event() is not an error.
+ * This matches with perf_event_release_kernel() removing all child events.
+ *
+ * Returns:
+ *  - 0 on success
+ *  - <0 on error
+ */
 static int inherit_group(struct perf_event *parent_event,
 	      struct task_struct *parent,
 	      struct perf_event_context *parent_ctx,
@@ -10651,6 +10666,11 @@ static int inherit_group(struct perf_event *parent_event,
 				 child, NULL, child_ctx);
 	if (IS_ERR(leader))
 		return PTR_ERR(leader);
+	/*
+	 * @leader can be NULL here because of is_orphaned_event(). In this
+	 * case inherit_event() will create individual events, similar to what
+	 * perf_group_detach() would do anyway.
+	 */
 	list_for_each_entry(sub, &parent_event->sibling_list, group_entry) {
 		child_ctr = inherit_event(sub, parent, parent_ctx,
 					    child, leader, child_ctx);
@@ -10660,6 +10680,17 @@ static int inherit_group(struct perf_event *parent_event,
 	return 0;
 }
 
+/*
+ * Creates the child task context and tries to inherit the event-group.
+ *
+ * Clears @inherited_all on !attr.inherited or error. Note that we'll leave
+ * inherited_all set when we 'fail' to inherit an orphaned event; this is
+ * consistent with perf_event_release_kernel() removing all child events.
+ *
+ * Returns:
+ *  - 0 on success
+ *  - <0 on error
+ */
 static int
 inherit_task_group(struct perf_event *event, struct task_struct *parent,
 		   struct perf_event_context *parent_ctx,
@@ -10682,7 +10713,6 @@ inherit_task_group(struct perf_event *event, struct task_struct *parent,
 		 * First allocate and initialize a context for the
 		 * child.
 		 */
-
 		child_ctx = alloc_perf_context(parent_ctx->pmu, child);
 		if (!child_ctx)
 			return -ENOMEM;

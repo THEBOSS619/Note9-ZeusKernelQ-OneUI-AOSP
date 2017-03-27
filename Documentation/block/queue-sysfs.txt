@@ -182,5 +182,11 @@ If the device is registered for writeback throttling, then this file shows
 the value of the monitoring window in which we'll look at the target
 latency. See wb_lat_usec.
 
+throttle_sample_time (RW)
+-------------------------
+This is the time window that blk-throttle samples data, in millisecond.
+blk-throttle makes decision based on the samplings. Lower time means cgroups
+have more smooth throughput, but higher CPU overhead. This exists only when
+CONFIG_BLK_DEV_THROTTLING_LOW is enabled.
 
 Jens Axboe <jens.axboe@oracle.com>, February 2009

@@ -47,7 +47,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
 	if (nla == NULL)
 		return -EINVAL;
 
-	err = nla_parse_nested(tb, TCA_PEDIT_MAX, nla, pedit_policy);
+	err = nla_parse_nested(tb, TCA_PEDIT_MAX, nla, pedit_policy, NULL);
 	if (err < 0)
 		return err;
 

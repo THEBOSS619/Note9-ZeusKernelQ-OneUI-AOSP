@@ -264,7 +264,7 @@ nl802154_prepare_wpan_dev_dump(struct sk_buff *skb,
 	if (!cb->args[0]) {
 		err = nlmsg_parse(cb->nlh, GENL_HDRLEN + nl802154_fam.hdrsize,
 				  nl802154_fam.attrbuf, nl802154_fam.maxattr,
-				  nl802154_policy);
+				  nl802154_policy, NULL);
 		if (err)
 			goto out_unlock;
 
@@ -577,7 +577,7 @@ static int nl802154_dump_wpan_phy_parse(struct sk_buff *skb,
 {
 	struct nlattr **tb = nl802154_fam.attrbuf;
 	int ret = nlmsg_parse(cb->nlh, GENL_HDRLEN + nl802154_fam.hdrsize,
-			      tb, nl802154_fam.maxattr, nl802154_policy);
+			      tb, nl802154_fam.maxattr, nl802154_policy, NULL);
 
 	/* TODO check if we can handle error here,
 	 * we have no backward compatibility
@@ -1322,7 +1322,7 @@ ieee802154_llsec_parse_dev_addr(struct nlattr *nla,
 	struct nlattr *attrs[NL802154_DEV_ADDR_ATTR_MAX + 1];
 
 	if (!nla || nla_parse_nested(attrs, NL802154_DEV_ADDR_ATTR_MAX, nla,
-				     nl802154_dev_addr_policy))
+				     nl802154_dev_addr_policy, NULL))
 		return -EINVAL;
 
 	if (!attrs[NL802154_DEV_ADDR_ATTR_PAN_ID] ||
@@ -1362,7 +1362,7 @@ ieee802154_llsec_parse_key_id(struct nlattr *nla,
 	struct nlattr *attrs[NL802154_KEY_ID_ATTR_MAX + 1];
 
 	if (!nla || nla_parse_nested(attrs, NL802154_KEY_ID_ATTR_MAX, nla,
-				     nl802154_key_id_policy))
+				     nl802154_key_id_policy, NULL))
 		return -EINVAL;
 
 	if (!attrs[NL802154_KEY_ID_ATTR_MODE])
@@ -1579,7 +1579,7 @@ static int nl802154_add_llsec_key(struct sk_buff *skb, struct genl_info *info)
 
 	if (nla_parse_nested(attrs, NL802154_KEY_ATTR_MAX,
 			     info->attrs[NL802154_ATTR_SEC_KEY],
-			     nl802154_key_policy))
+			     nl802154_key_policy, NULL))
 		return -EINVAL;
 
 	if (!attrs[NL802154_KEY_ATTR_USAGE_FRAMES] ||
@@ -1629,7 +1629,7 @@ static int nl802154_del_llsec_key(struct sk_buff *skb, struct genl_info *info)
 
 	if (nla_parse_nested(attrs, NL802154_KEY_ATTR_MAX,
 			     info->attrs[NL802154_ATTR_SEC_KEY],
-			     nl802154_key_policy))
+			     nl802154_key_policy, NULL))
 		return -EINVAL;
 
 	if (ieee802154_llsec_parse_key_id(attrs[NL802154_KEY_ATTR_ID], &id) < 0)
@@ -1743,8 +1743,8 @@ ieee802154_llsec_parse_device(struct nlattr *nla,
 {
 	struct nlattr *attrs[NL802154_DEV_ATTR_MAX + 1];
 
-	if (!nla || nla_parse_nested(attrs, NL802154_DEV_ATTR_MAX, nla,
-				     nl802154_dev_policy))
+	if (!nla || nla_parse_nested(attrs, NL802154_DEV_ATTR_MAX,
+				     nla, nl802154_dev_policy, NULL))
 		return -EINVAL;
 
 	memset(dev, 0, sizeof(*dev));
@@ -1797,7 +1797,7 @@ static int nl802154_del_llsec_dev(struct sk_buff *skb, struct genl_info *info)
 
 	if (nla_parse_nested(attrs, NL802154_DEV_ATTR_MAX,
 			     info->attrs[NL802154_ATTR_SEC_DEVICE],
-			     nl802154_dev_policy))
+			     nl802154_dev_policy, NULL))
 		return -EINVAL;
 
 	if (!attrs[NL802154_DEV_ATTR_EXTENDED_ADDR])
@@ -1925,7 +1925,7 @@ static int nl802154_add_llsec_devkey(struct sk_buff *skb, struct genl_info *info
 	if (!info->attrs[NL802154_ATTR_SEC_DEVKEY] ||
 	    nla_parse_nested(attrs, NL802154_DEVKEY_ATTR_MAX,
 			     info->attrs[NL802154_ATTR_SEC_DEVKEY],
-			     nl802154_devkey_policy) < 0)
+			     nl802154_devkey_policy, NULL) < 0)
 		return -EINVAL;
 
 	if (!attrs[NL802154_DEVKEY_ATTR_FRAME_COUNTER] ||
@@ -1957,7 +1957,7 @@ static int nl802154_del_llsec_devkey(struct sk_buff *skb, struct genl_info *info
 
 	if (nla_parse_nested(attrs, NL802154_DEVKEY_ATTR_MAX,
 			     info->attrs[NL802154_ATTR_SEC_DEVKEY],
-			     nl802154_devkey_policy))
+			     nl802154_devkey_policy, NULL))
 		return -EINVAL;
 
 	if (!attrs[NL802154_DEVKEY_ATTR_EXTENDED_ADDR])
@@ -2077,8 +2077,8 @@ llsec_parse_seclevel(struct nlattr *nla, struct ieee802154_llsec_seclevel *sl)
 {
 	struct nlattr *attrs[NL802154_SECLEVEL_ATTR_MAX + 1];
 
-	if (!nla || nla_parse_nested(attrs, NL802154_SECLEVEL_ATTR_MAX, nla,
-				     nl802154_seclevel_policy))
+	if (!nla || nla_parse_nested(attrs, NL802154_SECLEVEL_ATTR_MAX,
+				     nla, nl802154_seclevel_policy, NULL))
 		return -EINVAL;
 
 	memset(sl, 0, sizeof(*sl));

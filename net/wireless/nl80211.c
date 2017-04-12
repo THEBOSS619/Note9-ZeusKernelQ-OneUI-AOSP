@@ -597,7 +597,7 @@ static int nl80211_prepare_wdev_dump(struct sk_buff *skb,
 	if (!cb->args[0]) {
 		err = nlmsg_parse(cb->nlh, GENL_HDRLEN + nl80211_fam.hdrsize,
 				  nl80211_fam.attrbuf, nl80211_fam.maxattr,
-				  nl80211_policy);
+				  nl80211_policy, NULL);
 		if (err)
 			return err;
 
@@ -767,7 +767,7 @@ static int nl80211_parse_key_new(struct nlattr *key, struct key_parse *k)
 {
 	struct nlattr *tb[NL80211_KEY_MAX + 1];
 	int err = nla_parse_nested(tb, NL80211_KEY_MAX, key,
-				   nl80211_key_policy);
+				   nl80211_key_policy, NULL);
 	if (err)
 		return err;
 
@@ -808,7 +808,7 @@ static int nl80211_parse_key_new(struct nlattr *key, struct key_parse *k)
 
 		err = nla_parse_nested(kdt, NUM_NL80211_KEY_DEFAULT_TYPES - 1,
 				       tb[NL80211_KEY_DEFAULT_TYPES],
-				       nl80211_key_default_policy);
+				       nl80211_key_default_policy, NULL);
 		if (err)
 			return err;
 
@@ -855,10 +855,10 @@ static int nl80211_parse_key_old(struct genl_info *info, struct key_parse *k)
 
 	if (info->attrs[NL80211_ATTR_KEY_DEFAULT_TYPES]) {
 		struct nlattr *kdt[NUM_NL80211_KEY_DEFAULT_TYPES];
-		int err = nla_parse_nested(
-				kdt, NUM_NL80211_KEY_DEFAULT_TYPES - 1,
-				info->attrs[NL80211_ATTR_KEY_DEFAULT_TYPES],
-				nl80211_key_default_policy);
+		int err = nla_parse_nested(kdt,
+					   NUM_NL80211_KEY_DEFAULT_TYPES - 1,
+					   info->attrs[NL80211_ATTR_KEY_DEFAULT_TYPES],
+					   nl80211_key_default_policy, NULL);
 		if (err)
 			return err;
 
@@ -1914,7 +1914,7 @@ static int nl80211_dump_wiphy_parse(struct sk_buff *skb,
 {
 	struct nlattr **tb = nl80211_fam.attrbuf;
 	int ret = nlmsg_parse(cb->nlh, GENL_HDRLEN + nl80211_fam.hdrsize,
-			      tb, nl80211_fam.maxattr, nl80211_policy);
+			      tb, nl80211_fam.maxattr, nl80211_policy, NULL);
 	/* ignore parse errors for backward compatibility */
 	if (ret)
 		return 0;
@@ -2334,7 +2334,7 @@ static int nl80211_set_wiphy(struct sk_buff *skb, struct genl_info *info)
 			result = nla_parse(tb, NL80211_TXQ_ATTR_MAX,
 					   nla_data(nl_txq_params),
 					   nla_len(nl_txq_params),
-					   txq_params_policy);
+					   txq_params_policy, NULL);
 			if (result)
 				return result;
 			result = parse_txq_params(tb, &txq_params);
@@ -2721,8 +2721,8 @@ static int parse_monitor_flags(struct nlattr *nla, u32 *mntrflags)
 	if (!nla)
 		return -EINVAL;
 
-	if (nla_parse_nested(flags, NL80211_MNTR_FLAG_MAX,
-			     nla, mntr_flags_policy))
+	if (nla_parse_nested(flags, NL80211_MNTR_FLAG_MAX, nla,
+			     mntr_flags_policy, NULL))
 		return -EINVAL;
 
 	for (flag = 1; flag <= NL80211_MNTR_FLAG_MAX; flag++)
@@ -3588,7 +3588,7 @@ static int nl80211_parse_tx_bitrate_mask(struct genl_info *info,
 		if (sband == NULL)
 			return -EINVAL;
 		err = nla_parse(tb, NL80211_TXRATE_MAX, nla_data(tx_rates),
-				nla_len(tx_rates), nl80211_txattr_policy);
+				nla_len(tx_rates), nl80211_txattr_policy, NULL);
 		if (err)
 			return err;
 		if (tb[NL80211_TXRATE_LEGACY]) {
@@ -4075,8 +4075,8 @@ static int parse_station_flags(struct genl_info *info,
 	if (!nla)
 		return 0;
 
-	if (nla_parse_nested(flags, NL80211_STA_FLAG_MAX,
-			     nla, sta_flags_policy))
+	if (nla_parse_nested(flags, NL80211_STA_FLAG_MAX, nla,
+			     sta_flags_policy, NULL))
 		return -EINVAL;
 
 	/*
@@ -4695,7 +4695,7 @@ static int nl80211_parse_sta_wme(struct genl_info *info,
 
 	nla = info->attrs[NL80211_ATTR_STA_WME];
 	err = nla_parse_nested(tb, NL80211_STA_WME_MAX, nla,
-			       nl80211_sta_wme_policy);
+			       nl80211_sta_wme_policy, NULL);
 	if (err)
 		return err;
 
@@ -5817,7 +5817,7 @@ do {									    \
 		return -EINVAL;
 	if (nla_parse_nested(tb, NL80211_MESHCONF_ATTR_MAX,
 			     info->attrs[NL80211_ATTR_MESH_CONFIG],
-			     nl80211_meshconf_params_policy))
+			     nl80211_meshconf_params_policy, NULL))
 		return -EINVAL;
 
 	/* This makes sure that there aren't more than 32 mesh config
@@ -5953,7 +5953,7 @@ static int nl80211_parse_mesh_setup(struct genl_info *info,
 		return -EINVAL;
 	if (nla_parse_nested(tb, NL80211_MESH_SETUP_ATTR_MAX,
 			     info->attrs[NL80211_ATTR_MESH_SETUP],
-			     nl80211_mesh_setup_params_policy))
+			     nl80211_mesh_setup_params_policy, NULL))
 		return -EINVAL;
 
 	if (tb[NL80211_MESH_SETUP_ENABLE_VENDOR_SYNC])
@@ -6345,7 +6345,7 @@ static int nl80211_set_reg(struct sk_buff *skb, struct genl_info *info)
 			    rem_reg_rules) {
 		r = nla_parse(tb, NL80211_REG_RULE_ATTR_MAX,
 			      nla_data(nl_reg_rule), nla_len(nl_reg_rule),
-			      reg_rule_policy);
+			      reg_rule_policy, NULL);
 		if (r)
 			goto bad_reg;
 		r = parse_reg_rule(tb, &rd->reg_rules[rule_idx]);
@@ -6417,7 +6417,7 @@ static int parse_bss_select(struct nlattr *nla, struct wiphy *wiphy,
 		return -EINVAL;
 
 	err = nla_parse(attr, NL80211_BSS_SELECT_ATTR_MAX, nla_data(nest),
-			nla_len(nest), nl80211_bss_select_policy);
+			nla_len(nest), nl80211_bss_select_policy, NULL);
 	if (err)
 		return err;
 
@@ -6822,7 +6822,7 @@ nl80211_parse_sched_scan_plans(struct wiphy *wiphy, int n_plans,
 
 		err = nla_parse(plan, NL80211_SCHED_SCAN_PLAN_MAX,
 				nla_data(attr), nla_len(attr),
-				nl80211_plan_policy);
+				nl80211_plan_policy, NULL);
 		if (err)
 			return err;
 
@@ -6913,7 +6913,7 @@ nl80211_parse_sched_scan(struct wiphy *wiphy, struct wireless_dev *wdev,
 
 			err = nla_parse(tb, NL80211_SCHED_SCAN_MATCH_ATTR_MAX,
 					nla_data(attr), nla_len(attr),
-					nl80211_match_policy);
+					nl80211_match_policy, NULL);
 			if (err)
 				return ERR_PTR(err);
 			/* add other standalone attributes here */
@@ -7086,7 +7086,7 @@ nl80211_parse_sched_scan(struct wiphy *wiphy, struct wireless_dev *wdev,
 
 			err = nla_parse(tb, NL80211_SCHED_SCAN_MATCH_ATTR_MAX,
 					nla_data(attr), nla_len(attr),
-					nl80211_match_policy);
+					nl80211_match_policy, NULL);
 			if (err)
 				goto out_free;
 			ssid = tb[NL80211_SCHED_SCAN_MATCH_ATTR_SSID];
@@ -7366,7 +7366,7 @@ static int nl80211_channel_switch(struct sk_buff *skb, struct genl_info *info)
 
 	err = nla_parse_nested(csa_attrs, NL80211_ATTR_MAX,
 			       info->attrs[NL80211_ATTR_CSA_IES],
-			       nl80211_policy);
+			       nl80211_policy, NULL);
 	if (err)
 		return err;
 
@@ -8541,7 +8541,7 @@ static int nl80211_testmode_dump(struct sk_buff *skb,
 	} else {
 		err = nlmsg_parse(cb->nlh, GENL_HDRLEN + nl80211_fam.hdrsize,
 				  nl80211_fam.attrbuf, nl80211_fam.maxattr,
-				  nl80211_policy);
+				  nl80211_policy, NULL);
 		if (err)
 			goto out_err;
 
@@ -9396,7 +9396,7 @@ static int nl80211_set_cqm(struct sk_buff *skb, struct genl_info *info)
 		return -EINVAL;
 
 	err = nla_parse_nested(attrs, NL80211_ATTR_CQM_MAX, cqm,
-			       nl80211_attr_cqm_policy);
+			       nl80211_attr_cqm_policy, NULL);
 	if (err)
 		return err;
 
@@ -9794,7 +9794,7 @@ static int nl80211_parse_wowlan_tcp(struct cfg80211_registered_device *rdev,
 
 	err = nla_parse(tb, MAX_NL80211_WOWLAN_TCP,
 			nla_data(attr), nla_len(attr),
-			nl80211_wowlan_tcp_policy);
+			nl80211_wowlan_tcp_policy, NULL);
 	if (err)
 		return err;
 
@@ -9941,7 +9941,7 @@ static int nl80211_parse_wowlan_nd(struct cfg80211_registered_device *rdev,
 
 	err = nla_parse(tb, NL80211_ATTR_MAX,
 			nla_data(attr), nla_len(attr),
-			nl80211_policy);
+			nl80211_policy, NULL);
 	if (err)
 		goto out;
 
@@ -9978,7 +9978,7 @@ static int nl80211_set_wowlan(struct sk_buff *skb, struct genl_info *info)
 	err = nla_parse(tb, MAX_NL80211_WOWLAN_TRIG,
 			nla_data(info->attrs[NL80211_ATTR_WOWLAN_TRIGGERS]),
 			nla_len(info->attrs[NL80211_ATTR_WOWLAN_TRIGGERS]),
-			nl80211_wowlan_policy);
+			nl80211_wowlan_policy, NULL);
 	if (err)
 		return err;
 
@@ -10061,7 +10061,7 @@ static int nl80211_set_wowlan(struct sk_buff *skb, struct genl_info *info)
 			u8 *mask_pat;
 
 			nla_parse(pat_tb, MAX_NL80211_PKTPAT, nla_data(pat),
-				  nla_len(pat), nl80211_packet_pattern_policy);
+				  nla_len(pat), nl80211_packet_pattern_policy, NULL);
 			err = -EINVAL;
 			if (!pat_tb[NL80211_PKTPAT_MASK] ||
 			    !pat_tb[NL80211_PKTPAT_PATTERN])
@@ -10272,7 +10272,7 @@ static int nl80211_parse_coalesce_rule(struct cfg80211_registered_device *rdev,
 	struct nlattr *pat_tb[NUM_NL80211_PKTPAT];
 
 	err = nla_parse(tb, NL80211_ATTR_COALESCE_RULE_MAX, nla_data(rule),
-			nla_len(rule), nl80211_coalesce_policy);
+			nla_len(rule), nl80211_coalesce_policy, NULL);
 	if (err)
 		return err;
 
@@ -10311,7 +10311,7 @@ static int nl80211_parse_coalesce_rule(struct cfg80211_registered_device *rdev,
 		u8 *mask_pat;
 
 		nla_parse(pat_tb, MAX_NL80211_PKTPAT, nla_data(pat),
-			  nla_len(pat), nl80211_packet_pattern_policy);
+			  nla_len(pat), nl80211_packet_pattern_policy, NULL);
 		if (!pat_tb[NL80211_PKTPAT_MASK] ||
 		    !pat_tb[NL80211_PKTPAT_PATTERN])
 			return -EINVAL;
@@ -10433,7 +10433,7 @@ static int nl80211_set_rekey_data(struct sk_buff *skb, struct genl_info *info)
 	err = nla_parse(tb, MAX_NL80211_REKEY_DATA,
 			nla_data(info->attrs[NL80211_ATTR_REKEY_DATA]),
 			nla_len(info->attrs[NL80211_ATTR_REKEY_DATA]),
-			nl80211_rekey_policy);
+			nl80211_rekey_policy, NULL);
 	if (err)
 		return err;
 
@@ -10748,7 +10748,7 @@ static int nl80211_nan_add_func(struct sk_buff *skb,
 	err = nla_parse(tb, NL80211_NAN_FUNC_ATTR_MAX,
 			nla_data(info->attrs[NL80211_ATTR_NAN_FUNC]),
 			nla_len(info->attrs[NL80211_ATTR_NAN_FUNC]),
-			nl80211_nan_func_policy);
+			nl80211_nan_func_policy, NULL);
 	if (err)
 		return err;
 
@@ -10846,7 +10846,7 @@ static int nl80211_nan_add_func(struct sk_buff *skb,
 
 		err = nla_parse(srf_tb, NL80211_NAN_SRF_ATTR_MAX,
 				nla_data(tb[NL80211_NAN_FUNC_SRF]),
-				nla_len(tb[NL80211_NAN_FUNC_SRF]), NULL);
+				nla_len(tb[NL80211_NAN_FUNC_SRF]), NULL, NULL);
 		if (err)
 			goto out;
 
@@ -11378,7 +11378,7 @@ static int nl80211_prepare_vendor_dump(struct sk_buff *skb,
 
 	err = nlmsg_parse(cb->nlh, GENL_HDRLEN + nl80211_fam.hdrsize,
 			  nl80211_fam.attrbuf, nl80211_fam.maxattr,
-			  nl80211_policy);
+			  nl80211_policy, NULL);
 	if (err)
 		return err;
 

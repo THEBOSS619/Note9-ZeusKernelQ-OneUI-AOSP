@@ -1148,7 +1148,8 @@ static struct nft_stats __percpu *nft_stats_alloc(const struct nlattr *attr)
 	struct nft_stats *stats;
 	int err;
 
-	err = nla_parse_nested(tb, NFTA_COUNTER_MAX, attr, nft_counter_policy);
+	err = nla_parse_nested(tb, NFTA_COUNTER_MAX, attr, nft_counter_policy,
+			       NULL);
 	if (err < 0)
 		return ERR_PTR(err);
 
@@ -1223,7 +1224,7 @@ static int nft_chain_parse_hook(struct net *net,
 	int err;
 
 	err = nla_parse_nested(ha, NFTA_HOOK_MAX, nla[NFTA_CHAIN_HOOK],
-			       nft_hook_policy);
+			       nft_hook_policy, NULL);
 	if (err < 0)
 		return err;
 
@@ -1690,7 +1691,7 @@ static int nf_tables_expr_parse(const struct nft_ctx *ctx,
 	struct nlattr *tb[NFTA_EXPR_MAX + 1];
 	int err;
 
-	err = nla_parse_nested(tb, NFTA_EXPR_MAX, nla, nft_expr_policy);
+	err = nla_parse_nested(tb, NFTA_EXPR_MAX, nla, nft_expr_policy, NULL);
 	if (err < 0)
 		return err;
 
@@ -1700,7 +1701,7 @@ static int nf_tables_expr_parse(const struct nft_ctx *ctx,
 
 	if (tb[NFTA_EXPR_DATA]) {
 		err = nla_parse_nested(info->tb, type->maxattr,
-				       tb[NFTA_EXPR_DATA], type->policy);
+				       tb[NFTA_EXPR_DATA], type->policy, NULL);
 		if (err < 0)
 			goto err1;
 	} else
@@ -2810,7 +2811,8 @@ static int nf_tables_set_desc_parse(const struct nft_ctx *ctx,
 	struct nlattr *da[NFTA_SET_DESC_MAX + 1];
 	int err;
 
-	err = nla_parse_nested(da, NFTA_SET_DESC_MAX, nla, nft_set_desc_policy);
+	err = nla_parse_nested(da, NFTA_SET_DESC_MAX, nla,
+			       nft_set_desc_policy, NULL);
 	if (err < 0)
 		return err;
 
@@ -3287,7 +3289,8 @@ static int nf_tables_dump_set(struct sk_buff *skb, struct netlink_callback *cb)
 	int event, err;
 
 	err = nlmsg_parse(cb->nlh, sizeof(struct nfgenmsg), nla,
-			  NFTA_SET_ELEM_LIST_MAX, nft_set_elem_list_policy);
+			  NFTA_SET_ELEM_LIST_MAX, nft_set_elem_list_policy,
+			  NULL);
 	if (err < 0)
 		return err;
 
@@ -3545,7 +3548,7 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
 	int err;
 
 	err = nla_parse_nested(nla, NFTA_SET_ELEM_MAX, attr,
-			       nft_set_elem_policy);
+			       nft_set_elem_policy, NULL);
 	if (err < 0)
 		return err;
 
@@ -3754,7 +3757,7 @@ static int nft_del_setelem(struct nft_ctx *ctx, struct nft_set *set,
 	int err;
 
 	err = nla_parse_nested(nla, NFTA_SET_ELEM_MAX, attr,
-			       nft_set_elem_policy);
+			       nft_set_elem_policy, NULL);
 	if (err < 0)
 		goto err1;
 
@@ -4627,7 +4630,8 @@ static int nft_verdict_init(const struct nft_ctx *ctx, struct nft_data *data,
 	struct nft_chain *chain;
 	int err;
 
-	err = nla_parse_nested(tb, NFTA_VERDICT_MAX, nla, nft_verdict_policy);
+	err = nla_parse_nested(tb, NFTA_VERDICT_MAX, nla, nft_verdict_policy,
+			       NULL);
 	if (err < 0)
 		return err;
 
@@ -4757,7 +4761,7 @@ int nft_data_init(const struct nft_ctx *ctx,
 	struct nlattr *tb[NFTA_DATA_MAX + 1];
 	int err;
 
-	err = nla_parse_nested(tb, NFTA_DATA_MAX, nla, nft_data_policy);
+	err = nla_parse_nested(tb, NFTA_DATA_MAX, nla, nft_data_policy, NULL);
 	if (err < 0)
 		return err;
 

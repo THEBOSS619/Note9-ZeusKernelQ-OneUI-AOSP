@@ -137,7 +137,7 @@ static int mpls_build_state(struct net_device *dev, struct nlattr *nla,
 	int ret;
 
 	ret = nla_parse_nested(tb, MPLS_IPTUNNEL_MAX, nla,
-			       mpls_iptunnel_policy);
+			       mpls_iptunnel_policy, NULL);
 	if (ret < 0)
 		return ret;
 

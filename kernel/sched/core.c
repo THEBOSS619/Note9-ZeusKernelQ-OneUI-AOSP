@@ -6187,8 +6187,6 @@ void sched_put_rd(struct root_domain *rd)
 
 static int init_rootdomain(struct root_domain *rd)
 {
-	memset(rd, 0, sizeof(*rd));
-
 	if (!zalloc_cpumask_var(&rd->span, GFP_KERNEL))
 		goto out;
 	if (!zalloc_cpumask_var(&rd->online, GFP_KERNEL))
@@ -6248,7 +6246,7 @@ static struct root_domain *alloc_rootdomain(void)
 {
 	struct root_domain *rd;
 
-	rd = kmalloc(sizeof(*rd), GFP_KERNEL);
+	rd = kzalloc(sizeof(*rd), GFP_KERNEL);
 	if (!rd)
 		return NULL;
 

@@ -52,6 +52,7 @@
 #include <linux/freezer.h>
 #include <linux/exynos-ss.h>
 #include <linux/compat.h>
+#include <linux/delay.h>
 
 #include <asm/uaccess.h>
 
@@ -1729,6 +1730,12 @@ static void migrate_hrtimer_list(struct hrtimer_cpu_base *old_base,
 				raw_spin_unlock(&old_base->lock);
 				raw_spin_unlock(&new_base->lock);
 				cpu_relax();
+				/*
+				 * cpu_relax may just be a barrier. Grant the
+				 * run_hrtimer_list code some time to obtain
+				 * the spinlock.
+				 */
+				udelay(1);
 				raw_spin_lock(&new_base->lock);
 				raw_spin_lock_nested(&old_base->lock,
 							SINGLE_DEPTH_NESTING);

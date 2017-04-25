@@ -634,7 +634,8 @@ void tcp_init_buffer_space(struct sock *sk)
 		tcp_sndbuf_expand(sk);
 
 	tp->rcvq_space.space = min_t(u32, tp->rcv_wnd, TCP_INIT_CWND * tp->advmss);
-	tp->rcvq_space.time = tcp_time_stamp;
+	skb_mstamp_get(&tp->tcp_mstamp);
+	tp->rcvq_space.time = tp->tcp_mstamp;
 	tp->rcvq_space.seq = tp->copied_seq;
 
 	maxwin = tcp_full_space(sk);
@@ -754,7 +755,7 @@ static void netpm_net_status_estimator(struct tcp_sock *tp)
  */
 static void tcp_rcv_rtt_update(struct tcp_sock *tp, u32 sample, int win_dep)
 {
-	u32 new_sample = tp->rcv_rtt_est.rtt;
+	u32 new_sample = tp->rcv_rtt_est.rtt_us;
 	long m = sample;
 
 	if (m == 0)
@@ -784,8 +785,7 @@ static void tcp_rcv_rtt_update(struct tcp_sock *tp, u32 sample, int win_dep)
 		new_sample = m << 3;
 	}
 
-	if (tp->rcv_rtt_est.rtt != new_sample)
-		tp->rcv_rtt_est.rtt = new_sample;
+	tp->rcv_rtt_est.rtt_us = new_sample;
 #ifdef CONFIG_NETPM
 	if (netpm(tp))
 		netpm_net_status_estimator(tp);
@@ -794,15 +794,18 @@ static void tcp_rcv_rtt_update(struct tcp_sock *tp, u32 sample, int win_dep)
 
 static inline void tcp_rcv_rtt_measure(struct tcp_sock *tp)
 {
-	if (tp->rcv_rtt_est.time == 0)
+	u32 delta_us;
+
+	if (tp->rcv_rtt_est.time.v64 == 0)
 		goto new_measure;
 	if (before(tp->rcv_nxt, tp->rcv_rtt_est.seq))
 		return;
-	tcp_rcv_rtt_update(tp, tcp_time_stamp - tp->rcv_rtt_est.time, 1);
+	delta_us = skb_mstamp_us_delta(&tp->tcp_mstamp, &tp->rcv_rtt_est.time);
+	tcp_rcv_rtt_update(tp, delta_us, 1);
 
 new_measure:
 	tp->rcv_rtt_est.seq = tp->rcv_nxt + tp->rcv_wnd;
-	tp->rcv_rtt_est.time = tcp_time_stamp;
+	tp->rcv_rtt_est.time = tp->tcp_mstamp;
 }
 
 static inline void tcp_rcv_rtt_measure_ts(struct sock *sk,
@@ -812,7 +815,10 @@ static inline void tcp_rcv_rtt_measure_ts(struct sock *sk,
 	if (tp->rx_opt.rcv_tsecr &&
 	    (TCP_SKB_CB(skb)->end_seq -
 	     TCP_SKB_CB(skb)->seq >= inet_csk(sk)->icsk_ack.rcv_mss))
-		tcp_rcv_rtt_update(tp, tcp_time_stamp - tp->rx_opt.rcv_tsecr, 0);
+		tcp_rcv_rtt_update(tp,
+				   jiffies_to_usecs(tcp_time_stamp -
+						    tp->rx_opt.rcv_tsecr),
+				   0);
 }
 
 #ifdef CONFIG_NETPM
@@ -925,14 +931,14 @@ void tcp_rcv_space_adjust(struct sock *sk)
 	u32 copied;
 	int time;
 
-	time = tcp_time_stamp - tp->rcvq_space.time;
+	time = skb_mstamp_us_delta(&tp->tcp_mstamp, &tp->rcvq_space.time);
 #ifdef CONFIG_MPTCP
 	if (mptcp(tp)) {
 		if (mptcp_check_rtt(tp, time))
 			return;
 	} else if (time < (tp->rcv_rtt_est.rtt >> 3) || tp->rcv_rtt_est.rtt == 0)
 #else
-	if (time < (tp->rcv_rtt_est.rtt >> 3) || tp->rcv_rtt_est.rtt == 0)
+	if (time < (tp->rcv_rtt_est.rtt_us >> 3) || tp->rcv_rtt_est.rtt_us == 0)
 #endif
 		return;
 
@@ -1032,7 +1038,7 @@ void tcp_rcv_space_adjust(struct sock *sk)
 
 new_measure:
 	tp->rcvq_space.seq = tp->copied_seq;
-	tp->rcvq_space.time = tcp_time_stamp;
+	tp->rcvq_space.time = tp->tcp_mstamp;
 }
 
 /* There is something which you must keep in mind when you analyze the

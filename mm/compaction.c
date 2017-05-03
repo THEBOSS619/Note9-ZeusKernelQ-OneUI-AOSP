@@ -1042,9 +1042,6 @@ isolate_migratepages_range(struct compact_control *cc, unsigned long start_pfn,
 static bool suitable_migration_target(struct compact_control *cc,
 							struct page *page)
 {
-	if (cc->ignore_block_suitable)
-		return true;
-
 	/* If the page is a large free page, then disallow migration */
 	if (PageBuddy(page)) {
 		/*
@@ -1056,7 +1053,10 @@ static bool suitable_migration_target(struct compact_control *cc,
 			return false;
 	}
 
-	/* If the block is MIGRATE_MOVABLE, allow migration */
+	if (cc->ignore_block_suitable)
+		return true;
+
+	/* If the block is MIGRATE_MOVABLE or MIGRATE_CMA, allow migration */
 	if (migrate_async_suitable(get_pageblock_migratetype(page)))
 		return true;
 

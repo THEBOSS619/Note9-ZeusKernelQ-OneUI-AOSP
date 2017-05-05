@@ -1,5 +1,5 @@
 #define COMMON_FILE_SOCK_PERMS "ioctl", "read", "write", "create", \
-    "getattr", "setattr", "lock", "relabelfrom", "relabelto", "append"
+    "getattr", "setattr", "lock", "relabelfrom", "relabelto", "append", "map"
 
 #define COMMON_FILE_PERMS COMMON_FILE_SOCK_PERMS, "unlink", "link", \
     "rename", "execute", "quotaon", "mounton", "audit_access", \

@@ -1334,7 +1334,6 @@ static enum compact_result __compact_finished(struct compact_control *cc,
 			    const int migratetype)
 {
 	unsigned int order;
-	unsigned long watermark;
 
 	if (cc->contended || fatal_signal_pending(current))
 		return COMPACT_CONTENDED;
@@ -1360,13 +1359,6 @@ static enum compact_result __compact_finished(struct compact_control *cc,
 	}
 
 	if (is_via_compact_memory(cc->order))
-		return COMPACT_CONTINUE;
-
-	/* Compaction run is not finished if the watermark is not met */
-	watermark = zone->watermark[cc->alloc_flags & ALLOC_WMARK_MASK];
-
-	if (!zone_watermark_ok(zone, cc->order, watermark, cc->classzone_idx,
-							cc->alloc_flags))
 		return COMPACT_CONTINUE;
 
 	/* Direct compactor: Is a suitable page free? */

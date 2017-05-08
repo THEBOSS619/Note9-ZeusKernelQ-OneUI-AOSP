@@ -98,7 +98,7 @@ static inline unsigned int __tcp_hdrlen(const struct tcphdr *th)
 #define nla_put_u64_64bit(skb, attrtype, value, padattr) nla_put_u64(skb, attrtype, value)
 #endif
 
-#if KERNEL_VERSION(4, 12, 0) > LINUX_VERSION_CODE
+#if 0
 static void *kvzalloc(size_t sz, gfp_t flags)
 {
 	void *ptr = kzalloc(sz, flags);

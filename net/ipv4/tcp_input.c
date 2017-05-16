@@ -6262,7 +6262,7 @@ void tcp_finish_connect(struct sock *sk, struct sk_buff *skb)
 	/* Prevent spurious tcp_cwnd_restart() on first data
 	 * packet.
 	 */
-	tp->lsndtime = tcp_time_stamp;
+	tp->lsndtime = tcp_jiffies32;
 
 #ifdef CONFIG_MPTCP
 	tp->ops->init_buffer_space(sk);
@@ -6810,7 +6810,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
 			tcp_update_pacing_rate(sk);
 
 		/* Prevent spurious tcp_cwnd_restart() on first data packet */
-		tp->lsndtime = tcp_time_stamp;
+		tp->lsndtime = tcp_jiffies32;
 
 		tcp_initialize_rcv_mss(sk);
 		tcp_fast_path_on(tp);

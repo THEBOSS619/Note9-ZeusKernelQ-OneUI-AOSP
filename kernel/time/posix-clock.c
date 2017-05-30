@@ -25,6 +25,8 @@
 #include <linux/syscalls.h>
 #include <linux/uaccess.h>
 
+#include "posix-timers.h"
+
 /*
  * Returns NULL if the posix_clock instance attached to 'fp' is old and stale.
  */

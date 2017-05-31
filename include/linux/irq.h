@@ -224,6 +224,7 @@ enum {
 	IRQD_WAKEUP_ARMED		= (1 << 19),
 	IRQD_FORWARDED_TO_VCPU		= (1 << 20),
 	IRQD_AFFINITY_MANAGED		= (1 << 21),
+	IRQD_IRQ_STARTED		= (1 << 22),
 	IRQD_GIC_MULTI_TARGET		= (1 << 28),
 };
 
@@ -336,6 +337,11 @@ static inline void irqd_set_activated(struct irq_data *d)
 static inline void irqd_clr_activated(struct irq_data *d)
 {
 	__irqd_to_state(d) &= ~IRQD_ACTIVATED;
+}
+
+static inline bool irqd_is_started(struct irq_data *d)
+{
+	return __irqd_to_state(d) & IRQD_IRQ_STARTED;
 }
 
 #undef __irqd_to_state

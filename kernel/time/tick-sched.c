@@ -816,7 +816,7 @@ static void tick_nohz_stop_tick(struct tick_sched *ts, int cpu)
 	 * the scheduler tick in nohz_restart_sched_tick.
 	 */
 	if (!ts->tick_stopped) {
-		calc_load_enter_idle();
+		calc_load_nohz_start();
 		cpu_load_update_nohz_start();
 		quiet_vmstat();
 
@@ -872,7 +872,7 @@ static void tick_nohz_restart_sched_tick(struct tick_sched *ts, ktime_t now)
 	 */
 	timer_clear_idle();
 
-	calc_load_exit_idle();
+	calc_load_nohz_stop();
 	touch_softlockup_watchdog_sched();
 	/*
 	 * Cancel the scheduled timer and restore the tick

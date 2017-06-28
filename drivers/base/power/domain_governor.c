@@ -116,12 +116,6 @@ static bool default_suspend_ok(struct device *dev)
 	return td->cached_suspend_ok;
 }
 
-/**
- * default_power_down_ok - Default generic PM domain power off governor routine.
- * @pd: PM domain to check.
- *
- * This routine must be executed under the PM domain's lock.
- */
 static bool __default_power_down_ok(struct dev_pm_domain *pd,
 				     unsigned int state)
 {
@@ -206,6 +200,12 @@ static bool __default_power_down_ok(struct dev_pm_domain *pd,
 	return true;
 }
 
+/**
+ * default_power_down_ok - Default generic PM domain power off governor routine.
+ * @pd: PM domain to check.
+ *
+ * This routine must be executed under the PM domain's lock.
+ */
 static bool default_power_down_ok(struct dev_pm_domain *pd)
 {
 	struct generic_pm_domain *genpd = pd_to_genpd(pd);

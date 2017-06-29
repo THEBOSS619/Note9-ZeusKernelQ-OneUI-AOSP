@@ -568,6 +568,21 @@ struct task_cputime_t {
 		.sum_exec_runtime = 0,				\
 	}
 
+enum vtime_state {
+	/* Task is sleeping or running in a CPU with VTIME inactive: */
+	VTIME_INACTIVE = 0,
+	/* Task runs in userspace in a CPU with VTIME active: */
+	VTIME_USER,
+	/* Task runs in kernelspace in a CPU with VTIME active: */
+	VTIME_SYS,
+};
+
+struct vtime {
+	seqcount_t		seqcount;
+	unsigned long long	starttime;
+	enum vtime_state	state;
+};
+
 /*
  * This is the atomic variant of task_cputime, which can be used for
  * storing and updating task_cputime statistics without locking.
@@ -1848,16 +1863,7 @@ struct task_struct {
 #endif
 	struct prev_cputime prev_cputime;
 #ifdef CONFIG_VIRT_CPU_ACCOUNTING_GEN
-	seqcount_t			vtime_seqcount;
-	unsigned long long		vtime_starttime;
-	enum {
-		/* Task is sleeping or running in a CPU with VTIME inactive */
-		VTIME_INACTIVE = 0,
-		/* Task runs in userspace in a CPU with VTIME active */
-		VTIME_USER,
-		/* Task runs in kernelspace in a CPU with VTIME active */
-		VTIME_SYS,
-	} vtime_state;
+	struct vtime			vtime;
 #endif
 
 #ifdef CONFIG_NO_HZ_FULL

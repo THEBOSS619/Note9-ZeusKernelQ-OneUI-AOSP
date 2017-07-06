@@ -141,8 +141,7 @@ bool vma_policy_mof(struct vm_area_struct *vma);
 
 extern void numa_default_policy(void);
 extern void numa_policy_init(void);
-extern void mpol_rebind_task(struct task_struct *tsk, const nodemask_t *new,
-				enum mpol_rebind_step step);
+extern void mpol_rebind_task(struct task_struct *tsk, const nodemask_t *new);
 extern void mpol_rebind_mm(struct mm_struct *mm, nodemask_t *new);
 
 extern struct zonelist *huge_zonelist(struct vm_area_struct *vma,
@@ -252,8 +251,7 @@ static inline void numa_default_policy(void)
 }
 
 static inline void mpol_rebind_task(struct task_struct *tsk,
-				const nodemask_t *new,
-				enum mpol_rebind_step step)
+				const nodemask_t *new)
 {
 }
 

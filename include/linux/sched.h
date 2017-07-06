@@ -2228,9 +2228,10 @@ struct task_struct {
 	unsigned long preempt_disable_ip;
 #endif
 #ifdef CONFIG_NUMA
-	struct mempolicy *mempolicy;	/* Protected by alloc_lock */
-	short il_next;
-	short pref_node_fork;
+	/* Protected by alloc_lock: */
+	struct mempolicy		*mempolicy;
+	short				il_prev;
+	short				pref_node_fork;
 #endif
 #ifdef CONFIG_NUMA_BALANCING
 	int numa_scan_seq;

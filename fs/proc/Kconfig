@@ -111,3 +111,8 @@ config PROC_TRIGGER_SQLITE_BUG
 	bool "Trigger bug for SQLite debugging"
 	depends on PROC_FS
 	default y if !SAMSUNG_PRODUCT_SHIP && ANDROID_VERSION > "90000"
+
+config PROC_STRIPPED
+	default y
+	depends on EXPERT
+	bool "Strip non-essential /proc functionality to reduce code size"

@@ -257,7 +257,7 @@ static void __init test_bitmap_parselist(void)
 	}
 }
 
-static void __init test_bitmap_arr32(void)
+static void noinline __init test_mem_optimisations(void)
 {
 	unsigned int nbits, next_bit, len = sizeof(exp) * 8;
 	u32 arr[sizeof(exp) / 4];

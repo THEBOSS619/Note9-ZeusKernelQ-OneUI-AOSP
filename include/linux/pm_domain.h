@@ -43,6 +43,7 @@ struct gpd_dev_ops {
 struct genpd_power_state {
 	s64 power_off_latency_ns;
 	s64 power_on_latency_ns;
+	ktime_t idle_time;
 };
 
 struct genpd_lock_ops;
@@ -77,6 +78,8 @@ struct generic_pm_domain {
 	struct genpd_power_state states[GENPD_MAX_NUM_STATES];
 	unsigned int state_count; /* number of states */
 	unsigned int state_idx; /* state that genpd will go to when off */
+	ktime_t on_time;
+	ktime_t accounting_time;
 	const struct genpd_lock_ops *lock_ops;
 	union {
 		struct mutex mlock;

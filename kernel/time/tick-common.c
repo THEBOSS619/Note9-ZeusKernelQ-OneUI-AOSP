@@ -493,6 +493,7 @@ void tick_freeze(void)
 				     smp_processor_id(), true);
 		sched_clock_suspend();
 		timekeeping_suspend();
+		system_state = SYSTEM_SUSPEND;
 	} else {
 		tick_suspend_local();
 	}
@@ -514,6 +515,7 @@ void tick_unfreeze(void)
 	raw_spin_lock(&tick_freeze_lock);
 
 	if (tick_freeze_depth == num_online_cpus()) {
+		system_state = SYSTEM_RUNNING;
 		timekeeping_resume();
 		sched_clock_resume();
 		trace_suspend_resume(TPS("timekeeping_freeze"),

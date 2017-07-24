@@ -195,6 +195,27 @@ static inline unsigned int crypto_queue_len(struct crypto_queue *queue)
 void crypto_inc(u8 *a, unsigned int size);
 void crypto_xor(u8 *dst, const u8 *src, unsigned int size);
 
+static inline void crypto_xor_cpy(u8 *dst, const u8 *src1, const u8 *src2,
+				  unsigned int size)
+{
+	if (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) &&
+	    __builtin_constant_p(size) &&
+	    (size % sizeof(unsigned long)) == 0) {
+		unsigned long *d = (unsigned long *)dst;
+		unsigned long *s1 = (unsigned long *)src1;
+		unsigned long *s2 = (unsigned long *)src2;
+
+		while (size > 0) {
+			*d++ = *s1++ ^ *s2++;
+			size -= sizeof(unsigned long);
+		}
+	} else {
+		if (unlikely(dst != src1))
+			memmove(dst, src1, size);
+		crypto_xor(dst, src2, size);
+	}
+}
+
 int blkcipher_walk_done(struct blkcipher_desc *desc,
 			struct blkcipher_walk *walk, int err);
 int blkcipher_walk_virt(struct blkcipher_desc *desc,

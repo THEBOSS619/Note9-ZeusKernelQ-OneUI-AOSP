@@ -147,6 +147,21 @@ static bool sugov_should_update_freq(struct sugov_policy *sg_policy, u64 time)
 {
 	s64 delta_ns;
 
+	/*
+	 * Since cpufreq_update_util() is called with rq->lock held for
+	 * the @target_cpu, our per-cpu data is fully serialized.
+	 *
+	 * However, drivers cannot in general deal with cross-cpu
+	 * requests, so while get_next_freq() will work, our
+	 * sugov_update_commit() call may not.
+	 *
+	 * Hence stop here for remote requests if they aren't supported
+	 * by the hardware, as calculating the frequency is pointless if
+	 * we cannot in fact act on it.
+	 */
+	if (!cpufreq_can_do_remote_dvfs(sg_policy->policy))
+		return false;
+
 	if (unlikely(sg_policy->limits_changed)) {
 		sg_policy->limits_changed = false;
 		sg_policy->need_freq_update = true;
@@ -339,7 +354,7 @@ static inline bool use_pelt(void)
 #endif
 }
 
-static void sugov_get_util(unsigned long *util, unsigned long *max, u64 time)
+static void sugov_get_util(unsigned long *util, unsigned long *max, u64 time, int cpu)
 {
 	int cpu = smp_processor_id();
 	struct rq *rq = cpu_rq(cpu);
@@ -503,7 +518,7 @@ static void sugov_update_single(struct update_util_data *hook, u64 time,
 	if (flags & SCHED_CPUFREQ_DL) {
 		next_f = policy->cpuinfo.max_freq;
 	} else {
-		sugov_get_util(&util, &max, time);
+		sugov_get_util(&util, &max, time, sg_cpu->cpu);
 		sugov_iowait_boost(sg_cpu, &util, &max);
 		next_f = get_next_freq(sg_policy, util, max);
 		/*
@@ -570,7 +585,7 @@ static void sugov_update_shared(struct update_util_data *hook, u64 time,
 	unsigned long util, max;
 	unsigned int next_f;
 
-	sugov_get_util(&util, &max, time);
+	sugov_get_util(&util, &max, time, sg_cpu->cpu);
 
 	raw_spin_lock(&sg_policy->update_lock);
 
@@ -1510,7 +1525,11 @@ exit:
 
 static int __init sugov_register(void)
 {
+	int cpu;
+
 	sugov_exynos_init();
+	for_each_possible_cpu(cpu)
+		per_cpu(sugov_cpu, cpu).cpu = cpu;
 
 	return cpufreq_register_governor(&schedutil_gov);
 }

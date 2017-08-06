@@ -166,7 +166,8 @@ struct seq_file;
 struct cfs_rq;
 struct task_group;
 #ifdef CONFIG_SCHED_DEBUG
-extern void proc_sched_show_task(struct task_struct *p, struct seq_file *m);
+extern void proc_sched_show_task(struct task_struct *p,
+				 struct pid_namespace *ns, struct seq_file *m);
 extern void proc_sched_set_task(struct task_struct *p);
 #endif
 
@@ -306,6 +307,7 @@ extern spinlock_t mmlist_lock;
 
 struct task_struct;
 struct rusage;
+struct pid_namespace;
 
 #ifdef CONFIG_PROVE_RCU
 extern int lockdep_tasklist_lock_is_held(void);

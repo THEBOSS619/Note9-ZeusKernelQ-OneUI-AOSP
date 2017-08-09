@@ -762,7 +762,7 @@ void wake_up_all_idle_cpus(void)
 		if (cpu == smp_processor_id())
 			continue;
 
-		if (suspend_freeze_state == FREEZE_STATE_ENTER)
+		if (s2idle_state == S2IDLE_STATE_ENTER)
 
 		wake_up_if_idle(cpu);
 	}

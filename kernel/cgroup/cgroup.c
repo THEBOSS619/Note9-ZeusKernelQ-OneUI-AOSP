@@ -326,7 +326,6 @@ static void cgroup_idr_remove(struct idr *idr, int id)
 	spin_unlock_bh(&cgroup_idr_lock);
 }
 
-
 static bool cgroup_has_tasks(struct cgroup *cgrp)
 {
 	return cgrp->nr_populated_csets;
@@ -531,6 +530,12 @@ struct cgroup_subsys_state *cgroup_get_e_css(struct cgroup *cgrp,
 out_unlock:
 	rcu_read_unlock();
 	return css;
+}
+
+static void cgroup_get_live(struct cgroup *cgrp)
+{
+	WARN_ON_ONCE(cgroup_is_dead(cgrp));
+	css_get(&cgrp->self);
 }
 
 struct cgroup_subsys_state *of_css(struct kernfs_open_file *of)
@@ -3406,7 +3411,7 @@ static void cgroup_pressure_release(struct kernfs_open_file *of)
 }
 #endif /* CONFIG_PSI */
 
-static int cgroup_stats_show(struct seq_file *seq, void *v)
+static int cgroup_stat_show(struct seq_file *seq, void *v)
 {
 	struct cgroup *cgroup = seq_css(seq)->cgroup;
 
@@ -4561,7 +4566,7 @@ static struct cftype cgroup_base_files[] = {
 	},
 	{
 		.name = "cgroup.stat",
-		.seq_show = cgroup_stats_show,
+		.seq_show = cgroup_stat_show,
 	},
 	{ }	/* terminate */
 };

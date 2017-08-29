@@ -23,6 +23,7 @@
 #include <linux/irq_work.h>
 #include <linux/posix-timers.h>
 #include <linux/context_tracking.h>
+#include <linux/mm.h>
 
 #include <asm/irq_regs.h>
 
@@ -801,6 +802,7 @@ static ktime_t tick_nohz_stop_sched_tick(struct tick_sched *ts,
 		nohz_balance_enter_idle(cpu);
 		calc_load_enter_idle();
 		cpu_load_update_nohz_start();
+		quiet_vmstat();
 
 		ts->last_tick = hrtimer_get_expires(&ts->sched_timer);
 		ts->tick_stopped = 1;

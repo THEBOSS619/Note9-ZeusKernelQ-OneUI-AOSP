@@ -5455,8 +5455,7 @@ static void setup_zone_pageset(struct zone *zone);
  */
 DEFINE_MUTEX(zonelists_mutex);
 
-/* return values int ....just for stop_machine() */
-static int __build_all_zonelists(void *data)
+static void __build_all_zonelists(void *data)
 {
 	int nid;
 	int cpu;
@@ -5509,8 +5508,6 @@ static int __build_all_zonelists(void *data)
 			set_cpu_numa_mem(cpu, local_memory_node(cpu_to_node(cpu)));
 #endif
 	}
-
-	return 0;
 }
 
 static noinline void __init
@@ -5542,9 +5539,7 @@ void __ref build_all_zonelists(pg_data_t *pgdat, struct zone *zone,
 		if (zone)
 			setup_zone_pageset(zone);
 #endif
-		/* we have to stop all cpus to guarantee there is no user
-		   of zonelist */
-		stop_machine_cpuslocked(__build_all_zonelists, pgdat, NULL);
+		__build_all_zonelists(pgdat);
 		/* cpuset refresh routine should be here */
 	}
 	vm_total_pages = nr_free_pagecache_pages();

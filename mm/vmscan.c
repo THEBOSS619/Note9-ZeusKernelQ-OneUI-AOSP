@@ -1894,13 +1894,19 @@ shrink_inactive_list(unsigned long nr_to_scan, struct lruvec *lruvec,
 	struct pglist_data *pgdat = lruvec_pgdat(lruvec);
 	struct zone_reclaim_stat *reclaim_stat = &lruvec->reclaim_stat;
 	bool force_reclaim = false;
+	bool stalled = false;
 	enum ttu_flags ttu = TTU_UNMAP;
 
 	if (!inactive_reclaimable_pages(lruvec, sc, lru))
 		return 0;
 
 	while (unlikely(too_many_isolated(pgdat, file, sc, safe))) {
-		congestion_wait(BLK_RW_ASYNC, HZ/10);
+		if (stalled)
+			return 0;
+
+		/* wait a bit for the reclaimer. */
+		msleep(100);
+		stalled = true;
 
 		/* We are about to die and free our memory. Return now. */
 		if (fatal_signal_pending(current))

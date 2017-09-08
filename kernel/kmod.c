@@ -26,7 +26,6 @@
 
 #include <trace/events/module.h>
 
-#ifdef CONFIG_MODULES
 /*
  * Assuming:
  *
@@ -175,5 +174,3 @@ int __request_module(bool wait, const char *fmt, ...)
 	return ret;
 }
 EXPORT_SYMBOL(__request_module);
-
-#endif /* CONFIG_MODULES */

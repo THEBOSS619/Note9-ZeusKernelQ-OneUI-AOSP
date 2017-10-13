@@ -83,7 +83,7 @@ SYSCALL_DEFINE1(time, time_t __user *, tloc)
 
 SYSCALL_DEFINE1(stime, time_t __user *, tptr)
 {
-	struct timespec tv;
+	struct timespec64 tv;
 	int err;
 
 	if (get_user(tv.tv_sec, tptr))
@@ -91,11 +91,11 @@ SYSCALL_DEFINE1(stime, time_t __user *, tptr)
 
 	tv.tv_nsec = 0;
 
-	err = security_settime(&tv, NULL);
+	err = security_settime64(&tv, NULL);
 	if (err)
 		return err;
 
-	do_settimeofday(&tv);
+	do_settimeofday64(&tv);
 	return 0;
 }
 
@@ -123,7 +123,7 @@ COMPAT_SYSCALL_DEFINE1(time, compat_time_t __user *, tloc)
 
 COMPAT_SYSCALL_DEFINE1(stime, compat_time_t __user *, tptr)
 {
-	struct timespec tv;
+	struct timespec64 tv;
 	int err;
 
 	if (get_user(tv.tv_sec, tptr))
@@ -131,11 +131,11 @@ COMPAT_SYSCALL_DEFINE1(stime, compat_time_t __user *, tptr)
 
 	tv.tv_nsec = 0;
 
-	err = security_settime(&tv, NULL);
+	err = security_settime64(&tv, NULL);
 	if (err)
 		return err;
 
-	do_settimeofday(&tv);
+	do_settimeofday64(&tv);
 	return 0;
 }
 

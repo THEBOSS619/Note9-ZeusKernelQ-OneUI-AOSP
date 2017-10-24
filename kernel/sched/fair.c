@@ -10577,6 +10577,7 @@ static struct {
 	cpumask_var_t idle_cpus_mask;
 	atomic_t nr_cpus;
 	unsigned long next_balance;     /* in jiffy units */
+	unsigned long next_update;     /* in jiffy units */
 } nohz ____cacheline_aligned;
 
 static inline int find_new_ilb(void)

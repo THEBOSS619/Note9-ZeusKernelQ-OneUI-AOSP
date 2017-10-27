@@ -11,6 +11,7 @@
  *	   Paul E. McKenney <paulmck@linux.ibm.com>
  */
 
+#include <linux/sched/isolation.h>
 #include "../locking/rtmutex_common.h"
 
 #ifdef CONFIG_RCU_NOCB_CPU

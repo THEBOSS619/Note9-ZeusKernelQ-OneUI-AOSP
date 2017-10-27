@@ -32,6 +32,7 @@
 #include <linux/task_work.h>
 #include <linux/module.h>
 #include <linux/ems.h>
+#include <linux/sched/isolation.h>
 
 #include <trace/events/sched.h>
 

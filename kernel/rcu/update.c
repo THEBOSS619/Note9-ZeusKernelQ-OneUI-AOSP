@@ -41,6 +41,7 @@
 #include <linux/slab.h>
 #include <linux/irq_work.h>
 #include <linux/rcupdate_trace.h>
+#include <linux/sched/isolation.h>
 
 #define CREATE_TRACE_POINTS
 

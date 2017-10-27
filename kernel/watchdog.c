@@ -22,6 +22,7 @@
 #include <linux/tick.h>
 #include <linux/workqueue.h>
 #include <linux/exynos-ss.h>
+#include <linux/sched/isolation.h>
 
 #include <asm/irq_regs.h>
 #include <linux/kvm_para.h>

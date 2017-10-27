@@ -31,3 +31,4 @@ obj-$(CONFIG_PSI) += psi.o
 obj-$(CONFIG_SCHED_EMS) += ems/
 
 obj-$(CONFIG_MEMBARRIER) += membarrier.o
+obj-$(CONFIG_NO_HZ_FULL) += isolation.o

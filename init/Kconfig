@@ -560,6 +560,14 @@ config RCU_NOCB_CPU_BIND_LP
 	  Select this if energy efficiency is critical and no-CBs
 	  high-performance CPUs are present in the system.
 
+config CPU_ISOLATION
+	bool "CPU isolation"
+	depends on NO_HZ_FULL
+	help
+	  Make sure that CPUs running critical tasks are not disturbed by
+	  any source of "noise" such as unbound workqueues, timers, kthreads...
+	  Unbound jobs get offloaded to housekeeping CPUs.
+
 source "kernel/rcu/Kconfig"
 
 config BUILD_BIN2C

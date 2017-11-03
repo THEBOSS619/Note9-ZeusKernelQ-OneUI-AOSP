@@ -1212,6 +1212,7 @@ skip_subcpus:
 #else
 		memset(sg_cpu, 0, sizeof(*sg_cpu));
 #endif
+		sg_cpu->cpu = cpu;
 		sg_cpu->sg_policy = sg_policy;
 		sg_cpu->flags = 0;
 		sugov_start_slack(cpu);
@@ -1530,12 +1531,7 @@ exit:
 
 static int __init sugov_register(void)
 {
-	int cpu;
-
 	sugov_exynos_init();
-	for_each_possible_cpu(cpu)
-		per_cpu(sugov_cpu, cpu).cpu = cpu;
-
 	return cpufreq_register_governor(&schedutil_gov);
 }
 fs_initcall(sugov_register);

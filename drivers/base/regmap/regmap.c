@@ -701,7 +701,7 @@ struct regmap *__regmap_init(struct device *dev,
 		map->lock_arg = map;
 #else
 		ret = -EINVAL;
-		goto err;
+		goto err_map;
 #endif
 	} else {
 		if ((bus && bus->fast_io) ||

@@ -127,7 +127,7 @@ endif
 ifeq ($(CONFIG_KASAN),y)
 _c_flags += $(if $(patsubst n%,, \
 		$(KASAN_SANITIZE_$(basetarget).o)$(KASAN_SANITIZE)y), \
-		$(CFLAGS_KASAN))
+		$(CFLAGS_KASAN), $(CFLAGS_KASAN_NOSANITIZE))
 endif
 
 ifeq ($(CONFIG_UBSAN),y)
@@ -324,6 +324,16 @@ $(obj)/%.dtbo: $(src)/%.dts FORCE
 	$(call if_changed_dep,dtc)
 
 dtc-tmp = $(subst $(comma),_,$(dot-target).dts.tmp)
+
+# dtbtool (Exynos)
+# ---------------------------------------------------------------------------
+
+quiet_cmd_dtbtool_exynos = DTBTOOL $@
+cmd_dtbtool_exynos = $(objtree)/scripts/dtbtool_exynos/dtbtool \
+		--pagesize $(CONFIG_EXYNOS_DTBH_PAGE_SIZE) \
+		--platform $(CONFIG_EXYNOS_DTBH_PLATFORM_CODE) \
+		--subtype $(CONFIG_EXYNOS_DTBH_SUBTYPE_CODE) \
+		-o $@ $(sort $(filter-out FORCE,$^))
 
 # cat
 # ---------------------------------------------------------------------------

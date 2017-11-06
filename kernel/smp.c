@@ -209,7 +209,7 @@ static void flush_smp_call_function_queue(bool warn_cpu_offline)
 	struct call_single_data *csd, *csd_next;
 	static bool warned;
 
-	WARN_ON(!irqs_disabled());
+	lockdep_assert_irqs_disabled();
 
 	head = this_cpu_ptr(&call_single_queue);
 	entry = llist_del_all(head);

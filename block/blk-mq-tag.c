@@ -113,12 +113,6 @@ static int bt_get(struct blk_mq_alloc_data *data, struct sbitmap_queue *bt,
 
 	ws = bt_wait_ptr(bt, hctx);
 	do {
-		prepare_to_wait(&ws->wait, &wait, TASK_UNINTERRUPTIBLE);
-
-		tag = __bt_get(hctx, bt);
-		if (tag != -1)
-			break;
-
 		/*
 		 * We're out of tags on this hardware queue, kick any
 		 * pending IO submits before going to sleep waiting for
@@ -132,6 +126,12 @@ static int bt_get(struct blk_mq_alloc_data *data, struct sbitmap_queue *bt,
 		 * Retry tag allocation after running the hardware queue,
 		 * as running the queue may also have found completions.
 		 */
+		tag = __bt_get(hctx, bt);
+		if (tag != -1)
+			break;
+
+		prepare_to_wait_exclusive(&ws->wait, &wait, TASK_UNINTERRUPTIBLE);
+
 		tag = __bt_get(hctx, bt);
 		if (tag != -1)
 			break;

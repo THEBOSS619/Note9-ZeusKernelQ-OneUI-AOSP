@@ -312,7 +312,7 @@ static void sbq_wake_up(struct sbitmap_queue *sbq)
 	if (wait_cnt == 0) {
 		atomic_add(sbq->wake_batch, &ws->wait_cnt);
 		sbq_index_atomic_inc(&sbq->wake_index);
-		wake_up(&ws->wait);
+		wake_up_nr(&ws->wait, wake_batch);
 	}
 }
 

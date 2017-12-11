@@ -1644,17 +1644,21 @@ static int relatime_need_update(const struct path *path, struct inode *inode,
 int generic_update_time(struct inode *inode, struct timespec *time, int flags)
 {
 	int iflags = I_DIRTY_TIME;
+	bool dirty = false;
 
 	if (flags & S_ATIME)
 		inode->i_atime = *time;
 	if (flags & S_VERSION)
-		inode_inc_iversion(inode);
+		dirty = inode_maybe_inc_iversion(inode, false);
 	if (flags & S_CTIME)
 		inode->i_ctime = *time;
 	if (flags & S_MTIME)
 		inode->i_mtime = *time;
+	if ((flags & (S_ATIME | S_CTIME | S_MTIME)) &&
+	    !(inode->i_sb->s_flags & MS_LAZYTIME))
+		dirty = true;
 
-	if (!(inode->i_sb->s_flags & MS_LAZYTIME) || (flags & S_VERSION))
+	if (dirty)
 		iflags |= I_DIRTY_SYNC;
 	__mark_inode_dirty(inode, iflags);
 	return 0;
@@ -1887,9 +1891,9 @@ int file_update_time(struct file *file)
 	 * removed since v4.17-rc4
 	 */
 	#ifdef CONFIG_FIVE
-	need_sync = IS_I_VERSION(inode) && (inode->i_flags & S_IMA);
+	need_sync = IS_I_VERSION(inode) && inode_iversion_need_inc(inode) && (inode->i_flags & S_IMA);
 	#else
-	need_sync = IS_I_VERSION(inode);
+	need_sync = IS_I_VERSION(inode) && inode_iversion_need_inc(inode);
 	#endif
 	if (need_sync)
 		sync_it |= S_VERSION;

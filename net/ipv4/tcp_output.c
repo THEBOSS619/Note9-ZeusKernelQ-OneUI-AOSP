@@ -2542,7 +2542,7 @@ bool tcp_schedule_loss_probe(struct sock *sk, bool advancing_rto)
 	if ((sysctl_tcp_early_retrans != 3 && sysctl_tcp_early_retrans != 4) ||
 	    !tp->packets_out || !tcp_is_sack(tp) ||
 	    (icsk->icsk_ca_state != TCP_CA_Open &&
-	     inet_csk(sk)->icsk_ca_state != TCP_CA_CWR))
+	     icsk->icsk_ca_state != TCP_CA_CWR))
 		return false;
 
 	/* Probe timeout is 2*rtt. Add minimum RTO to account

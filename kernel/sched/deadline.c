@@ -1122,6 +1122,12 @@ static void update_curr_dl(struct rq *rq)
 throttle:
 	if (dl_runtime_exceeded(dl_se) || dl_se->dl_yielded) {
 		dl_se->dl_throttled = 1;
+
+		/* If requested, inform the user about runtime overruns. */
+		if (dl_runtime_exceeded(dl_se) &&
+		    (dl_se->flags & SCHED_FLAG_DL_OVERRUN))
+			dl_se->dl_overrun = 1;
+
 		__dequeue_task_dl(rq, curr, 0);
 		if (unlikely(dl_se->dl_boosted || !start_dl_timer(curr)))
 			enqueue_task_dl(rq, curr, ENQUEUE_REPLENISH);

@@ -2306,6 +2306,7 @@ void __dl_clear_params(struct task_struct *p)
 	dl_se->dl_throttled = 0;
 	dl_se->dl_yielded = 0;
 	dl_se->dl_non_contending = 0;
+	dl_se->dl_overrun = 0;
 }
 
 /*
@@ -4397,8 +4398,7 @@ recheck:
 			return -EINVAL;
 	}
 
-	if (attr->sched_flags &
-		~(SCHED_FLAG_RESET_ON_FORK | SCHED_FLAG_RECLAIM))
+	if (attr->sched_flags & ~SCHED_FLAG_ALL)
 		return -EINVAL;
 
 	/*

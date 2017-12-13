@@ -440,8 +440,7 @@ static inline void sugov_util_collapse(struct sugov_cpu *sg_cpu)
 }
 #endif
 
-static void sugov_set_iowait_boost(struct sugov_cpu *sg_cpu, u64 time,
-				   unsigned int flags)
+static void sugov_set_iowait_boost(struct sugov_cpu *sg_cpu, u64 time)
 {
 	unsigned int max_boost;
 	struct sugov_policy *sg_policy = sg_cpu->sg_policy;
@@ -460,7 +459,7 @@ static void sugov_set_iowait_boost(struct sugov_cpu *sg_cpu, u64 time,
 		}
 	}
 
-	if (flags & SCHED_CPUFREQ_IOWAIT) {
+	if (sg_cpu->flags & SCHED_CPUFREQ_IOWAIT) {
 
 		/*
 		 * Boost FAIR tasks only up to the CPU clamped utilization.
@@ -581,7 +580,8 @@ static void sugov_update_shared(struct update_util_data *hook, u64 time,
 #ifdef CONFIG_SCHED_KAIR_GLUE
 	sugov_util_collapse(sg_cpu);
 #endif
-	sugov_set_iowait_boost(sg_cpu, time, flags);
+
+	sugov_set_iowait_boost(sg_cpu, time);
 	sg_cpu->last_update = time;
 
 	if (sugov_should_update_freq(sg_policy, time)) {

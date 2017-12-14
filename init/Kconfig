@@ -563,10 +563,14 @@ config RCU_NOCB_CPU_BIND_LP
 config CPU_ISOLATION
 	bool "CPU isolation"
 	depends on NO_HZ_FULL
+	default y
 	help
 	  Make sure that CPUs running critical tasks are not disturbed by
 	  any source of "noise" such as unbound workqueues, timers, kthreads...
-	  Unbound jobs get offloaded to housekeeping CPUs.
+	  Unbound jobs get offloaded to housekeeping CPUs. This is driven by
+	  the "isolcpus=" boot parameter.
+
+	  Say Y if unsure.
 
 source "kernel/rcu/Kconfig"
 

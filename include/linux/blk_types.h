@@ -65,6 +65,10 @@ struct bio {
 	void			*bi_cg_private;
 #endif
 #endif
+#ifdef CONFIG_BLK_DEV_THROTTLING
+		/* record which disk the bio is throttled against */
+		struct gendisk		*bi_throttled_disk;
+#endif
 	union {
 #if defined(CONFIG_BLK_DEV_INTEGRITY)
 		struct bio_integrity_payload *bi_integrity; /* data integrity */

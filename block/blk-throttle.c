@@ -1953,9 +1953,15 @@ bool blk_throtl_bio(struct request_queue *q, struct blkcg_gq *blkg,
 
 	WARN_ON_ONCE(!rcu_read_lock_held());
 
-	/* see throtl_charge_bio() */
-	if ((bio->bi_opf & REQ_THROTTLED) || !tg->has_rules[rw])
-		goto out;
+	/*
+	 * see throtl_charge_bio() for BIO_THROTTLED. If a bio is throttled
+	 * against a disk but remapped to other disk, we should throttle it
+	 * again
+	 */
+	if (bio_flagged(bio, REQ_THROTTLED) || !tg->has_rules[rw] ||
+	    (bio->bi_throttled_disk && bio->bi_throttled_disk == bio->bi_bdev->bd_disk))
+ 		goto out;
+	bio->bi_throttled_disk = NULL;
 
 	spin_lock_irq(q->queue_lock);
 

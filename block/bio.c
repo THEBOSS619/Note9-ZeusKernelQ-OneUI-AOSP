@@ -590,6 +590,9 @@ void __bio_clone_fast(struct bio *bio, struct bio *bio_src)
 	 * so we don't set nor calculate new physical/hw segment counts here
 	 */
 	bio->bi_bdev = bio_src->bi_bdev;
+#ifdef CONFIG_BLK_DEV_THROTTLING
+	bio->bi_throttled_disk = bio_src->bi_throttled_disk;
+#endif
 	bio_set_flag(bio, BIO_CLONED);
 	bio->bi_opf = bio_src->bi_opf;
 	bio->bi_iter = bio_src->bi_iter;

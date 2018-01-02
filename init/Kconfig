@@ -563,6 +563,7 @@ config RCU_NOCB_CPU_BIND_LP
 config CPU_ISOLATION
 	bool "CPU isolation"
 	depends on NO_HZ_FULL
+	depends on SMP || COMPILE_TEST
 	default y
 	help
 	  Make sure that CPUs running critical tasks are not disturbed by

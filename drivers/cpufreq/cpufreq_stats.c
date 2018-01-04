@@ -29,7 +29,7 @@ struct cpufreq_stats {
 #endif
 };
 
-static int cpufreq_stats_update(struct cpufreq_stats *stats)
+static void cpufreq_stats_update(struct cpufreq_stats *stats)
 {
 	unsigned long long cur_time = get_jiffies_64();
 	unsigned long flags;
@@ -38,7 +38,6 @@ static int cpufreq_stats_update(struct cpufreq_stats *stats)
 	stats->time_in_state[stats->last_index] += cur_time - stats->last_time;
 	stats->last_time = cur_time;
 	spin_unlock_irqrestore(&cpufreq_stats_lock, flags);
-	return 0;
 }
 
 static ssize_t show_total_trans(struct cpufreq_policy *policy, char *buf)

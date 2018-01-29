@@ -1,7 +1,7 @@
 /*
  * exyswd-rng.c - Random Number Generator driver for the exynos
  *
- * Copyright (C) 2016 Samsung Electronics
+ * Copyright (C) 2018 Samsung Electronics
  * Sehee Kim <sehi.kim@samsung.com>
  *
  * This program is free software; you can redistribute  it and/or modify it
@@ -192,7 +192,7 @@ static int exynos_swd_read(struct hwrng *rng, void *data, size_t max, bool wait)
 	retry_cnt = 0;
 	while (read_size) {
 		spin_lock_irqsave(&hwrandom_lock, flag);
-		ret = __exynos_smc(SMC_CMD_RANDOM, HWRNG_GET_DATA, 0, 0);
+		ret = exynos_smc(SMC_CMD_RANDOM, HWRNG_GET_DATA, 0, 0);
 		__asm__ volatile(
 			"\t"
 			: "+r"(reg0), "+r"(reg1), "+r"(reg2), "+r"(reg3)

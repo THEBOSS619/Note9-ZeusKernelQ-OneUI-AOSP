@@ -82,6 +82,7 @@
 #include <linux/io.h>
 #include <linux/kaiser.h>
 #include <linux/cache.h>
+#include <linux/jump_label.h>
 
 #include <asm/io.h>
 #include <asm/bugs.h>
@@ -1173,6 +1174,7 @@ static int __ref kernel_init(void *unused)
 #endif /* CONFIG_SEC_GPIO_DVS */
 	/* need to finish all async __init code before freeing the memory */
 	async_synchronize_full();
+	jump_label_invalidate_init();
 #ifndef CONFIG_DEFERRED_INITCALLS
 	free_initmem();
 #endif

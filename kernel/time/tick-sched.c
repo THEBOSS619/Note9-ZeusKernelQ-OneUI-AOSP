@@ -508,6 +508,13 @@ int tick_nohz_tick_stopped(void)
 	return ts->tick_stopped;
 }
 
+bool tick_nohz_tick_stopped_cpu(int cpu)
+{
+	struct tick_sched *ts = per_cpu_ptr(&tick_cpu_sched, cpu);
+
+	return ts->tick_stopped;
+}
+
 /**
  * tick_nohz_update_jiffies - update jiffies when idle was interrupted
  *

@@ -4628,6 +4628,7 @@ static int parse_options(struct super_block *sb, char *options, int silent,
 	opts->casesensitive = 0;
 	opts->utf8 = 0;
 	opts->adj_hidsect = 1;
+	opts->adj_req = 1;
 	opts->tz_utc = 0;
 	opts->improved_allocation = 0;
 	opts->amap_opt.pack_ratio = 0;	// Default packing

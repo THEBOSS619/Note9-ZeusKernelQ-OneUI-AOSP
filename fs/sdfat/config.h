@@ -67,7 +67,7 @@
 #endif
 
 #ifndef CONFIG_SDFAT_ALIGNED_MPAGE_WRITE
-//#define CONFIG_SDFAT_ALIGNED_MPAGE_WRITE
+#define CONFIG_SDFAT_ALIGNED_MPAGE_WRITE
 #endif
 
 #ifndef CONFIG_SDFAT_FAT_MIRRORING /* if Kconfig lacked fat-mirroring option */
@@ -79,7 +79,7 @@
 #endif
 
 #ifndef CONFIG_SDFAT_SUPPORT_DIR_SYNC
-//#define CONFIG_SDFAT_SUPPORT_DIR_SYNC /* support DIR_SYNC */
+#define CONFIG_SDFAT_SUPPORT_DIR_SYNC /* support DIR_SYNC */
 #endif
 
 #ifndef CONFIG_SDFAT_CHECK_RO_ATTR

@@ -4634,7 +4634,7 @@ static int parse_options(struct super_block *sb, char *options, int silent,
 	opts->amap_opt.sect_per_au = 0;
 	opts->amap_opt.misaligned_sect = 0;
 	opts->symlink = 0;
-	opts->errors = SDFAT_ERRORS_RO;
+	opts->errors = SDFAT_ERRORS_CONT;
 	opts->discard = 0;
 	*debug = 0;
 

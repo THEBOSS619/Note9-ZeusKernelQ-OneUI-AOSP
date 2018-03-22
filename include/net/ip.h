@@ -88,8 +88,6 @@ struct ip_ra_chain {
 	struct rcu_head		rcu;
 };
 
-extern struct ip_ra_chain __rcu *ip_ra_chain;
-
 /* IP flags. */
 #define IP_CE		0x8000		/* Flag: "Congestion"		*/
 #define IP_DF		0x4000		/* Flag: "Don't Fragment"	*/

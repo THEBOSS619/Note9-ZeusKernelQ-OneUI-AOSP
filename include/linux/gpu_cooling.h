@@ -41,7 +41,7 @@ gpufreq_cooling_register(const struct cpumask *clip_gpus);
 
 struct thermal_cooling_device *
 gpufreq_power_cooling_register(const struct cpumask *clip_gpus,
-			       u32 capacitance, get_static_t plat_static_func);
+			       u32 capacitance);
 
 /**
  * of_gpufreq_cooling_register - create gpufreq cooling device based on DT.
@@ -56,8 +56,7 @@ of_gpufreq_cooling_register(struct device_node *np,
 struct thermal_cooling_device *
 of_gpufreq_power_cooling_register(struct device_node *np,
 				  const struct cpumask *clip_gpus,
-				  u32 capacitance,
-				  get_static_t plat_static_func);
+				  u32 capacitance);
 #else
 static inline struct thermal_cooling_device *
 of_gpufreq_cooling_register(struct device_node *np,
@@ -69,8 +68,7 @@ of_gpufreq_cooling_register(struct device_node *np,
 static inline struct thermal_cooling_device *
 of_gpufreq_power_cooling_register(struct device_node *np,
 				  const struct cpumask *clip_gpus,
-				  u32 capacitance,
-				  get_static_t plat_static_func)
+				  u32 capacitance);
 {
 	return NULL;
 }
@@ -92,7 +90,7 @@ gpufreq_cooling_register(const struct cpumask *clip_gpus)
 
 static inline struct thermal_cooling_device *
 gpufreq_power_cooling_register(const struct cpumask *clip_gpus,
-			       u32 capacitance, get_static_t plat_static_func)
+			       u32 capacitance)
 {
 	return NULL;
 }
@@ -107,8 +105,7 @@ of_gpufreq_cooling_register(struct device_node *np,
 static inline struct thermal_cooling_device *
 of_gpufreq_power_cooling_register(struct device_node *np,
 				  const struct cpumask *clip_gpus,
-				  u32 capacitance,
-				  get_static_t plat_static_func)
+				  u32 capacitance)
 {
 	return NULL;
 }

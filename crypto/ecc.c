@@ -514,7 +514,7 @@ static void vli_mmod_fast_256(u64 *result, const u64 *product,
 static bool vli_mmod_fast(u64 *result, u64 *product,
 			  const u64 *curve_prime, unsigned int ndigits)
 {
-	u64 tmp[2 * ndigits];
+	u64 tmp[2 * ECC_MAX_DIGITS];
 
 	switch (ndigits) {
 	case 3:
@@ -535,7 +535,7 @@ static bool vli_mmod_fast(u64 *result, u64 *product,
 static void vli_mod_mult_fast(u64 *result, const u64 *left, const u64 *right,
 			      const u64 *curve_prime, unsigned int ndigits)
 {
-	u64 product[2 * ndigits];
+	u64 product[2 * ECC_MAX_DIGITS];
 
 	vli_mult(product, left, right, ndigits);
 	vli_mmod_fast(result, product, curve_prime, ndigits);
@@ -545,7 +545,7 @@ static void vli_mod_mult_fast(u64 *result, const u64 *left, const u64 *right,
 static void vli_mod_square_fast(u64 *result, const u64 *left,
 				const u64 *curve_prime, unsigned int ndigits)
 {
-	u64 product[2 * ndigits];
+	u64 product[2 * ECC_MAX_DIGITS];
 
 	vli_square(product, left, ndigits);
 	vli_mmod_fast(result, product, curve_prime, ndigits);
@@ -559,8 +559,8 @@ static void vli_mod_square_fast(u64 *result, const u64 *left,
 static void vli_mod_inv(u64 *result, const u64 *input, const u64 *mod,
 			unsigned int ndigits)
 {
-	u64 a[ndigits], b[ndigits];
-	u64 u[ndigits], v[ndigits];
+	u64 a[ECC_MAX_DIGITS], b[ECC_MAX_DIGITS];
+	u64 u[ECC_MAX_DIGITS], v[ECC_MAX_DIGITS];
 	u64 carry;
 	int cmp_result;
 
@@ -648,8 +648,8 @@ static void ecc_point_double_jacobian(u64 *x1, u64 *y1, u64 *z1,
 				      u64 *curve_prime, unsigned int ndigits)
 {
 	/* t1 = x, t2 = y, t3 = z */
-	u64 t4[ndigits];
-	u64 t5[ndigits];
+	u64 t4[ECC_MAX_DIGITS];
+	u64 t5[ECC_MAX_DIGITS];
 
 	if (vli_is_zero(z1, ndigits))
 		return;
@@ -710,7 +710,7 @@ static void ecc_point_double_jacobian(u64 *x1, u64 *y1, u64 *z1,
 static void apply_z(u64 *x1, u64 *y1, u64 *z, u64 *curve_prime,
 		    unsigned int ndigits)
 {
-	u64 t1[ndigits];
+	u64 t1[ECC_MAX_DIGITS];
 
 	vli_mod_square_fast(t1, z, curve_prime, ndigits);    /* z^2 */
 	vli_mod_mult_fast(x1, x1, t1, curve_prime, ndigits); /* x1 * z^2 */
@@ -723,7 +723,7 @@ static void xycz_initial_double(u64 *x1, u64 *y1, u64 *x2, u64 *y2,
 				u64 *p_initial_z, u64 *curve_prime,
 				unsigned int ndigits)
 {
-	u64 z[ndigits];
+	u64 z[ECC_MAX_DIGITS];
 
 	vli_set(x2, x1, ndigits);
 	vli_set(y2, y1, ndigits);
@@ -749,7 +749,7 @@ static void xycz_add(u64 *x1, u64 *y1, u64 *x2, u64 *y2, u64 *curve_prime,
 		     unsigned int ndigits)
 {
 	/* t1 = X1, t2 = Y1, t3 = X2, t4 = Y2 */
-	u64 t5[ndigits];
+	u64 t5[ECC_MAX_DIGITS];
 
 	/* t5 = x2 - x1 */
 	vli_mod_sub(t5, x2, x1, curve_prime, ndigits);
@@ -790,9 +790,9 @@ static void xycz_add_c(u64 *x1, u64 *y1, u64 *x2, u64 *y2, u64 *curve_prime,
 		       unsigned int ndigits)
 {
 	/* t1 = X1, t2 = Y1, t3 = X2, t4 = Y2 */
-	u64 t5[ndigits];
-	u64 t6[ndigits];
-	u64 t7[ndigits];
+	u64 t5[ECC_MAX_DIGITS];
+	u64 t6[ECC_MAX_DIGITS];
+	u64 t7[ECC_MAX_DIGITS];
 
 	/* t5 = x2 - x1 */
 	vli_mod_sub(t5, x2, x1, curve_prime, ndigits);
@@ -845,9 +845,9 @@ static void ecc_point_mult(struct ecc_point *result,
 			   unsigned int ndigits)
 {
 	/* R0 and R1 */
-	u64 rx[2][ndigits];
-	u64 ry[2][ndigits];
-	u64 z[ndigits];
+	u64 rx[2][ECC_MAX_DIGITS];
+	u64 ry[2][ECC_MAX_DIGITS];
+	u64 z[ECC_MAX_DIGITS];
 	int i, nb;
 	int num_bits = vli_num_bits(scalar, ndigits);
 
@@ -934,11 +934,11 @@ int ecdh_make_pub_key(unsigned int curve_id, unsigned int ndigits,
 {
 	int ret = 0;
 	struct ecc_point *pk;
-	u64 priv[ndigits];
+	u64 priv[ECC_MAX_DIGITS];
 	unsigned int nbytes;
 	const struct ecc_curve *curve = ecc_get_curve(curve_id);
 
-	if (!private_key || !curve) {
+	if (!private_key || !curve || ndigits > ARRAY_SIZE(priv)) {
 		ret = -EINVAL;
 		goto out;
 	}
@@ -974,30 +974,25 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
 {
 	int ret = 0;
 	struct ecc_point *product, *pk;
-	u64 *priv, *rand_z;
+	u64 priv[ECC_MAX_DIGITS];
+	u64 rand_z[ECC_MAX_DIGITS];
+	unsigned int nbytes;
 	const struct ecc_curve *curve = ecc_get_curve(curve_id);
 
-	if (!private_key || !public_key || !curve) {
+	if (!private_key || !public_key || !curve ||
+	    ndigits > ARRAY_SIZE(priv) || ndigits > ARRAY_SIZE(rand_z)) {
 		ret = -EINVAL;
 		goto out;
 	}
 
-	priv = kmalloc_array(ndigits, sizeof(*priv), GFP_KERNEL);
-	if (!priv) {
-		ret = -ENOMEM;
-		goto out;
-	}
+	nbytes = ndigits << ECC_DIGITS_TO_BYTES_SHIFT;
 
-	rand_z = kmalloc_array(ndigits, sizeof(*rand_z), GFP_KERNEL);
-	if (!rand_z) {
-		ret = -ENOMEM;
-		goto kfree_out;
-	}
+	get_random_bytes(rand_z, nbytes);
 
 	pk = ecc_alloc_point(ndigits);
 	if (!pk) {
 		ret = -ENOMEM;
-		goto kfree_out;
+		goto out;
 	}
 
 	product = ecc_alloc_point(ndigits);
@@ -1006,7 +1001,6 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
 		goto err_alloc_product;
 	}
 
-	get_random_bytes(rand_z, ndigits << ECC_DIGITS_TO_BYTES_SHIFT);
 
 	ecc_swap_digits((const u64 *)public_key, pk->x, ndigits);
 	ecc_swap_digits((const u64 *)&public_key[nbytes], pk->y, ndigits);
@@ -1022,9 +1016,6 @@ int crypto_ecdh_shared_secret(unsigned int curve_id, unsigned int ndigits,
 	ecc_free_point(product);
 err_alloc_product:
 	ecc_free_point(pk);
-kfree_out:
-	kzfree(priv);
-	kzfree(rand_z);
 out:
 	return ret;
 }

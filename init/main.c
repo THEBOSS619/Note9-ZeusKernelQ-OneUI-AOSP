@@ -863,6 +863,7 @@ asmlinkage __visible void __init start_kernel(void)
 	pagecache_init();
 	signals_init();
 	symlink_cache_init();
+	seq_file_init();
 	proc_root_init();
 	nsfs_init();
 	cpuset_init();

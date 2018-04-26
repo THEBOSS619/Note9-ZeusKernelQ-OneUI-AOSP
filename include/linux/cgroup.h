@@ -698,11 +698,18 @@ static inline bool task_under_cgroup_hierarchy(struct task_struct *task,
 }
 #endif /* !CONFIG_CGROUPS */
 
+#ifdef CONFIG_CGROUPS
+/*
+ * cgroup scalable recursive statistics.
+ */
+void cgroup_rstat_updated(struct cgroup *cgrp, int cpu);
+void cgroup_rstat_flush(struct cgroup *cgrp);
+void cgroup_rstat_flush_hold(struct cgroup *cgrp);
+void cgroup_rstat_flush_release(void);
+
 /*
  * Basic resource stats.
  */
-#ifdef CONFIG_CGROUPS
-
 #ifdef CONFIG_CGROUP_CPUACCT
 void cpuacct_charge(struct task_struct *tsk, u64 cputime);
 void cpuacct_account_field(struct task_struct *tsk, int index, u64 val);

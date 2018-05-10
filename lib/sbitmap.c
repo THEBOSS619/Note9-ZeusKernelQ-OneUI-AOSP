@@ -212,18 +212,33 @@ unsigned int sbitmap_weight(const struct sbitmap *sb)
 }
 EXPORT_SYMBOL_GPL(sbitmap_weight);
 
-static unsigned int sbq_calc_wake_batch(unsigned int depth)
+static unsigned int sbq_calc_wake_batch(struct sbitmap_queue *sbq,
+					unsigned int depth)
 {
 	unsigned int wake_batch;
+	unsigned int shallow_depth;
 
 	/*
 	 * For each batch, we wake up one queue. We need to make sure that our
-	 * batch size is small enough that the full depth of the bitmap is
-	 * enough to wake up all of the queues.
+	 * batch size is small enough that the full depth of the bitmap,
+	 * potentially limited by a shallow depth, is enough to wake up all of
+	 * the queues.
+	 *
+	 * Each full word of the bitmap has bits_per_word bits, and there might
+	 * be a partial word. There are depth / bits_per_word full words and
+	 * depth % bits_per_word bits left over. In bitwise arithmetic:
+	 *
+	 * bits_per_word = 1 << shift
+	 * depth / bits_per_word = depth >> shift
+	 * depth % bits_per_word = depth & ((1 << shift) - 1)
+	 *
+	 * Each word can be limited to sbq->min_shallow_depth bits.
 	 */
-	wake_batch = SBQ_WAKE_BATCH;
-	if (wake_batch > depth / SBQ_WAIT_QUEUES)
-		wake_batch = max(1U, depth / SBQ_WAIT_QUEUES);
+	shallow_depth = min(1U << sbq->sb.shift, sbq->min_shallow_depth);
+	depth = ((depth >> sbq->sb.shift) * shallow_depth +
+		 min(depth & ((1U << sbq->sb.shift) - 1), shallow_depth));
+	wake_batch = clamp_t(unsigned int, depth / SBQ_WAIT_QUEUES, 1,
+			     SBQ_WAKE_BATCH);
 
 	return wake_batch;
 }
@@ -249,7 +264,8 @@ int sbitmap_queue_init_node(struct sbitmap_queue *sbq, unsigned int depth,
 			*per_cpu_ptr(sbq->alloc_hint, i) = prandom_u32() % depth;
 	}
 
-	sbq->wake_batch = sbq_calc_wake_batch(depth);
+	sbq->min_shallow_depth = UINT_MAX;
+	sbq->wake_batch = sbq_calc_wake_batch(sbq, depth);
 	atomic_set(&sbq->wake_index, 0);
 
 	sbq->ws = kzalloc_node(SBQ_WAIT_QUEUES * sizeof(*sbq->ws), flags, node);
@@ -269,9 +285,10 @@ int sbitmap_queue_init_node(struct sbitmap_queue *sbq, unsigned int depth,
 }
 EXPORT_SYMBOL_GPL(sbitmap_queue_init_node);
 
-void sbitmap_queue_resize(struct sbitmap_queue *sbq, unsigned int depth)
+static void sbitmap_queue_update_wake_batch(struct sbitmap_queue *sbq,
+					    unsigned int depth)
 {
-	unsigned int wake_batch = sbq_calc_wake_batch(depth);
+	unsigned int wake_batch = sbq_calc_wake_batch(sbq, depth);
 	int i;
 
 	if (sbq->wake_batch != wake_batch) {
@@ -284,6 +301,11 @@ void sbitmap_queue_resize(struct sbitmap_queue *sbq, unsigned int depth)
 		for (i = 0; i < SBQ_WAIT_QUEUES; i++)
 			atomic_set(&sbq->ws[i].wait_cnt, 1);
 	}
+}
+
+void sbitmap_queue_resize(struct sbitmap_queue *sbq, unsigned int depth)
+{
+	sbitmap_queue_update_wake_batch(sbq, depth);
 	sbitmap_resize(&sbq->sb, depth);
 }
 EXPORT_SYMBOL_GPL(sbitmap_queue_resize);
@@ -344,6 +366,14 @@ int __sbitmap_queue_get_shallow(struct sbitmap_queue *sbq,
 	return nr;
 }
 EXPORT_SYMBOL_GPL(__sbitmap_queue_get_shallow);
+
+void sbitmap_queue_min_shallow_depth(struct sbitmap_queue *sbq,
+				     unsigned int min_shallow_depth)
+{
+	sbq->min_shallow_depth = min_shallow_depth;
+	sbitmap_queue_update_wake_batch(sbq, sbq->sb.depth);
+}
+EXPORT_SYMBOL_GPL(sbitmap_queue_min_shallow_depth);
 
 static struct sbq_wait_state *sbq_wake_ptr(struct sbitmap_queue *sbq)
 {

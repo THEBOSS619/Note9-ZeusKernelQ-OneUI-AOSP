@@ -384,11 +384,8 @@ static inline bool rwsem_can_spin_on_owner(struct rw_semaphore *sem)
 
 	rcu_read_lock();
 	owner = READ_ONCE(sem->owner);
-	if (!rwsem_owner_is_writer(owner)) {
-		/*
-		 * Don't spin if the rwsem is readers owned.
-		 */
-		ret = !rwsem_owner_is_reader(owner);
+	if (!owner || !is_rwsem_owner_spinnable(owner)) {
+		ret = !owner;	/* !owner is spinnable */
 		goto done;
 	}
 
@@ -409,8 +406,8 @@ static noinline bool rwsem_spin_on_owner(struct rw_semaphore *sem)
 {
 	struct task_struct *owner = READ_ONCE(sem->owner);
 
-	if (!rwsem_owner_is_writer(owner))
-		goto out;
+	if (!is_rwsem_owner_spinnable(owner))
+		return false;
 
 	while (true) {
 		bool on_cpu, same_owner;
@@ -421,7 +418,7 @@ static noinline bool rwsem_spin_on_owner(struct rw_semaphore *sem)
 		 * the rcu_read_lock() ensures the memory stays valid.
 		 */
 		rcu_read_lock();
-		same_owner = sem->owner == owner;
+		same_owner = owner && (READ_ONCE(sem->owner) == owner);
 		if (same_owner)
 			on_cpu = owner->on_cpu;
 		rcu_read_unlock();
@@ -439,12 +436,11 @@ static noinline bool rwsem_spin_on_owner(struct rw_semaphore *sem)
 
 		cpu_relax();
 	}
-out:
 	/*
 	 * If there is a new owner or the owner is not set, we continue
 	 * spinning.
 	 */
-	return !rwsem_owner_is_reader(READ_ONCE(sem->owner));
+	return is_rwsem_owner_spinnable(READ_ONCE(sem->owner));
 }
 
 static bool rwsem_optimistic_spin(struct rw_semaphore *sem)

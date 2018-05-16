@@ -194,6 +194,7 @@ void show_regs_print_info(const char *log_lvl);
 extern void printk_safe_init(void);
 extern void printk_safe_flush(void);
 extern void printk_safe_flush_on_panic(void);
+int syslog_print_all(char __user *buf, int size, bool clear);
 #else
 static inline __printf(1, 0)
 int vprintk(const char *s, va_list args)
@@ -263,6 +264,9 @@ static inline void printk_safe_flush(void)
 }
 
 static inline void printk_safe_flush_on_panic(void)
+{
+}
+static inline int syslog_print_all(char __user *buf, int size, bool clear)
 {
 }
 #endif

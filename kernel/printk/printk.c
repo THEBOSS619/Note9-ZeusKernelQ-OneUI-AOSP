@@ -966,6 +966,9 @@ static ssize_t devkmsg_write(struct kiocb *iocb, struct iov_iter *from)
 	printk_emit(facility, level, NULL, 0, "%s", line);
 	kfree(buf);
 	return ret;
+out:
+	kfree(buf);
+	return ret;
 }
 
 static ssize_t devkmsg_read(struct file *file, char __user *buf,
@@ -1960,9 +1963,9 @@ asmlinkage int vprintk_emit(int facility, int level,
 	int printed_len = 0;
 	bool in_sched = false;
 
-	// if printk mode is disabled, terminate instantly
-	if (printk_mode == 0)
-			return 0;
+	/* return instantly if printk is disabled */
+	if (likely(printk_mode == 0))
+		return 0;
 
 	if (level == LOGLEVEL_SCHED) {
 		level = LOGLEVEL_DEFAULT;
@@ -2045,9 +2048,9 @@ EXPORT_SYMBOL(vprintk_emit);
 
 asmlinkage int vprintk(const char *fmt, va_list args)
 {
-	// if printk mode is disabled, terminate instantly
-	if (printk_mode == 0)
-			return 0;
+	/* return instantly if printk is disabled */
+	if (likely(printk_mode == 0))
+		return 0;
 
 	return vprintk_func(fmt, args);
 }
@@ -2060,9 +2063,9 @@ asmlinkage int printk_emit(int facility, int level,
 	va_list args;
 	int r;
 
-	// if printk mode is disabled, terminate instantly
-	if (printk_mode == 0)
-			return 0;
+	/* return instantly if printk is disabled */
+	if (likely(printk_mode == 0))
+		return 0;
 
 	va_start(args, fmt);
 	r = vprintk_emit(facility, level, dict, dictlen, fmt, args);
@@ -2076,9 +2079,9 @@ int vprintk_default(const char *fmt, va_list args)
 {
 	int r;
 
-	// if printk mode is disabled, terminate instantly
-	if (printk_mode == 0)
-			return 0;
+	/* return instantly if printk is disabled */
+	if (likely(printk_mode == 0))
+		return 0;
 
 #ifdef CONFIG_KGDB_KDB
 	if (unlikely(kdb_trap_printk)) {

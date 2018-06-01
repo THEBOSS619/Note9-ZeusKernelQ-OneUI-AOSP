@@ -3389,7 +3389,7 @@ static int dw_mci_init_slot(struct dw_mci *host, unsigned int id)
 		mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
 
 	if (host->pdata->caps)
-		mmc->caps = host->pdata->caps;
+		mmc->caps |= host->pdata->caps;
 
 	/*
 	 * Support MMC_CAP_ERASE by default.
@@ -3398,7 +3398,7 @@ static int dw_mci_init_slot(struct dw_mci *host, unsigned int id)
 	mmc->caps |= MMC_CAP_ERASE;
 
 	if (host->pdata->pm_caps)
-		mmc->pm_caps = host->pdata->pm_caps;
+		mmc->pm_caps |= host->pdata->pm_caps;
 
 	if (host->dev->of_node) {
 		ctrl_id = of_alias_get_id(host->dev->of_node, "mshc");
@@ -3411,7 +3411,7 @@ static int dw_mci_init_slot(struct dw_mci *host, unsigned int id)
 		mmc->caps |= drv_data->caps[ctrl_id];
 
 	if (host->pdata->caps2)
-		mmc->caps2 = host->pdata->caps2;
+		mmc->caps2 |= host->pdata->caps2;
 
 	ret = mmc_of_parse(mmc);
 	if (ret)

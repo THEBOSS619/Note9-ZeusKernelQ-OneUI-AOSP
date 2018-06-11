@@ -26,6 +26,18 @@
 
 #include "power.h"
 
+
+#include <linux/moduleparam.h>
+
+static bool enable_sensorhub_wl = true;
+module_param(enable_sensorhub_wl, bool, 0644);
+
+static bool enable_ssp_wl = true;
+module_param(enable_ssp_wl, bool, 0644);
+
+static bool enable_bcm4773_wl = true;
+module_param(enable_bcm4773_wl, bool, 0644);
+
 /*
  * If set, the suspend/hibernate code will abort transitions to a sleep state
  * if wakeup events are registered during or immediately before the transition.
@@ -535,6 +547,21 @@ static bool wakeup_source_not_registered(struct wakeup_source *ws)
 static void wakeup_source_activate(struct wakeup_source *ws)
 {
 	unsigned int cec;
+	
+	if (!enable_sensorhub_wl && !strcmp(ws->name, "ssp_sensorhub_wake_lock")) {
+		pr_info("wakeup source sensorhub activation skipped\n");
+		return;
+	}
+
+        if (!enable_ssp_wl && !strcmp(ws->name, "ssp_wake_lock")) {
+                pr_info("wakeup source SSP activation skipped\n");
+                return;
+        }
+
+        if (!enable_bcm4773_wl && !strcmp(ws->name, "bcm4773_wake_lock")) {
+                pr_info("wakeup source bcm4773_wake_lock activation skipped\n");
+                return;
+        }
 
 	if (WARN_ONCE(wakeup_source_not_registered(ws),
 			"unregistered wakeup source\n"))

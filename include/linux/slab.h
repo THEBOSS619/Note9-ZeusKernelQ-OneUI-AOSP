@@ -561,6 +561,7 @@ struct memcg_cache_params {
 	struct list_head list;
 	union {
 		struct memcg_cache_array __rcu *memcg_caches;
+		bool dying;
 		struct {
 			struct mem_cgroup *memcg;
 			struct kmem_cache *root_cache;

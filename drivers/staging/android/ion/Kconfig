@@ -79,3 +79,11 @@ config ION_RBIN_HEAP
 	  can be composed of multiple free chunks.
 
 source drivers/staging/android/ion/exynos/Kconfig
+
+config ION_DEFER_FREE_NO_SCHED_IDLE
+	bool "Increases the priority of ION defer free thead"
+	depends on ION
+	help
+	  Choose this option to remove the SCHED_IDLE flag in case of defer free
+	  thereby increasing the priority of defer free thread.
+	  if you're not sure say Y here.

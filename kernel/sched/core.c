@@ -6491,6 +6491,7 @@ DEFINE_PER_CPU(struct sched_domain *, sd_asym_packing);
 DEFINE_PER_CPU(struct sched_domain *, sd_asym_cpucapacity);
 DEFINE_PER_CPU(struct sched_domain *, sd_ea);
 DEFINE_PER_CPU(struct sched_domain *, sd_scs);
+DEFINE_STATIC_KEY_FALSE(sched_asym_cpucapacity);
 
 static void update_top_cache_domain(int cpu)
 {
@@ -7939,6 +7940,7 @@ static int build_sched_domains(const struct cpumask *cpu_map,
 	struct s_data d;
 	int i, ret = -ENOMEM;
 	struct sched_domain_topology_level *tl_asym;
+	bool has_asym = false;
 
 	if (WARN_ON(cpumask_empty(cpu_map)))
 		goto error;
@@ -7957,8 +7959,10 @@ static int build_sched_domains(const struct cpumask *cpu_map,
 		for_each_sd_topology(tl) {
 			int dflags = 0;
 
-			if (tl == tl_asym)
+			if (tl == tl_asym) {
 				dflags |= SD_ASYM_CPUCAPACITY;
+				has_asym = true;
+			}
 
 			if (WARN_ON(!topology_span_sane(tl, cpu_map, i)))
 				goto error;
@@ -8018,6 +8022,9 @@ static int build_sched_domains(const struct cpumask *cpu_map,
 		cpu_attach_domain(sd, d.rd, i);
 	}
 	rcu_read_unlock();
+
+	if (has_asym)
+		static_branch_enable_cpuslocked(&sched_asym_cpucapacity);
 
 	ret = 0;
 error:

@@ -29,7 +29,7 @@
 #include <linux/rcupdate.h>
 #include "input-compat.h"
 
-#if !defined(CONFIG_INPUT_BOOSTER) // Input Booster +
+#if defined(CONFIG_INPUT_BOOSTER) // Input Booster +
 #include <linux/input/input.h>
 #endif // Input Booster -
 
@@ -412,7 +412,7 @@ static void input_handle_event(struct input_dev *dev,
 
 }
 
-#if !defined(CONFIG_INPUT_BOOSTER) // Input Booster +
+#if defined(CONFIG_INPUT_BOOSTER) // Input Booster +
 // ********** Define Timeout Functions ********** //
 DECLARE_TIMEOUT_FUNC(touch);
 DECLARE_TIMEOUT_FUNC(multitouch);
@@ -844,14 +844,15 @@ void input_event(struct input_dev *dev,
 		 unsigned int type, unsigned int code, int value)
 {
 	unsigned long flags;
+#if defined(CONFIG_INPUT_BOOSTER) // Input Booster +
 	int idx;
-
+#endif
 	if (is_event_supported(type, dev->evbit, EV_MAX)) {
 
 		spin_lock_irqsave(&dev->event_lock, flags);
 		input_handle_event(dev, type, code, value);
 		spin_unlock_irqrestore(&dev->event_lock, flags);
-#if !defined(CONFIG_INPUT_BOOSTER) // Input Booster +
+#if defined(CONFIG_INPUT_BOOSTER) // Input Booster +
 		if (device_tree_infor != NULL) {
 			if (type == EV_SYN && input_count > 0) {
 				pr_booster("[Input Booster1] ==============================================\n");
@@ -2958,7 +2959,7 @@ static int __init input_init(void)
 		pr_err("unable to register char major %d", INPUT_MAJOR);
 		goto fail2;
 	}
-#if !defined(CONFIG_INPUT_BOOSTER) // Input Booster +
+#if defined(CONFIG_INPUT_BOOSTER) // Input Booster +
 	input_booster_init();
 #endif  // Input Booster -
 

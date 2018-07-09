@@ -22,7 +22,7 @@
 #include "sched.h"
 #include "tune.h"
 
-unsigned long boosted_cpu_util(int cpu);
+unsigned long boosted_cpu_util(int cpu, unsigned long other_util);
 
 /* Stub out fast switch routines present on mainline to reduce the backport
  * overhead. */
@@ -245,7 +245,7 @@ static void sugov_get_util(unsigned long *util, unsigned long *max, u64 time)
 	rt = div64_u64(rq->rt_avg, sched_avg_period() + delta);
 	rt = (rt * max_cap) >> SCHED_CAPACITY_SHIFT;
 
-	*util = boosted_cpu_util(cpu);
+	*util = boosted_cpu_util(cpu, rt);
 	if (likely(use_pelt()))
 		*util = min((*util + rt), max_cap);
 

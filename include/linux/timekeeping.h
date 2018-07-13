@@ -266,7 +266,7 @@ static inline void timekeeping_clocktai64(struct timespec64 *ts)
 extern bool timekeeping_rtc_skipsuspend(void);
 extern bool timekeeping_rtc_skipresume(void);
 
-extern void timekeeping_inject_sleeptime64(struct timespec64 *delta);
+extern void timekeeping_inject_sleeptime64(const struct timespec64 *delta);
 
 /*
  * PPS accessor

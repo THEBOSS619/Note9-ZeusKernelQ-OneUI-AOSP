@@ -2086,7 +2086,12 @@ retry:
 	next_task->on_rq = TASK_ON_RQ_MIGRATING;
 	deactivate_task(rq, next_task, 0);
 	set_task_cpu(next_task, later_rq->cpu);
-	activate_task(later_rq, next_task, 0);
+	/*
+	 * Update the later_rq clock here, because the clock is used
+	 * by the cpufreq_update_util() inside __add_running_bw().
+	 */
+	update_rq_clock(later_rq);
+	activate_task(later_rq, next_task, ENQUEUE_NOCLOCK);
 	next_task->on_rq = TASK_ON_RQ_QUEUED;
 	ret = 1;
 

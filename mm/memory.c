@@ -4077,9 +4077,9 @@ int __handle_speculative_fault(struct mm_struct *mm, unsigned long address,
 		return VM_FAULT_RETRY;
 	}
 
-	mem_cgroup_oom_enable();
+	mem_cgroup_enter_user_fault();
 	ret = handle_pte_fault(&fe);
-	mem_cgroup_oom_disable();
+	mem_cgroup_exit_user_fault();
 
 	/*
 	 * If there is no need to retry, don't return the vma to the caller.
@@ -4164,7 +4164,7 @@ int handle_mm_fault(struct vm_area_struct *vma, unsigned long address,
 	 * space.  Kernel faults are handled more gracefully.
 	 */
 	if (flags & FAULT_FLAG_USER)
-		mem_cgroup_oom_enable();
+		mem_cgroup_enter_user_fault();
 
 	if (unlikely(is_vm_hugetlb_page(vma)))
 		ret = hugetlb_fault(vma->vm_mm, vma, address, flags);
@@ -4172,7 +4172,7 @@ int handle_mm_fault(struct vm_area_struct *vma, unsigned long address,
 		ret = __handle_mm_fault(vma, address, flags);
 
 	if (flags & FAULT_FLAG_USER) {
-		mem_cgroup_oom_disable();
+		mem_cgroup_exit_user_fault();
                 /*
                  * The task may have entered a memcg OOM situation but
                  * if the allocation error was handled gracefully (no

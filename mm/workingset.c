@@ -371,10 +371,7 @@ static unsigned long count_shadow_nodes(struct shrinker *shrinker,
 	unsigned long max_nodes;
 	unsigned long pages;
 
-	/* list_lru lock nests inside IRQ-safe mapping->tree_lock */
-	local_irq_disable();
 	shadow_nodes = list_lru_shrink_count(&workingset_shadow_nodes, sc);
-	local_irq_enable();
 
 	if (sc->memcg) {
 		pages = mem_cgroup_node_nr_lru_pages(sc->memcg, sc->nid,

@@ -54,7 +54,7 @@ static int __init hardlockup_panic_setup(char *str)
 }
 __setup("nmi_watchdog=", hardlockup_panic_setup);
 
-void touch_nmi_watchdog(void)
+notrace void touch_nmi_watchdog(void)
 {
 	/*
 	 * Using __raw here because some code paths have

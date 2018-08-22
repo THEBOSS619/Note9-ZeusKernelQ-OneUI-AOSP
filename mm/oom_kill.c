@@ -583,8 +583,7 @@ static bool oom_reap_task_mm(struct task_struct *tsk, struct mm_struct *mm)
 	/* failed to reap part of the address space. Try again later */
 	if (!__oom_reap_task_mm(mm)) {
 		up_read(&mm->mmap_sem);
-		ret = false;
-		goto unlock_oom;
+		return false;
 	}
 
 	pr_info("oom_reaper: reaped process %d (%s), now anon-rss:%lukB, file-rss:%lukB, shmem-rss:%lukB\n",

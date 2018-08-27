@@ -40,5 +40,6 @@
 #define ARM64_MISMATCHED_CACHE_TYPE		19
 
 #define ARM64_NCAPS				20
+#define ARM64_HAS_CRC32				21
 
 #endif /* __ASM_CPUCAPS_H */

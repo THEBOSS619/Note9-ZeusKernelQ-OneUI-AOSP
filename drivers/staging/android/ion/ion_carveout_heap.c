@@ -208,7 +208,9 @@ static struct ion_heap_ops carveout_heap_ops = {
 	.unmap_kernel = ion_heap_unmap_kernel,
 };
 
-struct ion_heap *ion_carveout_heap_create(struct ion_platform_heap *heap_data)
+static struct ion_heap *__ion_carveout_heap_create(
+					struct ion_platform_heap *heap_data,
+					bool sync)
 {
 	struct ion_carveout_heap *carveout_heap;
 	struct page *page;
@@ -236,6 +238,11 @@ struct ion_heap *ion_carveout_heap_create(struct ion_platform_heap *heap_data)
 
 	__flush_dcache_area(page_address(page), size);
 	return &carveout_heap->heap;
+}
+
+struct ion_heap *ion_carveout_heap_create(struct ion_platform_heap *heap_data)
+{
+	return __ion_carveout_heap_create(heap_data, true);
 }
 
 void ion_carveout_heap_destroy(struct ion_heap *heap)

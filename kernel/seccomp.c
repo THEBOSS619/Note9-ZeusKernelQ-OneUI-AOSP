@@ -188,7 +188,7 @@ static u32 seccomp_run_filters(const struct seccomp_data *sd)
 			lockless_dereference(current->seccomp.filter);
 
 	/* Ensure unexpected behavior doesn't result in failing open. */
-	if (unlikely(WARN_ON(f == NULL)))
+	if (WARN_ON(f == NULL))
 		return SECCOMP_RET_KILL;
 
 	if (!sd) {
@@ -288,7 +288,7 @@ static inline pid_t seccomp_can_sync_threads(void)
 		/* Return the first thread that cannot be synchronized. */
 		failed = task_pid_vnr(thread);
 		/* If the pid cannot be resolved, then return -ESRCH */
-		if (unlikely(WARN_ON(failed == 0)))
+		if (WARN_ON(failed == 0))
 			failed = -ESRCH;
 		return failed;
 	}

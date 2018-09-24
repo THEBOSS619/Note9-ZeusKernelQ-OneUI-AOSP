@@ -933,6 +933,7 @@ static struct timer_base *lock_timer_base(struct timer_list *timer,
 			spin_unlock_irqrestore(&base->lock, *flags);
 		}
 		cpu_relax();
+		ndelay(TIMER_LOCK_TIGHT_LOOP_DELAY_NS);
 	}
 }
 
@@ -1285,6 +1286,7 @@ int del_timer_sync(struct timer_list *timer)
 		if (ret >= 0)
 			return ret;
 		udelay(1);
+		ndelay(TIMER_LOCK_TIGHT_LOOP_DELAY_NS);
 	}
 }
 EXPORT_SYMBOL(del_timer_sync);

@@ -101,6 +101,9 @@ struct fuse_inode {
 	/** List of writepage requestst (pending or sent) */
 	struct list_head writepages;
 
+	/* iversion of directory when cache was started */
+		u64 iversion;
+
 	/** Miscellaneous bits describing inode state */
 	unsigned long state;
 

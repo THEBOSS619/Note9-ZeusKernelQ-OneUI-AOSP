@@ -15,41 +15,9 @@
 
 #include "ssp_sensorhub.h"
 
-void ssp_sensorhub_log(const char *func_name,
+inline void ssp_sensorhub_log(const char *func_name,
 				const char *data, int length)
 {
-	char buf[6];
-	char *log_str;
-	int log_size;
-	int i;
-
-	if (likely(length <= BIG_DATA_SIZE))
-		log_size = length;
-	else
-		log_size = PRINT_TRUNCATE * 2 + 1;
-
-	log_size = sizeof(buf) * log_size + 1;
-	log_str = kzalloc(log_size, GFP_ATOMIC);
-	if (unlikely(!log_str)) {
-		sensorhub_err("allocate memory for data log err");
-		return;
-	}
-
-	for (i = 0; i < length; i++) {
-		if (length < BIG_DATA_SIZE ||
-			i < PRINT_TRUNCATE || i >= length - PRINT_TRUNCATE) {
-			snprintf(buf, sizeof(buf), "%d", (signed char)data[i]);
-			strlcat(log_str, buf, log_size);
-
-			if (i < length - 1)
-				strlcat(log_str, ", ", log_size);
-		}
-		if (length > BIG_DATA_SIZE && i == PRINT_TRUNCATE)
-			strlcat(log_str, "..., ", log_size);
-	}
-
-	pr_info("[SSP]: %s - %s (%d)\n", func_name, log_str, length);
-	kfree(log_str);
 }
 
 static int ssp_sensorhub_send_cmd(struct ssp_sensorhub_data *hub_data,

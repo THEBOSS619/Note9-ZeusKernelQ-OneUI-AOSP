@@ -924,14 +924,6 @@ int save_magnetic_cal_param_to_nvm(struct ssp_data *data, char *pchRcvDataFrame,
 		length = sizeof(mag_caldata_yas);
 	}
 
-	ssp_dbg("[SSP]: %s\n", __func__);
-	for (i = 0; i < length; i++) {
-		if (data->mag_type == MAG_TYPE_AKM)
-			ssp_dbg("[SSP] mag cal param[%d] %d\n", i, mag_caldata_akm[i]);
-		else
-			ssp_dbg("[SSP] mag cal param[%d] %d\n", i, mag_caldata_yas[i]);
-	}
-
 	old_fs = get_fs();
 	set_fs(KERNEL_DS);
 

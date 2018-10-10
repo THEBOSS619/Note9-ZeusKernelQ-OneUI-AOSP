@@ -21,7 +21,7 @@ CFLAGS_uh_inform.o += -DDMV_LITE
 endif
 
 # Object file lists.
-arm64-obj-y		:= debug-monitors.o entry.o irq.o fpsimd.o		\
+arm64-obj-y		:= entry.o irq.o fpsimd.o		\
 			   entry-fpsimd.o process.o ptrace.o setup.o signal.o	\
 			   sys.o stacktrace.o time.o traps.o io.o vdso.o	\
 			   hyp-stub.o psci.o cpu_ops.o insn.o	\
@@ -41,6 +41,7 @@ ifneq ($(CONFIG_VDSO32),y)
 arm64-obj-$(CONFIG_COMPAT)		+= sigreturn32.o
 endif
 arm64-obj-$(CONFIG_KUSER_HELPERS)	+= kuser32.o
+arm64-obj-$(CONFIG_DEBUG_MONITORS) += debug-monitors.o
 arm64-obj-$(CONFIG_FUNCTION_TRACER)	+= ftrace.o entry-ftrace.o
 arm64-obj-$(CONFIG_MODULES)		+= arm64ksyms.o module.o
 arm64-obj-$(CONFIG_ARM64_MODULE_PLTS)	+= module-plts.o

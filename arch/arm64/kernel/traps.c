@@ -610,9 +610,11 @@ asmlinkage void __exception do_undefinstr(struct pt_regs *regs, unsigned int esr
 		sec_debug_set_extra_info_esr(esr);
 	}
 #endif
+#ifdef CONFIG_DEBUG_MONITORS
 	/* check for AArch32 breakpoint instructions */
 	if (!aarch32_break_handler(regs))
 		return;
+#endif
 
 	if (call_undef_hook(regs) == 0)
 		return;
@@ -964,11 +966,13 @@ static int bug_handler(struct pt_regs *regs, unsigned int esr)
 	return DBG_HOOK_HANDLED;
 }
 
+#ifdef CONFIG_DEBUG_MONITORS
 static struct break_hook bug_break_hook = {
 	.esr_val = 0xf2000000 | BUG_BRK_IMM,
 	.esr_mask = 0xffffffff,
 	.fn = bug_handler,
 };
+#endif
 
 /*
  * Initial handler for AArch64 BRK exceptions
@@ -983,5 +987,7 @@ int __init early_brk64(unsigned long addr, unsigned int esr,
 /* This registration must happen early, before debug_traps_init(). */
 void __init trap_init(void)
 {
+#ifdef CONFIG_DEBUG_MONITORS
 	register_break_hook(&bug_break_hook);
+#endif
 }

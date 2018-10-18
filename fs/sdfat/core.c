@@ -33,9 +33,7 @@
 #include <linux/writeback.h>
 #include <linux/kernel.h>
 #include <linux/log2.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 16, 0)
 #include <linux/iversion.h>
-#endif
 
 #include "sdfat.h"
 #include "core.h"
@@ -1958,6 +1956,7 @@ s32 fscore_lookup(struct inode *inode, u8 *path, FILE_ID_T *fid)
 	struct super_block *sb = inode->i_sb;
 	FS_INFO_T *fsi = &(SDFAT_SB(sb)->fsi);
 	FILE_ID_T *dir_fid = &(SDFAT_I(inode)->fid);
+	u32 i_version_low;
 
 	TMSG("%s entered\n", __func__);
 
@@ -1971,10 +1970,11 @@ s32 fscore_lookup(struct inode *inode, u8 *path, FILE_ID_T *fid)
 		return ret;
 
 	/* check the validation of hint_stat and initialize it if required */
-	if (dir_fid->version != (u32)inode_peek_iversion(inode)) {
+	i_version_low = (u32)(inode_query_iversion(inode) & 0xffffffff);
+	if (dir_fid->version != i_version_low) {
 		dir_fid->hint_stat.clu = dir.dir;
 		dir_fid->hint_stat.eidx = 0;
-		dir_fid->version = (u32)inode_peek_iversion(inode);
+		dir_fid->version = i_version_low;
 		dir_fid->hint_femp.eidx = -1;
 	}
 

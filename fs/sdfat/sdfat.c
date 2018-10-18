@@ -52,6 +52,7 @@
 #include <linux/blkdev.h>
 #include <linux/swap.h> /* for mark_page_accessed() */
 #include <linux/vmalloc.h>
+#include <linux/iversion.h>
 #include <asm/current.h>
 #include <asm/unaligned.h>
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 16, 0)
@@ -1240,7 +1241,7 @@ static int __sdfat_revalidate_common(struct dentry *dentry)
 	spin_lock(&dentry->d_lock);
 	if ((!dentry->d_inode) && (!__check_dstate_locked(dentry) &&
 		(dentry->d_time !=
-		(unsigned long)inode_peek_iversion(dentry->d_parent->d_inode)))) {
+		(unsigned long)inode_query_iversion(dentry->d_parent->d_inode)))) {
 		ret = 0;
 	}
 	spin_unlock(&dentry->d_lock);
@@ -2531,7 +2532,7 @@ static struct dentry *__sdfat_lookup(struct inode *dir, struct dentry *dentry)
 	dput(alias);
 out:
 	/* initialize d_time even though it is positive dentry */
-	dentry->d_time = (unsigned long)inode_peek_iversion(dir);
+	dentry->d_time = (unsigned long)inode_query_iversion(dir);
 	__unlock_super(sb);
 
 	dentry = d_splice_alias(inode, dentry);
@@ -2578,7 +2579,7 @@ static int sdfat_unlink(struct inode *dir, struct dentry *dentry)
 	clear_nlink(inode);
 	inode->i_mtime = inode->i_atime = ts;
 	sdfat_detach(inode);
-	dentry->d_time = (unsigned long)inode_peek_iversion(dir);
+	dentry->d_time = (unsigned long)inode_query_iversion(dir);
 out:
 	__unlock_d_revalidate(dentry);
 	__unlock_super(sb);
@@ -2736,7 +2737,7 @@ static int sdfat_rmdir(struct inode *dir, struct dentry *dentry)
 	clear_nlink(inode);
 	inode->i_mtime = inode->i_atime = ts;
 	sdfat_detach(inode);
-	dentry->d_time = (unsigned long)inode_peek_iversion(dir);
+	dentry->d_time = (unsigned long)inode_query_iversion(dir);
 out:
 	__unlock_d_revalidate(dentry);
 	__unlock_super(sb);

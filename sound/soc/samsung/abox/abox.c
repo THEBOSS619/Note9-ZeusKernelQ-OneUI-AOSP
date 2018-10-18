@@ -106,7 +106,7 @@ static void update_mask_value(void __iomem *sfr,
 #define AUDIF_RATE_HZ			(24576000)
 #define CALLIOPE_ENABLE_TIMEOUT_MS	(1000)
 #define IPC_TIMEOUT_US			(10000)
-#define BOOT_DONE_TIMEOUT_MS		(10000)
+#define BOOT_DONE_TIMEOUT_MS		(4000)
 #define IPC_RETRY			(10)
 
 #define DMA_VOL_FACTOR_MAX_STEPS	(0xFFFFFF)

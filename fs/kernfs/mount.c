@@ -161,6 +161,9 @@ static int kernfs_fill_super(struct super_block *sb, unsigned long magic)
 	sb->s_xattr = kernfs_xattr_handlers;
 	sb->s_time_gran = 1;
 
+	/* sysfs dentries and inodes don't require IO to create */
+	sb->s_shrink.seeks = 0;
+
 	/* get root inode, initialize and unlock it */
 	mutex_lock(&kernfs_mutex);
 	inode = kernfs_get_inode(sb, info->root->kn);

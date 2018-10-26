@@ -925,7 +925,21 @@ int blk_register_queue(struct gendisk *disk)
 
 	kobject_uevent(&q->kobj, KOBJ_ADD);
 
-	blk_wb_init(q);
+	/*
+	 * There are two cases where wbt may have already been initialized:
+	 * 1. A call sequence of blk_register_queue(); blk_unregister_queue();
+	 *    blk_register_queue().
+	 * 2. Multiple gendisks sharing a request_queue.
+	 *
+	 * To fix case 1, we'd like to call wbt_exit() in
+	 * blk_unregister_queue(). However, that's unsafe for case 2. So, we're
+	 * forced to do this and call wbt_exit() in blk_release_queue() instead.
+	 *
+	 * Note that in case 2, wbt will account across disks until those legacy
+	 * drivers are fixed.
+	 */
+	if (!q->rq_wb)
+		blk_wb_init(q);
 
 	if (q->request_fn || (q->mq_ops && q->elevator)) {
 		ret = elv_register_queue(q);

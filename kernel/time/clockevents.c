@@ -40,10 +40,8 @@ static u64 cev_delta2ns(unsigned long latch, struct clock_event_device *evt,
 	u64 clc = (u64) latch << evt->shift;
 	u64 rnd;
 
-	if (unlikely(!evt->mult)) {
+	if (WARN_ON(!evt->mult))
 		evt->mult = 1;
-		WARN_ON(1);
-	}
 	rnd = (u64) evt->mult - 1;
 
 	/*
@@ -165,10 +163,8 @@ void clockevents_switch_state(struct clock_event_device *dev,
 		 * on it, so fix it up and emit a warning:
 		 */
 		if (clockevent_state_oneshot(dev)) {
-			if (unlikely(!dev->mult)) {
+			if (WARN_ON(!dev->mult))
 				dev->mult = 1;
-				WARN_ON(1);
-			}
 		}
 	}
 }
@@ -318,10 +314,8 @@ int clockevents_program_event(struct clock_event_device *dev, ktime_t expires,
 	int64_t delta;
 	int rc;
 
-	if (unlikely(expires < 0)) {
-		WARN_ON_ONCE(1);
+	if (WARN_ON_ONCE(expires < 0))
 		return -ETIME;
-	}
 
 	dev->next_event = expires;
 

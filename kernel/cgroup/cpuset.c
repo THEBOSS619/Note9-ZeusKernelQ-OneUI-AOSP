@@ -2598,6 +2598,7 @@ cpuset_css_alloc(struct cgroup_subsys_state *parent_css)
 
 free_requested:
 	free_cpumask_var(cs->cpus_requested);
+	return &cs->css;
 }
 
 static int cpuset_css_online(struct cgroup_subsys_state *css)

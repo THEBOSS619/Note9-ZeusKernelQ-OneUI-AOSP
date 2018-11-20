@@ -736,6 +736,9 @@ static int attempt_merge(struct request_queue *q, struct request *req,
 	if (!allow_merge_bio_for_encryption(req->bio, next->bio))
 		return 0;
 
+	if (req->ioprio != next->ioprio)
+		return 0;
+
 	/*
 	 * If we are allowed to merge, then append bio list
 	 * from next to rq and release next. merge_requests_fn
@@ -779,7 +782,6 @@ static int attempt_merge(struct request_queue *q, struct request *req,
 	 */
 	blk_account_io_merge(next);
 
-	req->ioprio = ioprio_best(req->ioprio, next->ioprio);
 	if (blk_rq_cpu_valid(next))
 		req->cpu = next->cpu;
 
@@ -855,6 +857,9 @@ bool blk_rq_merge_ok(struct request *rq, struct bio *bio)
 	    || (!(bio_flagged(bio, BIO_JOURNAL)) && (rq->cmd_flags & REQ_META)))
 		return false;
 #endif
+
+	if (rq->ioprio != bio_prio(bio))
+		return false;
 
 	return true;
 }

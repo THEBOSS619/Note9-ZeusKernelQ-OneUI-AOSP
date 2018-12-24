@@ -36,12 +36,6 @@
 
 #include "internal.h"
 
-#if 0
-static bool notests;
-module_param(notests, bool, 0644);
-MODULE_PARM_DESC(notests, "disable crypto self-tests");
-#endif
-
 #ifdef CONFIG_CRYPTO_MANAGER_DISABLE_TESTS
 
 /* a perfect nop */
@@ -61,6 +55,10 @@ EXPORT_SYMBOL_GPL(in_fips_err);
 #else
 
 #include "testmgr.h"
+
+static bool notests;
+module_param(notests, bool, 0644);
+MODULE_PARM_DESC(notests, "disable crypto self-tests");
 
 /*
  * Need slab memory for testing (size in number of pages).

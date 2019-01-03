@@ -392,7 +392,6 @@ static inline int ep_events_available(struct eventpoll *ep)
  *                  no re-entered.
  *
  * @ncalls: Pointer to the nested_calls structure to be used for this call.
- * @max_nests: Maximum number of allowed nesting calls.
  * @nproc: Nested call core function pointer.
  * @priv: Opaque data to be passed to the @nproc callback.
  * @cookie: Cookie to be used to identify this nested call.
@@ -401,9 +400,9 @@ static inline int ep_events_available(struct eventpoll *ep)
  * Returns: Returns the code returned by the @nproc callback, or -1 if
  *          the maximum recursion limit has been exceeded.
  */
-static int ep_call_nested(struct nested_calls *ncalls, int max_nests,
-						  int (*nproc)(void *, void *, int), void *priv,
-						  void *cookie, void *ctx)
+static int ep_call_nested(struct nested_calls *ncalls,
+			  int (*nproc)(void *, void *, int), void *priv,
+			  void *cookie, void *ctx)
 {
 	int error, call_nests = 0;
 	unsigned long flags;
@@ -421,8 +420,7 @@ static int ep_call_nested(struct nested_calls *ncalls, int max_nests,
 	list_for_each_entry(tncur, lsthead, llink)
 	{
 		if (tncur->ctx == ctx &&
-			(tncur->cookie == cookie || ++call_nests > max_nests))
-		{
+		    (tncur->cookie == cookie || ++call_nests > EP_MAX_NESTS)) {
 			/*
 			 * Ops ... loop detected or maximum nest level reached.
 			 * We abort this wake by breaking the cycle itself.
@@ -496,8 +494,8 @@ static void ep_poll_safewake(wait_queue_head_t *wq)
 {
 	int this_cpu = get_cpu();
 
-	ep_call_nested(&poll_safewake_ncalls, EP_MAX_NESTS,
-				   ep_poll_wakeup_proc, NULL, wq, (void *)(long)this_cpu);
+	ep_call_nested(&poll_safewake_ncalls,
+		       ep_poll_wakeup_proc, NULL, wq, (void *) (long) this_cpu);
 
 	put_cpu();
 }
@@ -1229,10 +1227,9 @@ static int reverse_path_check_proc(void *priv, void *cookie, int call_nests)
 			else
 			{
 				error = ep_call_nested(&poll_loop_ncalls,
-									   EP_MAX_NESTS,
-									   reverse_path_check_proc,
-									   child_file, child_file,
-									   current);
+							reverse_path_check_proc,
+							child_file, child_file,
+							current);
 			}
 			if (error != 0)
 				break;
@@ -1266,9 +1263,9 @@ static int reverse_path_check(void)
 	list_for_each_entry(current_file, &tfile_check_list, f_tfile_llink)
 	{
 		path_count_init();
-		error = ep_call_nested(&poll_loop_ncalls, EP_MAX_NESTS,
-							   reverse_path_check_proc, current_file,
-							   current_file, current);
+		error = ep_call_nested(&poll_loop_ncalls,
+					reverse_path_check_proc, current_file,
+					current_file, current);
 		if (error)
 			break;
 	}
@@ -1780,9 +1777,9 @@ static int ep_loop_check_proc(void *priv, void *cookie, int call_nests)
 			ep_tovisit = epi->ffd.file->private_data;
 			if (ep_tovisit->visited)
 				continue;
-			error = ep_call_nested(&poll_loop_ncalls, EP_MAX_NESTS,
-								   ep_loop_check_proc, epi->ffd.file,
-								   ep_tovisit, current);
+			error = ep_call_nested(&poll_loop_ncalls,
+					ep_loop_check_proc, epi->ffd.file,
+					ep_tovisit, current);
 			if (error != 0)
 				break;
 		}
@@ -1822,8 +1819,8 @@ static int ep_loop_check(struct eventpoll *ep, struct file *file)
 	int ret;
 	struct eventpoll *ep_cur, *ep_next;
 
-	ret = ep_call_nested(&poll_loop_ncalls, EP_MAX_NESTS,
-						 ep_loop_check_proc, file, ep, current);
+	ret = ep_call_nested(&poll_loop_ncalls,
+			      ep_loop_check_proc, file, ep, current);
 	/* clear visited list */
 	list_for_each_entry_safe(ep_cur, ep_next, &visited_list,
 							 visited_list_link)

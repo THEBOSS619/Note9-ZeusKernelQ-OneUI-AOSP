@@ -206,7 +206,7 @@ void panic(const char *fmt, ...)
 	ecd_printf("Kernel Panic - not syncing: %s\n", buf);
 	pr_auto(ASL5, "Kernel panic - not syncing: %s\n", buf);
 
-#if !defined(SEC_PRODUCT_SHIP) && defined(CONFIG_RELOCATABLE_KERNEL)
+#if !defined(SEC_PRODUCT_SHIP) && defined(CONFIG_RELOCATABLE)
 	{
 		u64 const kernel_offset = kimage_vaddr - KIMAGE_VADDR;
 		u64 kernel_addr = SZ_2G + SZ_512K + kernel_offset;

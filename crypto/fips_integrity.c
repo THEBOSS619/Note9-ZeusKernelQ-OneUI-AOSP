@@ -12,7 +12,7 @@
 
 /*
  * This function return kernel offset.
- * If CONFIG_RELOCATABLE_KERNEL is set
+ * If CONFIG_RELOCATABLE is set
  * Then the kernel will be placed into the random offset in memory
  * At the build time, we write self address of the "crypto_buildtime_address"
  * to the "crypto_buildtime_address" variable

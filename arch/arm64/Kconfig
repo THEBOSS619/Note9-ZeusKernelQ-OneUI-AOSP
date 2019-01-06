@@ -1132,15 +1132,9 @@ config ARM64_MODULE_PLTS
 	select ARM64_MODULE_CMODEL_LARGE
 	select HAVE_MOD_ARCH_SPECIFIC
 
-config RELOCATABLE_KERNEL
+config RELOCATABLE
 	bool "set kernel to relocatable in both virtual and physical address"
 	default n
-	help
-	  This configuare will allow you to config the kernel into position
-	  independent kernel, with '--PIE' insert into LD script.
-
-config RELOCATABLE
-	bool
 	help
 	  This builds the kernel as a Position Independent Executable (PIE),
 	  which retains all relocation metadata required to relocate the

@@ -11023,6 +11023,10 @@ static void nohz_balancer_kick(bool only_update)
 	return;
 }
 
+/*
+ * Current decision point for kicking the idle load balancer in the presence
+ * of idle CPUs in the system.
+ */
 void nohz_balance_exit_idle(unsigned int cpu)
 {
 	if (unlikely(test_bit(NOHZ_TICK_STOPPED, nohz_flags(cpu)))) {

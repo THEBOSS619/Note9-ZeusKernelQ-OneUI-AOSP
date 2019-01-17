@@ -11027,7 +11027,13 @@ void nohz_balance_exit_idle(unsigned int cpu)
 {
 	if (unlikely(test_bit(NOHZ_TICK_STOPPED, nohz_flags(cpu)))) {
 		/*
-		 * Completely isolated CPUs don't ever set, so we must test.
+		 * If there is an imbalance between LLC domains (IOW we could
+		 * increase the overall cache use), we need some less-loaded LLC
+		 * domain to pull some load. Likewise, we may need to spread
+		 * load within the current LLC domain (e.g. packed SMT cores but
+		 * other CPUs are idle). We can't really know from here how busy
+		 * the others are - so just get a nohz balance going if it looks
+		 * like this LLC domain has tasks we could move.
 		 */
 		if (likely(cpumask_test_cpu(cpu, nohz.idle_cpus_mask))) {
 			cpumask_clear_cpu(cpu, nohz.idle_cpus_mask);

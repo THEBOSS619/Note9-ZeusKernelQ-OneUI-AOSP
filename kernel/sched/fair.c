@@ -11424,7 +11424,7 @@ static inline bool nohz_kick_needed(struct rq *rq, bool only_update)
 	sd = rcu_dereference(rq->sd);
 	if (sd) {
 		if ((rq->cfs.h_nr_running >= 1) &&
-				check_cpu_capacity(rq, sd)) {
+		    check_cpu_capacity(rq, sd)) {
 			kick = true;
 			goto unlock;
 		}
@@ -11432,11 +11432,7 @@ static inline bool nohz_kick_needed(struct rq *rq, bool only_update)
 
 	sd = rcu_dereference(per_cpu(sd_asym_packing, cpu));
 	if (sd) {
-		for_each_cpu(i, sched_domain_span(sd)) {
-			if (i == cpu ||
-			    !cpumask_test_cpu(i, nohz.idle_cpus_mask))
-				continue;
-
+		for_each_cpu_and(i, sched_domain_span(sd), nohz.idle_cpus_mask) {
 			if (sched_asym_prefer(i, cpu)) {
 				kick = true;
 				goto unlock;

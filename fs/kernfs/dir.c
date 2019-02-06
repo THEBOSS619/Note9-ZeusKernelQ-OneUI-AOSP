@@ -521,8 +521,8 @@ void kernfs_put(struct kernfs_node *kn)
 			security_release_secctx(kn->iattr->ia_secdata,
 						kn->iattr->ia_secdata_len);
 		simple_xattrs_free(&kn->iattr->xattrs);
+		kmem_cache_free(kernfs_iattrs_cache, kn->iattr);
 	}
-	kfree(kn->iattr);
 	ida_simple_remove(&root->ino_ida, kn->ino);
 	kmem_cache_free(kernfs_node_cache, kn);
 

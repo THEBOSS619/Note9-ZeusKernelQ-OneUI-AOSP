@@ -2239,13 +2239,11 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	if (cc->hw_fmp) {
 		cc->io_queue = alloc_workqueue("kcryptd_fmp_io",
 					       WQ_HIGHPRI |
+					       WQ_CPU_INTENSIVE |
 					       WQ_MEM_RECLAIM,
 					       1);
 	} else {
-		cc->io_queue = alloc_workqueue("kcryptd_io",
-					       WQ_HIGHPRI |
-					       WQ_MEM_RECLAIM,
-					       1);
+		cc->io_queue = alloc_workqueue("kcryptd_io", WQ_HIGHPRI | WQ_CPU_INTENSIVE | WQ_MEM_RECLAIM, 1);
 	}
 
 	if (!cc->io_queue) {
@@ -2257,11 +2255,13 @@ static int crypt_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		if (test_bit(DM_CRYPT_SAME_CPU, &cc->flags))
 			cc->crypt_queue = alloc_workqueue("kcryptd",
 							  WQ_HIGHPRI |
+							  WQ_CPU_INTENSIVE |
 							  WQ_MEM_RECLAIM,  num_possible_cpus() * 2);
 		else
 			cc->crypt_queue = alloc_workqueue("kcryptd",
 							  WQ_HIGHPRI |
 							  WQ_MEM_RECLAIM |
+							  WQ_CPU_INTENSIVE |
 							  WQ_UNBOUND,
 							   num_possible_cpus() * 2);
 		if (!cc->crypt_queue) {

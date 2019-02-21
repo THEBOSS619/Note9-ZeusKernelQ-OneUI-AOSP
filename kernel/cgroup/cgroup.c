@@ -2661,11 +2661,6 @@ void cgroup_procs_write_finish(struct task_struct *task)
 	struct cgroup_subsys *ss;
 	int ssid;
 
-	/* This covers boosting for app launches and app transitions */
-	if (!ret && !threadgroup && !strcmp(of->kn->parent->name, "top-app") &&
-	    task_is_zygote(tsk->parent))
-		cpu_input_boost_kick_max(1000);
-
 	/* release reference from cgroup_procs_write_start() */
 	put_task_struct(task);
 
@@ -4439,6 +4434,11 @@ static ssize_t cgroup_procs_write(struct kernfs_open_file *of,
 		goto out_finish;
 
 	ret = cgroup_attach_task(dst_cgrp, task, true);
+
+	/* This covers boosting for app launches and app transitions */
+	if (!ret && !strcmp(of->kn->parent->name, "top-app") &&
+	    task_is_zygote(task->parent))
+		cpu_input_boost_kick_max(500);
 
 out_finish:
 	cgroup_procs_write_finish(task);

@@ -66,6 +66,8 @@ bool __refrigerator(bool check_kthr_stop)
 	bool was_frozen = false;
 	long save = current->state;
 
+	might_sleep();
+
 	pr_debug("%s entered refrigerator\n", current->comm);
 
 	for (;;) {

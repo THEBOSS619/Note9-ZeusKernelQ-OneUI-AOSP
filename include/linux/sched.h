@@ -128,6 +128,7 @@ struct sched_attr {
 };
 
 struct futex_pi_state;
+struct capture_control;
 struct robust_list_head;
 struct bio_list;
 struct fs_struct;
@@ -2062,6 +2063,9 @@ struct task_struct {
 
 	struct io_context *io_context;
 
+#ifdef CONFIG_COMPACTION
+	struct capture_control		*capture_control;
+#endif
 	unsigned long ptrace_message;
 	siginfo_t *last_siginfo; /* For ptrace use.  */
 	struct task_io_accounting ioac;

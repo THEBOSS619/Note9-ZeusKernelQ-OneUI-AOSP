@@ -200,7 +200,9 @@ extern int cpuidle_find_deepest_state(struct cpuidle_driver *drv,
 				      struct cpuidle_device *dev);
 extern int cpuidle_enter_freeze(struct cpuidle_driver *drv,
 				struct cpuidle_device *dev);
-extern void cpuidle_use_deepest_state(bool enable);				
+extern void cpuidle_use_deepest_state(bool enable);
+extern int cpuidle_use_deepest_state_mask(const struct cpumask *target,
+					  bool enable);
 #else
 static inline int cpuidle_find_deepest_state(struct cpuidle_driver *drv,
 					     struct cpuidle_device *dev)
@@ -210,6 +212,11 @@ static inline int cpuidle_enter_freeze(struct cpuidle_driver *drv,
 {return -ENODEV; }
 static inline void cpuidle_use_deepest_state(bool enable)
 {
+}
+static inline int cpuidle_use_deepest_state_mask(const struct cpumask *target,
+						 bool enable)
+{
+	return -ENODEV;
 }
 #endif
 

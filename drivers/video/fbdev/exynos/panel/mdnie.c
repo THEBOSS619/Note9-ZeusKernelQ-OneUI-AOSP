@@ -1253,7 +1253,7 @@ static ssize_t rgb_store(struct device *dev,
 	 dev_info(dev, "%s, white_r %d, white_g %d, white_b %d\n",
 			 __func__, white_red, white_green, white_blue);
 
-	stop_samsung = !(white_red == 255 && white_green == 255 && white_blue == 255);
+	stop_samsung = !(white_red == 245 && white_green == 242 && white_blue == 248);
 
 	mutex_lock(&mdnie->lock);
 	mdnie->props.ssr_wrgb[0] = white_red;

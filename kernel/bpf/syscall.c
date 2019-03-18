@@ -54,20 +54,26 @@ void bpf_register_map_type(struct bpf_map_type_list *tl)
 
 void *bpf_map_area_alloc(size_t size)
 {
-	/* We definitely need __GFP_NORETRY, so OOM killer doesn't
-	 * trigger under memory pressure as we really just want to
-	 * fail instead.
+	/* We really just want to fail instead of triggering OOM killer
+	 * under memory pressure, therefore we set __GFP_NORETRY to kmalloc,
+	 * which is used for lower order allocation requests.
+	 *
+	 * It has been observed that higher order allocation requests done by
+	 * vmalloc with __GFP_NORETRY being set might fail due to not trying
+	 * to reclaim memory from the page cache, thus we set
+	 * __GFP_RETRY_MAYFAIL to avoid such situations.
 	 */
-	const gfp_t flags = __GFP_NOWARN | __GFP_NORETRY | __GFP_ZERO;
+
+	const gfp_t flags = __GFP_NOWARN | __GFP_ZERO;
 	void *area;
 
 	if (size <= (PAGE_SIZE << PAGE_ALLOC_COSTLY_ORDER)) {
-		area = kmalloc(size, GFP_USER | flags);
+		area = kmalloc(size, GFP_USER | __GFP_NORETRY | flags);
 		if (area != NULL)
 			return area;
 	}
 
-	return __vmalloc(size, GFP_KERNEL | flags, PAGE_KERNEL);
+	return __vmalloc(size, GFP_KERNEL | __GFP_RETRY_MAYFAIL | flags, PAGE_KERNEL);
 }
 
 void bpf_map_area_free(void *area)

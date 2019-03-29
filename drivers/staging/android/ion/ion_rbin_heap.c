@@ -225,7 +225,7 @@ static int ion_rbin_heap_allocate(struct ion_heap *heap,
 		return -ENOMEM;
 	}
 
-	trace_printk("start. len %lu\n", size);
+	printk("start. len %lu\n", size);
 	trace_ion_rbin_alloc_start(heap->name, buffer, size, NULL);
 
 	INIT_LIST_HEAD(&pages);
@@ -264,7 +264,7 @@ static int ion_rbin_heap_allocate(struct ion_heap *heap,
 
 	buffer->priv_virt = table;
 	buffer->sg_table = table;
-	trace_printk("end success %9lu %9lu\n",
+	printk("end success %9lu %9lu\n",
 		     from_pool_size, size - from_pool_size);
 	trace_ion_rbin_alloc_end(heap->name, buffer, size, NULL);
 	return 0;
@@ -276,7 +276,7 @@ free_pages:
 		free_rbin_page(rbin_heap, buffer, page);
 
 	atomic_sub(size >> PAGE_SHIFT, &rbin_allocated_pages);
-	trace_printk("end fail %ld %ld %lu\n", nr_total, nr_alloc, size);
+	printk("end fail %ld %ld %lu\n", nr_total, nr_alloc, size);
 	trace_ion_rbin_alloc_end(heap->name, buffer, size, (void *)-1UL);
 	return -ENOMEM;
 }
@@ -375,7 +375,7 @@ static int ion_rbin_heap_prereclaim(void *data)
 		wait_event_freezable(heap->waitqueue,
 				     heap->prereclaim_run);
 
-		trace_printk("start\n");
+		printk("start\n");
 		reclaim_contig_migrate_range(heap->base_pfn,
 				heap->base_pfn + heap->count, 0);
 		totalsize = 0;
@@ -391,7 +391,7 @@ static int ion_rbin_heap_prereclaim(void *data)
 			ion_page_pool_free(pool, page);
 			atomic_add(1 << order, &rbin_pool_pages);
 		}
-		trace_printk("end %lu\n", totalsize);
+		printk("end %lu\n", totalsize);
 		heap->prereclaim_run = 0;
 	}
 
@@ -442,7 +442,7 @@ static int ion_rbin_heap_shrink_all(void *data)
 		wait_event_freezable(heap->waitqueue,
 				     heap->shrink_run);
 
-		trace_printk("start\n");
+		printk("start\n");
 		total_freed = 0;
 		for (i = 0; i < NUM_ORDERS; i++) {
 			pool = heap->pools[i];
@@ -455,7 +455,7 @@ static int ion_rbin_heap_shrink_all(void *data)
 			}
 		}
 		heap->shrink_run = 0;
-		trace_printk("%lu\n", total_freed);
+		printk("%lu\n", total_freed);
 	}
 
 	return 0;

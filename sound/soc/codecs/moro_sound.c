@@ -435,8 +435,11 @@ static ssize_t moro_sound_store(struct device *dev, struct device_attribute *att
 				first = 0;
 			}
 
-			if(val == 1) update_audio_hub();
-			if(val == 0) reset_audio_hub();
+			if(val == 1) {
+				update_audio_hub();
+			} else {
+				reset_audio_hub();
+			}
 		}
 
 		// print debug info

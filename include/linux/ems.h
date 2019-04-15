@@ -198,7 +198,7 @@ extern unsigned int frt_disable_cpufreq;
  *    implementation especially for the computation of the per-CPU boost
  *    value
  */
-#define BOOSTGROUPS_COUNT 5
+#define BOOSTGROUPS_COUNT 6
 
 /* SchedTune boost groups
  * Keep track of all the boost groups which impact on CPU, for example when a

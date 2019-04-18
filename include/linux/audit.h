@@ -169,6 +169,10 @@ extern int audit_list_rules_send(struct sk_buff *request_skb, int seq);
 
 extern u32 audit_enabled;
 #else /* CONFIG_AUDIT */
+static inline int audit_update_lsm_rules(void)
+{
+	return 0;
+}
 static inline __printf(4, 5)
 void audit_log(struct audit_context *ctx, gfp_t gfp_mask, int type,
 	       const char *fmt, ...)

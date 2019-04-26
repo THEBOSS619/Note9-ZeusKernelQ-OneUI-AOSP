@@ -730,15 +730,10 @@ struct ion_handle *__ion_alloc(struct ion_client *client, size_t len,
 	}
 	up_read(&dev->lock);
 
-	if (buffer == NULL) {
-		trace_ion_alloc_fail(client->name, ENODEV, len,
-				align, heap_id_mask, flags);
+	if (buffer == NULL)
 		return ERR_PTR(-ENODEV);
-	}
 
 	if (IS_ERR(buffer)) {
-		trace_ion_alloc_fail(client->name, PTR_ERR(buffer),
-					len, align, heap_id_mask, flags);
 		return ERR_CAST(buffer);
 	}
 

@@ -1192,6 +1192,16 @@ config SCHED_EMS
 	  and prefer_perf and enhanced prefer_idle that work in conjunction with
 	  SCHEDTUNE.
 
+config STUNE_ASSIST
+	bool "SchedTune configuration helper"
+	depends on CGROUP_SCHEDTUNE
+	depends on ANDROID
+	help
+	  This option enables the configuration of default SchedTune
+	  parameters from kernel.
+
+	  Say N if unsure.
+
 config DYNAMIC_STUNE_BOOST
 	bool "Dynamic SchedTune boosting support"
 	depends on SCHED_TUNE

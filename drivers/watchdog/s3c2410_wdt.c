@@ -1280,10 +1280,8 @@ static int s3c2410wdt_probe(struct platform_device *pdev)
 
 	if (cluster_index == LITTLE_CLUSTER) {
 		ret = watchdog_register_device(&wdt->wdt_device);
-		if (ret) {
-			dev_err(dev, "cannot register watchdog (%d)\n", ret);
+		if (ret)
 			goto err_cpufreq;
-		}
 	}
 
 	ret = s3c2410wdt_automatic_disable_wdt(wdt, false);

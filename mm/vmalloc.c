@@ -3019,7 +3019,7 @@ int remap_vmalloc_range_partial(struct vm_area_struct *vma, unsigned long uaddr,
 	if (!area)
 		return -EINVAL;
 
-	if (!(area->flags & VM_USERMAP))
+	if (!(area->flags & (VM_USERMAP | VM_DMA_COHERENT)))
 		return -EINVAL;
 
 	if (check_add_overflow(size, off, &end_index) ||
@@ -3572,6 +3572,9 @@ static int s_show(struct seq_file *m, void *p)
 
 	if (v->flags & VM_USERMAP)
 		seq_puts(m, " user");
+
+	if (v->flags & VM_DMA_COHERENT)
+		seq_puts(m, " dma-coherent");
 
 	if (is_vmalloc_addr(v->pages))
 		seq_puts(m, " vpages");

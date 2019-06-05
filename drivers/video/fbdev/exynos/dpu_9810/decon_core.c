@@ -2634,6 +2634,7 @@ static int decon_set_win_config(struct decon_device *decon,
 #endif
 	num_of_window = decon_get_active_win_count(decon, win_data);
 	if (num_of_window) {
+		devfreq_boost_kick(DEVFREQ_EXYNOS_MIF);
 		win_data->retire_fence = decon_create_fence(decon, &sync_file);
 		if (win_data->retire_fence < 0)
 			goto err_prepare;

@@ -457,8 +457,12 @@ find_va_links(struct vmap_area *va,
 		else if (va->va_end > tmp_va->va_start &&
 				va->va_start >= tmp_va->va_end)
 			link = &(*link)->rb_right;
-		else
-			BUG();
+		else {
+			WARN(1, "vmalloc bug: 0x%lx-0x%lx overlaps with 0x%lx-0x%lx\n",
+				va->va_start, va->va_end, tmp_va->va_start, tmp_va->va_end);
+
+			return NULL;
+		}
 	} while (*link);
 
 	*parent = &tmp_va->rb_node;
@@ -685,7 +689,8 @@ insert_vmap_area(struct vmap_area *va,
 	struct rb_node *parent;
 
 	link = find_va_links(va, root, NULL, &parent);
-	link_va(va, root, parent, link, head);
+	if (link)
+		link_va(va, root, parent, link, head);
 }
 
 static void
@@ -701,8 +706,10 @@ insert_vmap_area_augment(struct vmap_area *va,
 	else
 		link = find_va_links(va, root, NULL, &parent);
 
-	link_va(va, root, parent, link, head);
-	augment_tree_propagate_from(va);
+	if (link) {
+		link_va(va, root, parent, link, head);
+		augment_tree_propagate_from(va);
+	}
 }
 
 /*
@@ -726,6 +733,8 @@ merge_or_add_vmap_area(struct vmap_area *va,
 	 * inserted, unless it is merged with its sibling/siblings.
 	 */
 	link = find_va_links(va, root, NULL, &parent);
+	if (!link)
+		return;
 
 	/*
 	 * Get next node of VA to check if merging can be done.
@@ -1333,6 +1342,9 @@ static bool __purge_vmap_area_lazy(unsigned long start, unsigned long end)
 		 */
 		merge_or_add_vmap_area(va,
 			&free_vmap_area_root, &free_vmap_area_list);
+
+		if (!va)
+			continue;
 
 		atomic_long_sub(nr, &vmap_lazy_nr);
 

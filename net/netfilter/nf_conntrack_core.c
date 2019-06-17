@@ -57,10 +57,6 @@
 #include <net/netfilter/nf_nat_helper.h>
 #include <net/netns/hash.h>
 
-// KNOX NPA - START
-#include <net/ncm.h>
-// KNOX NPA - END
-
 #define NF_CONNTRACK_VERSION	"0.5.0"
 
 int (*nfnetlink_parse_nat_setup_hook)(struct nf_conn *ct,
@@ -1099,9 +1095,6 @@ __nf_conntrack_alloc(struct net *net,
 		     gfp_t gfp, u32 hash)
 {
 	struct nf_conn *ct;
-	// KNOX NPA - START
-	struct timespec open_timespec;
-	// KNOX NPA - END
 
 	/* We don't want any race condition at early drop stage */
 	atomic_inc(&net->ct.count);
@@ -1124,30 +1117,6 @@ __nf_conntrack_alloc(struct net *net,
 		goto out;
 
 	spin_lock_init(&ct->lock);
-
-	// KNOX NPA - START
-	/* initialize the conntrack structure members when memory is allocated */
-	if (ct != NULL) {
-		open_timespec = current_kernel_time();
-		ct->open_time = open_timespec.tv_sec;
-		ct->knox_uid = 0;
-		ct->knox_pid = 0;
-		memset(ct->process_name,'\0',sizeof(ct->process_name));
-		memset(ct->domain_name,'\0',sizeof(ct->domain_name));
-		ct->knox_puid = 0;
-		ct->knox_ppid = 0;
-		memset(ct->parent_process_name,'\0',sizeof(ct->parent_process_name));
-		ct->knox_sent = 0;
-		ct->knox_recv = 0;
-		memset(ct->interface_name,'\0',sizeof(ct->interface_name));
-		atomic_set(&ct->startFlow, 0);
-		/* Use 'ct->npa_timeout = 0' if struct nf_conn->timeout is of type u32;
-		   Use 'setup_timer(&ct->npa_timeout, death_by_timeout_npa, (unsigned long)ct)' if struct nf_conn->timeout is of type struct timer_list; */
-		ct->npa_timeout = 0;
-		atomic_set(&ct->intermediateFlow, 0);
-	}
-	// KNOX NPA - END
-
 	ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple = *orig;
 	ct->tuplehash[IP_CT_DIR_ORIGINAL].hnnode.pprev = NULL;
 	ct->tuplehash[IP_CT_DIR_REPLY].tuple = *repl;

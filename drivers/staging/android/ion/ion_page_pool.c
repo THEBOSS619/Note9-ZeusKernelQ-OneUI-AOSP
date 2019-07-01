@@ -29,6 +29,9 @@ static void *ion_page_pool_alloc_pages(struct ion_page_pool *pool, bool zeroed)
 {
 	gfp_t gfp_mask = pool->gfp_mask;
 
+	if (fatal_signal_pending(current))
+		return NULL;
+
 	if (!zeroed)
 		gfp_mask &= ~__GFP_ZERO;
 

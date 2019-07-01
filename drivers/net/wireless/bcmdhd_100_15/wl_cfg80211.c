@@ -1283,7 +1283,7 @@ static void wl_add_remove_pm_enable_work(struct bcm_cfg80211 *cfg,
 
 	/* It should schedule work item only if driver is up */
 	if (wq_duration && dhd->up) {
-		if (schedule_delayed_work(&cfg->pm_enable_work,
+		if (queue_delayed_work(system_power_efficient_wq, &cfg->pm_enable_work,
 				msecs_to_jiffies((const unsigned int)wq_duration))) {
 			DHD_PM_WAKE_LOCK_TIMEOUT(cfg->pub, wq_duration);
 		} else {

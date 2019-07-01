@@ -4249,7 +4249,7 @@ static void hci_cmd_work(struct work_struct *work)
 			if (test_bit(HCI_RESET, &hdev->flags))
 				cancel_delayed_work(&hdev->cmd_timer);
 			else
-				schedule_delayed_work(&hdev->cmd_timer,
+				queue_delayed_work(system_power_efficient_wq, &hdev->cmd_timer,
 						      HCI_CMD_TIMEOUT);
 		} else {
 			skb_queue_head(&hdev->cmd_q, skb);

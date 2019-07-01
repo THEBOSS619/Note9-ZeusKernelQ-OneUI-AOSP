@@ -116,7 +116,7 @@
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 36)
 	#define skb_tx_timestamp(skb)
 
-	#define queue_delayed_work(long_wq, work, delay)	schedule_delayed_work(work, delay)
+	#define queue_delayed_work(long_wq, work, delay)	queue_delayed_work(system_power_efficient_wq, work, delay)
 
 	static inline void usleep_range(unsigned long min, unsigned long max)
 	{

@@ -670,7 +670,7 @@ static void kobject_release(struct kref *kref)
 		 kobject_name(kobj), kobj, __func__, kobj->parent, delay);
 	INIT_DELAYED_WORK(&kobj->release, kobject_delayed_cleanup);
 
-	schedule_delayed_work(&kobj->release, delay);
+	queue_delayed_work(system_power_efficient_wq, &kobj->release, delay);
 #else
 	kobject_cleanup(kobj);
 #endif

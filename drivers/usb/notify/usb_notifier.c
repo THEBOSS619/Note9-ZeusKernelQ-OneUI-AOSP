@@ -308,7 +308,7 @@ static void usb_regulator_onoff(void *data, unsigned int onoff)
 		} else {
 			if (pdata->usb_ldo_onoff) {
 				pdata->usb_ldo_off_working = true;
-				schedule_delayed_work(&pdata->usb_ldo_work, msecs_to_jiffies(2000));
+				queue_delayed_work(system_power_efficient_wq, &pdata->usb_ldo_work, msecs_to_jiffies(2000));
 			} else {
 				pr_err("%s already off\n", __func__);
 			}

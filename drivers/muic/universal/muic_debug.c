@@ -109,5 +109,5 @@ void muic_show_debug_info(struct work_struct *work)
 	muic_print_reg_dump(pmuic);
 	mutex_unlock(&pmuic->muic_mutex);
 
-	schedule_delayed_work(&pmuic->usb_work, msecs_to_jiffies(60000));
+	queue_delayed_work(system_power_efficient_wq, &pmuic->usb_work, msecs_to_jiffies(60000));
 }

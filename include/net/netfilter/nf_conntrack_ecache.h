@@ -150,7 +150,7 @@ void nf_conntrack_ecache_fini(void);
 static inline void nf_conntrack_ecache_delayed_work(struct net *net)
 {
 	if (!delayed_work_pending(&net->ct.ecache_dwork)) {
-		schedule_delayed_work(&net->ct.ecache_dwork, HZ);
+		queue_delayed_work(system_power_efficient_wq, &net->ct.ecache_dwork, HZ);
 		net->ct.ecache_dwork_pending = true;
 	}
 }

@@ -522,7 +522,7 @@ static int muic_probe(struct platform_device *pdev)
 
 #ifdef DEBUG_MUIC
 	INIT_DELAYED_WORK(&pmuic->usb_work, muic_show_debug_info);
-	schedule_delayed_work(&pmuic->usb_work, msecs_to_jiffies(10000));
+	queue_delayed_work(system_power_efficient_wq, &pmuic->usb_work, msecs_to_jiffies(10000));
 #endif
 
 
@@ -661,7 +661,7 @@ static int muic_resume(struct device *dev)
 
 	pr_info("%s:%s\n", MUIC_DEV_NAME, __func__);
 
-	schedule_delayed_work(&pmuic->usb_work, msecs_to_jiffies(1000));
+	queue_delayed_work(system_power_efficient_wq, &pmuic->usb_work, msecs_to_jiffies(1000));
 
 	if (device_may_wakeup(dev))
 		disable_irq_wake(pmuic->i2c->irq);

@@ -1117,7 +1117,7 @@ static void max77854_hv_muic_after_qc_prepare(struct hv_data *phv)
 	pr_info("%s:%s\n", MUIC_HV_DEV_NAME, __func__);
 	phv->is_qc_vb_settle = false;
 
-	schedule_delayed_work(&phv->hv_muic_qc_vb_work, msecs_to_jiffies(300));
+	queue_delayed_work(system_power_efficient_wq, &phv->hv_muic_qc_vb_work, msecs_to_jiffies(300));
 }
 
 static void max77854_hv_muic_adcmode_switch
@@ -1192,7 +1192,7 @@ static int max77854_hv_muic_handle_attach
 		phv->is_afc_handshaking = false;
 		/* HW Issue(MPing miss)
 		 * check HV state values after 2000ms(2s) */
-		schedule_delayed_work(&phv->hv_muic_mping_miss_wa,
+		queue_delayed_work(system_power_efficient_wq, &phv->hv_muic_mping_miss_wa,
 				msecs_to_jiffies(MPING_MISS_WA_TIME));
 		break;
 	case FUNC_PREPARE_TO_PREPARE_DUPLI:

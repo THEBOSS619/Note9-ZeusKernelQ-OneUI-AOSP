@@ -918,7 +918,7 @@ static void otg_notify_state(struct otg_notify *n,
 				if (prev_c_type != NOTIFY_EVENT_HOST)
 					u_notify->is_device = 0;
 				u_notify->check_work_complete = 0;
-				schedule_delayed_work(&u_notify->check_work,
+				queue_delayed_work(system_power_efficient_wq, &u_notify->check_work,
 					n->device_check_sec*HZ);
 				pr_info("%s check work start\n", __func__);
 			}
@@ -1828,7 +1828,7 @@ int set_otg_notify(struct otg_notify *n)
 	if (n->booting_delay_sec) {
 		INIT_DELAYED_WORK(&u_notify->b_delay.booting_work,
 				  reserve_state_check);
-		schedule_delayed_work(&u_notify->b_delay.booting_work,
+		queue_delayed_work(system_power_efficient_wq, &u_notify->b_delay.booting_work,
 				n->booting_delay_sec*HZ);
 	}
 

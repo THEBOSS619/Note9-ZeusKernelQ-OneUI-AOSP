@@ -5739,7 +5739,7 @@ wl_cfgvendor_nan_stop_handler(struct wiphy *wiphy,
 		} else {
 			delay_ms = 0;
 		}
-		schedule_delayed_work(&cfg->nan_disable,
+		queue_delayed_work(system_power_efficient_wq, &cfg->nan_disable,
 			msecs_to_jiffies(delay_ms));
 	}
 exit:

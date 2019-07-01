@@ -36,7 +36,7 @@ static void sec_nad_param_update(struct work_struct *work)
 		/* Rerun workqueue when nad_refer read fail */
 		if (param_data->retry_cnt > param_data->curr_cnt) {
 			NAD_PRINT("retry count : %d\n", param_data->curr_cnt++);
-			schedule_delayed_work(&sec_nad_param_data.sec_nad_delay_work, HZ * 1);
+			queue_delayed_work(system_power_efficient_wq, &sec_nad_param_data.sec_nad_delay_work, HZ * 1);
 		}
 		return;
 	}
@@ -1333,9 +1333,9 @@ static int __init sec_nad_init(void)
 	INIT_DELAYED_WORK(&sec_nad_param_data.sec_nad_delay_work, sec_nad_init_update);
 
 #if defined(CONFIG_SEC_NAD_MANUAL_PARAM_READTIME)
-	schedule_delayed_work(&sec_nad_param_data.sec_nad_delay_work, HZ * CONFIG_SEC_NAD_MANUAL_PARAM_READTIME);
+	queue_delayed_work(system_power_efficient_wq, &sec_nad_param_data.sec_nad_delay_work, HZ * CONFIG_SEC_NAD_MANUAL_PARAM_READTIME);
 #else
-	schedule_delayed_work(&sec_nad_param_data.sec_nad_delay_work, HZ * 10);
+	queue_delayed_work(system_power_efficient_wq, &sec_nad_param_data.sec_nad_delay_work, HZ * 10);
 #endif
 
 	return 0;

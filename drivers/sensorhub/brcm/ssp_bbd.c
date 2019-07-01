@@ -201,7 +201,7 @@ int bbd_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
 
 		pr_err("[SSPBBD] %s(): queue work to sensorhub reset(%lld, %lld)\n",
 				__func__, data->resumeTimestamp, current_timestamp);
-		schedule_delayed_work(&data->work_ssp_reset, msecs_to_jiffies(100));
+		queue_delayed_work(system_power_efficient_wq, &data->work_ssp_reset, msecs_to_jiffies(100));
 	}
 
 	return status;

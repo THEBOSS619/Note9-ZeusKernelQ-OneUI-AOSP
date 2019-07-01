@@ -1446,7 +1446,7 @@ handle_attach:
 		/* Maxim's request, wait 500ms for checking HVDCP */
 		pr_info("%s afc work after 500ms\n", __func__);
 		cancel_delayed_work_sync(&(muic_data->afc_work));
-		schedule_delayed_work(&(muic_data->afc_work), msecs_to_jiffies(500));
+		queue_delayed_work(system_power_efficient_wq, &(muic_data->afc_work), msecs_to_jiffies(500));
 	}
 #endif /* CONFIG_HV_MUIC_MAX77705_AFC */
 
@@ -1804,7 +1804,7 @@ static void max77705_muic_detect_dev(struct max77705_muic_data *muic_data,
 		cancel_delayed_work(&(muic_data->vbus_wa_work));
 		if (vbvolt > 0) {
 			wake_lock_timeout(&muic_data->muic_wake_lock, 2100);
-			schedule_delayed_work(&(muic_data->vbus_wa_work), msecs_to_jiffies(2000));
+			queue_delayed_work(system_power_efficient_wq, &(muic_data->vbus_wa_work), msecs_to_jiffies(2000));
 		}
 	} else if (irq == muic_data->irq_chgtyp && chgtyp > 0) {
 		wake_unlock(&muic_data->muic_wake_lock);
@@ -1983,7 +1983,7 @@ static int max77705_muic_hv_charger_init(void)
 	if (max77705_muic_check_is_enable_afc(muic_data, muic_data->attached_dev)) {
 		pr_info("%s afc work start\n", __func__);
 		cancel_delayed_work_sync(&(muic_data->afc_work));
-		schedule_delayed_work(&(muic_data->afc_work), msecs_to_jiffies(0));
+		queue_delayed_work(system_power_efficient_wq, &(muic_data->afc_work), msecs_to_jiffies(0));
 	}
 
 	return 0;
@@ -2090,7 +2090,7 @@ static void max77705_muic_print_reg_log(struct work_struct *work)
 		__func__, status[7], status[8], status[9], status[10], status[11],
 		muic_data->usbc_pdata->watchdog_count, muic_data->usbc_pdata->por_count);
 
-	schedule_delayed_work(&(muic_data->debug_work),
+	queue_delayed_work(system_power_efficient_wq, &(muic_data->debug_work),
 		msecs_to_jiffies(60000));
 }
 
@@ -2477,7 +2477,7 @@ int max77705_muic_probe(struct max77705_usbc_platform_data *usbc_data)
 
 	INIT_DELAYED_WORK(&(muic_data->debug_work),
 		max77705_muic_print_reg_log);
-	schedule_delayed_work(&(muic_data->debug_work),
+	queue_delayed_work(system_power_efficient_wq, &(muic_data->debug_work),
 		msecs_to_jiffies(10000));
 
 	return 0;
@@ -2589,7 +2589,7 @@ int max77705_muic_resume(struct max77705_usbc_platform_data *usbc_data)
 	struct max77705_muic_data *muic_data = usbc_data->muic_data;
 
 	pr_info("%s\n", __func__);
-	schedule_delayed_work(&(muic_data->debug_work), msecs_to_jiffies(1000));
+	queue_delayed_work(system_power_efficient_wq, &(muic_data->debug_work), msecs_to_jiffies(1000));
 
 	return 0;
 }

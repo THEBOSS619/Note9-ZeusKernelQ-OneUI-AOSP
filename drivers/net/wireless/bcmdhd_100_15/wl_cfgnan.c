@@ -7567,7 +7567,7 @@ wl_cfgnan_reset_geofence_ranging(struct bcm_cfg80211 *cfg,
 		WL_DBG(("Retry over a timer, cur_idx = %d\n",
 			rtt_status->geofence_cfg.cur_target_idx));
 		/* schedule proxd retry timer */
-		schedule_delayed_work(&rtt_status->rtt_retry_timer,
+		queue_delayed_work(system_power_efficient_wq, &rtt_status->rtt_retry_timer,
 			msecs_to_jiffies(rtt_status->geofence_cfg.geofence_rtt_interval));
 		goto exit;
 

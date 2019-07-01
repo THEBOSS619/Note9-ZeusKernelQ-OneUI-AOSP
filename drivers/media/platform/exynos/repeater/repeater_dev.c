@@ -347,9 +347,9 @@ void encoding_work_handler(struct work_struct *work)
 
 	if (ctx->ctx_status == REPEATER_CTX_START) {
 		required_delay = required_delay / 2;
-		print_repeater_debug(RPT_EXT_INFO, "schedule_delayed_work() %lld\n",
+		print_repeater_debug(RPT_EXT_INFO, "queue_delayed_work(system_power_efficient_wq, ) %lld\n",
 			required_delay);
-		schedule_delayed_work(&ctx->encoding_work,
+		queue_delayed_work(system_power_efficient_wq, &ctx->encoding_work,
 			usecs_to_jiffies(required_delay));
 	} else {
 		print_repeater_debug(RPT_ERROR, "ctx_status is invalid %d",
@@ -462,7 +462,7 @@ int repeater_ioctl_start(struct repeater_context *ctx)
 		init_shared_buffer(shr_bufs, MAX_SHARED_BUF_NUM);
 		ctx->ctx_status = REPEATER_CTX_START;
 		if (ctx->info.fps == 30) {
-			ret = schedule_delayed_work(&ctx->encoding_work,
+			ret = queue_delayed_work(system_power_efficient_wq, &ctx->encoding_work,
 				usecs_to_jiffies(1));
 			print_repeater_debug(RPT_INT_INFO,
 				"schedule_delayed_work ret %d\n", ret);
@@ -558,7 +558,7 @@ int repeater_ioctl_resume(struct repeater_context *ctx)
 		ctx->resume_time = ktime_to_us(cur_ktime);
 		ctx->paused_time += ctx->resume_time - ctx->pause_time;
 		ctx->ctx_status = REPEATER_CTX_START;
-		ret = schedule_delayed_work(&ctx->encoding_work,
+		ret = queue_delayed_work(system_power_efficient_wq, &ctx->encoding_work,
 			usecs_to_jiffies(1));
 		print_repeater_debug(RPT_INT_INFO,
 			"schedule_delayed_work ret %d\n", ret);

@@ -384,7 +384,7 @@ static void cable_type_check_work(bool state, int time) {
 	if(typec_manager.usb_enable_state) {
 		cancel_delayed_work_sync(&typec_manager.cable_check_work);
 		if(state) {
-			schedule_delayed_work(&typec_manager.cable_check_work, msecs_to_jiffies(time*100));
+			queue_delayed_work(system_power_efficient_wq, &typec_manager.cable_check_work, msecs_to_jiffies(time*100));
 		}
 	}
 }
@@ -445,7 +445,7 @@ void water_dry_time_update(int mode)
 		rtc_time_to_tm(time.tv_sec, &det_time);
 		pr_info("%s: year=%d\n", __func__,  det_time.tm_year);
 		if (det_time.tm_year == 70) { /* (1970-01-01 00:00:00) */
-			schedule_delayed_work(&typec_manager.rtctime_update_work, msecs_to_jiffies(5000));
+			queue_delayed_work(system_power_efficient_wq, &typec_manager.rtctime_update_work, msecs_to_jiffies(5000));
 		}
 	}
 
@@ -476,7 +476,7 @@ static void water_det_rtc_time_update(struct work_struct *work)
 			typec_manager.wVbusHigh_time = time.tv_sec;
 		}
 		max_retry++;
-		schedule_delayed_work(&typec_manager.rtctime_update_work, msecs_to_jiffies(5000));
+		queue_delayed_work(system_power_efficient_wq, &typec_manager.rtctime_update_work, msecs_to_jiffies(5000));
 	} else {
 		if (typec_manager.water_det) {
 			typec_manager.waterDet_time = time.tv_sec;
@@ -522,7 +522,7 @@ void handle_muic_fake_event(int event)
 		case EVENT_LOAD:
 			if(typec_manager.muic_attach_state_without_ccic
 				|| typec_manager.ccic_drp_state == USB_STATUS_NOTIFY_ATTACH_UFP) {
-				schedule_delayed_work(&typec_manager.vbus_noti_work, msecs_to_jiffies(1000));
+				queue_delayed_work(system_power_efficient_wq, &typec_manager.vbus_noti_work, msecs_to_jiffies(1000));
 				typec_manager.muic_fake_event_wq_processing = 1;
 			}
 			break;
@@ -549,7 +549,7 @@ static void muic_fake_event_work(struct work_struct *work)
 		return;
 	} else if (typec_manager.muic_action == MUIC_NOTIFY_CMD_DETACH) {
 		typec_manager.muic_attach_state_without_ccic = 1;
-		schedule_delayed_work(&typec_manager.muic_noti_work, msecs_to_jiffies(0));
+		queue_delayed_work(system_power_efficient_wq, &typec_manager.muic_noti_work, msecs_to_jiffies(0));
 		return;
 	}
 
@@ -784,9 +784,9 @@ static int manager_handle_muic_notification(struct notifier_block *nb,
 
 		if(typec_manager.muic_attach_state_without_ccic) {
 			if (p_noti.attach) {
-				schedule_delayed_work(&typec_manager.muic_noti_work, msecs_to_jiffies(2000));
+				queue_delayed_work(system_power_efficient_wq, &typec_manager.muic_noti_work, msecs_to_jiffies(2000));
 			} else {
-				schedule_delayed_work(&typec_manager.muic_noti_work, 0);
+				queue_delayed_work(system_power_efficient_wq, &typec_manager.muic_noti_work, 0);
 			}
 		}
 		break;
@@ -1097,7 +1097,7 @@ static void delayed_manger_notifier_init(struct work_struct *work)
 	{
 		pr_err("Manager notifier init time is %d.\n",retry_count);
 		if(retry_count++ != max_retry_count)
-			schedule_delayed_work(&typec_manager.manager_init_work, msecs_to_jiffies(2000));
+			queue_delayed_work(system_power_efficient_wq, &typec_manager.manager_init_work, msecs_to_jiffies(2000));
 		else
 			pr_err("fail to init manager notifier\n");
 	}
@@ -1218,7 +1218,7 @@ static int manager_notifier_init(void)
 
 	if(confirm_manager_notifier_register)
 	{
-		schedule_delayed_work(&typec_manager.manager_init_work, msecs_to_jiffies(2000));
+		queue_delayed_work(system_power_efficient_wq, &typec_manager.manager_init_work, msecs_to_jiffies(2000));
 	}
 	else
 	{

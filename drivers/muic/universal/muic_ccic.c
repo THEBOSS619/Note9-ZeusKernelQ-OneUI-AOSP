@@ -731,7 +731,7 @@ void __delayed_ccic_notifier(struct work_struct *work)
 #endif
 	if (ret < 0) {
 		pr_info("%s: CCIC Noti. is not ready. Try again in 4sec...\n", __func__);
-		schedule_delayed_work(&pmuic->ccic_work, msecs_to_jiffies(4000));
+		queue_delayed_work(system_power_efficient_wq, &pmuic->ccic_work, msecs_to_jiffies(4000));
 		return;
 	}
 
@@ -755,7 +755,7 @@ void muic_register_ccic_notifier(muic_data_t *pmuic)
 	if (ret < 0) {
 		pr_info("%s: CCIC Noti. is not ready. Try again in 8sec...\n", __func__);
 		INIT_DELAYED_WORK(&pmuic->ccic_work, __delayed_ccic_notifier);
-		schedule_delayed_work(&pmuic->ccic_work, msecs_to_jiffies(8000));
+		queue_delayed_work(system_power_efficient_wq, &pmuic->ccic_work, msecs_to_jiffies(8000));
 		return;
 	}
 

@@ -716,7 +716,7 @@ static irqreturn_t s3c64xx_serial_handle_irq(int irq, void *id)
 #ifdef CONFIG_PM_DEVFREQ
 	if ((ourport->mif_qos_val || ourport->cpu_qos_val)
 					&& ourport->qos_timeout)
-		schedule_delayed_work(&ourport->qos_work,
+		queue_delayed_work(system_power_efficient_wq, &ourport->qos_work,
 						msecs_to_jiffies(100));
 #endif
 

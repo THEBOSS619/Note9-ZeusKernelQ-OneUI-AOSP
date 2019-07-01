@@ -528,7 +528,7 @@ static ssize_t store_nad_balancer(struct device *dev,
 		}
 
 		/* Trigger delayed workqueue */
-		schedule_delayed_work(&info->sec_nad_balancer_work, HZ * expire_time);
+		queue_delayed_work(system_power_efficient_wq, &info->sec_nad_balancer_work, HZ * expire_time);
 	}
 	return count;
 }

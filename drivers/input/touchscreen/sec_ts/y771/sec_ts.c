@@ -393,7 +393,7 @@ int sec_ts_i2c_write(struct sec_ts_data *ts, u8 reg, u8 *data, int len)
 		ret = -EIO;
 #ifdef USE_POR_AFTER_I2C_RETRY
 		if (ts->probe_done && !ts->reset_is_on_going)
-			schedule_delayed_work(&ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
+			queue_delayed_work(system_power_efficient_wq, &ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
 #endif
 	}
 
@@ -538,7 +538,7 @@ int sec_ts_i2c_read(struct sec_ts_data *ts, u8 reg, u8 *data, int len)
 		ret = -EIO;
 #ifdef USE_POR_AFTER_I2C_RETRY
 		if (ts->probe_done && !ts->reset_is_on_going)
-			schedule_delayed_work(&ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
+			queue_delayed_work(system_power_efficient_wq, &ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
 #endif
 
 	}
@@ -704,7 +704,7 @@ static void dump_tsp_log(void)
 		pr_err("%s: %s %s: ignored ## tsp probe fail!!\n", SEC_TS_I2C_NAME, SECLOG, __func__);
 		return;
 	}
-	schedule_delayed_work(p_ghost_check, msecs_to_jiffies(100));
+	queue_delayed_work(system_power_efficient_wq, p_ghost_check, msecs_to_jiffies(100));
 }
 #endif
 
@@ -2522,7 +2522,7 @@ static int sec_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
 
 	device_init_wakeup(&client->dev, true);
 
-	schedule_delayed_work(&ts->work_read_info, msecs_to_jiffies(50));
+	queue_delayed_work(system_power_efficient_wq, &ts->work_read_info, msecs_to_jiffies(50));
 
 	/* check evt info */
 	sec_ts_read_evt_info(ts);
@@ -2769,7 +2769,7 @@ static void sec_ts_reset_work(struct work_struct *work)
 		input_err(true, &ts->client->dev, "%s: failed to reset, ret:%d\n", __func__, ret);
 		ts->reset_is_on_going = false;
 		cancel_delayed_work(&ts->reset_work);
-		schedule_delayed_work(&ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
+		queue_delayed_work(system_power_efficient_wq, &ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
 		mutex_unlock(&ts->modechange);
 
 		if (ts->debug_flag & SEC_TS_DEBUG_SEND_UEVENT)
@@ -2789,7 +2789,7 @@ static void sec_ts_reset_work(struct work_struct *work)
 				input_err(true, &ts->client->dev, "%s: failed to reset, ret:%d\n", __func__, ret);
 				ts->reset_is_on_going = false;
 				cancel_delayed_work(&ts->reset_work);
-				schedule_delayed_work(&ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
+				queue_delayed_work(system_power_efficient_wq, &ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
 				mutex_unlock(&ts->modechange);
 				wake_unlock(&ts->wakelock);
 				return;
@@ -2839,7 +2839,7 @@ static void sec_ts_print_info_work(struct work_struct *work)
 	struct sec_ts_data *ts = container_of(work, struct sec_ts_data,
 			work_print_info.work);
 	sec_ts_print_info(ts);
-	schedule_delayed_work(&ts->work_print_info, msecs_to_jiffies(TOUCH_PRINT_INFO_DWORK_TIME));
+	queue_delayed_work(system_power_efficient_wq, &ts->work_print_info, msecs_to_jiffies(TOUCH_PRINT_INFO_DWORK_TIME));
 }
 
 static void sec_ts_read_info_work(struct work_struct *work)
@@ -3120,7 +3120,7 @@ static int sec_ts_input_open(struct input_dev *dev)
 
 	if (ts->power_status == SEC_TS_STATE_LPM) {
 #ifdef USE_RESET_EXIT_LPM
-		schedule_delayed_work(&ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
+		queue_delayed_work(system_power_efficient_wq, &ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
 #else
 		sec_ts_set_lowpowermode(ts, TO_TOUCH_MODE);
 #endif

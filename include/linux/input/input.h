@@ -236,7 +236,7 @@ static void input_booster_##_DEVICE_##_timeout_work_func(struct work_struct *wor
 		if (_this->param[(_this->index) ? _this->index-1 : 0].time > 0) { \
 			SET_BOOSTER; \
 			if (_this->change_on_release) { \
-				schedule_delayed_work(&_this->input_booster_timeout_work[_this->index], msecs_to_jiffies(_this->param[_this->index].time)); \
+				queue_delayed_work(system_power_efficient_wq, &_this->input_booster_timeout_work[_this->index], msecs_to_jiffies(_this->param[_this->index].time)); \
 				_this->index++; \
 				CHANGE_STATE_TO(idle); \
 			} \

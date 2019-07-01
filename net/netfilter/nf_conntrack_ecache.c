@@ -114,7 +114,7 @@ static void ecache_work(struct work_struct *work)
 
 	ctnet->ecache_dwork_pending = delay > 0;
 	if (delay >= 0)
-		schedule_delayed_work(&ctnet->ecache_dwork, delay);
+		queue_delayed_work(system_power_efficient_wq, &ctnet->ecache_dwork, delay);
 }
 
 int nf_conntrack_eventmask_report(unsigned int eventmask, struct nf_conn *ct,

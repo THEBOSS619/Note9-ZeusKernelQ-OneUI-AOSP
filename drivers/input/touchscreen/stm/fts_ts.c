@@ -875,7 +875,7 @@ static int fts_wait_for_ready(struct fts_ts_info *info)
 			rc = -FTS_ERROR_TIMEOUT;
 			input_err(true, &info->client->dev, "%s: Time Over\n", __func__);
 			if (info->lowpower_mode)
-				schedule_delayed_work(&info->reset_work, msecs_to_jiffies(10));
+				queue_delayed_work(system_power_efficient_wq, &info->reset_work, msecs_to_jiffies(10));
 
 			break;
 		}
@@ -1443,7 +1443,7 @@ static unsigned char fts_event_handler_type_b(struct fts_ts_info *info,
 					data[EventNum * FTS_EVENT_SIZE+6],
 					data[EventNum * FTS_EVENT_SIZE+7]);
 
-				schedule_delayed_work(&info->reset_work, msecs_to_jiffies(10));
+				queue_delayed_work(system_power_efficient_wq, &info->reset_work, msecs_to_jiffies(10));
 			} else {
 				fts_debug_msg_event_handler(info,
 						  &data[EventNum *
@@ -2655,7 +2655,7 @@ static int fts_input_open(struct input_dev *dev)
 	input_dbg(false, &info->client->dev, "%s\n", __func__);
 
 #ifdef USE_OPEN_DWORK
-	schedule_delayed_work(&info->open_work,
+	queue_delayed_work(system_power_efficient_wq, &info->open_work,
 			      msecs_to_jiffies(TOUCH_OPEN_DWORK_TIME));
 #else
 	retval = fts_start_device(info);
@@ -2992,7 +2992,7 @@ void tsp_dump(void)
 		return;
 
 	pr_err("FTS %s: start\n", __func__);
-	schedule_delayed_work(p_debug_work, msecs_to_jiffies(100));
+	queue_delayed_work(system_power_efficient_wq, p_debug_work, msecs_to_jiffies(100));
 }
 
 static void fts_reset_work(struct work_struct *work)

@@ -690,6 +690,7 @@ struct s5p_mfc_dev {
 	struct s5p_mfc_debug	*logging_data;
 
 	int num_inst;
+	int num_dec;
 
 	struct mutex mfc_mutex;
 

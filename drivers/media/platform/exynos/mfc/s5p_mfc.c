@@ -714,6 +714,11 @@ static int s5p_mfc_release(struct file *file)
 	if (ctx->is_drm)
 		dev->num_drm_inst--;
 	dev->num_inst--;
+	if (ctx->type == MFCINST_DECODER && !ctx->is_drm) {
+		dev->num_dec--;
+		if (dev->num_dec == 0)
+			disable_devfreq_video_boost(false);
+	}
 
 	if (ctx->type == MFCINST_DECODER && !ctx->is_drm) {
 		dev->num_dec--;

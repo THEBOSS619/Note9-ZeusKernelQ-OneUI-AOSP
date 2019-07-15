@@ -106,13 +106,6 @@ static void freeze_enter(void)
 
 static void s2idle_loop(void)
 {
-	int error;
-
-	dpm_noirq_begin();
-	error = dpm_noirq_suspend_devices(PMSG_SUSPEND);
-	if (error)
-		goto resume;
-
 	pr_debug("PM: suspend-to-idle\n");
 
 	/*
@@ -137,10 +130,6 @@ static void s2idle_loop(void)
 	}
 
 	pr_debug("PM: resume from suspend-to-idle\n");
-
-resume:
-	dpm_noirq_resume_devices(PMSG_RESUME);
-	dpm_noirq_end();
 }
 
 void freeze_wake(void)
@@ -411,11 +400,6 @@ static int suspend_enter(suspend_state_t state, bool *wakeup)
 	if (error)
 		goto Devices_early_resume;
 
-	if (state == PM_SUSPEND_FREEZE && pm_test_level != TEST_PLATFORM) {
-		s2idle_loop();
-		goto Platform_early_resume;
-	}
-
 	error = dpm_suspend_noirq(PMSG_SUSPEND);
 	if (error) {
 		last_dev = suspend_stats.last_failed_dev + REC_FAILED_NUM - 1;
@@ -431,6 +415,11 @@ static int suspend_enter(suspend_state_t state, bool *wakeup)
 
 	if (suspend_test(TEST_PLATFORM))
 		goto Platform_wake;
+
+	if (state == PM_SUSPEND_FREEZE) {
+		s2idle_loop();
+		goto Platform_wake;
+	}
 
 	error = disable_nonboot_cpus();
 	if (error || suspend_test(TEST_CPUS)) {

@@ -311,7 +311,6 @@ bool __dl_overflow(struct dl_bw *dl_b, int cpus, u64 old_bw, u64 new_bw)
 	       dl_b->bw * cpus < dl_b->total_bw - old_bw + new_bw;
 }
 
-extern struct mutex sched_domains_mutex;
 extern int sched_init_domains(const struct cpumask *cpu_map);
 void dl_change_utilization(struct task_struct *p, u64 new_bw);
 
@@ -753,7 +752,6 @@ struct root_domain {
 	int max_cap_orig_cpu, min_cap_orig_cpu;
 };
 
-extern struct root_domain def_root_domain;
 extern void sched_get_rd(struct root_domain *rd);
 extern void sched_put_rd(struct root_domain *rd);
 

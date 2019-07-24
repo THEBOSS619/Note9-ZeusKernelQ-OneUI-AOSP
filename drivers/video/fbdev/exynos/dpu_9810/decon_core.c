@@ -81,6 +81,7 @@ void __iomem *regs_dphy_clk_2;
 #endif
 void tracing_mark_write(struct decon_device *decon, char id, char *str1, int value)
 {
+#if 0
 	char buf[DECON_TRACE_BUF_SIZE] = {0,};
 
 	if (!decon->systrace.pid)
@@ -105,6 +106,9 @@ void tracing_mark_write(struct decon_device *decon, char id, char *str1, int val
 #ifdef CONFIG_PROFILING
 	trace_puts(buf);
 #endif
+#endif
+
+	return;
 }
 static void decon_dump_using_dpp(struct decon_device *decon)
 {

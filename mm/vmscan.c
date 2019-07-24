@@ -1377,7 +1377,7 @@ void reclaim_contig_migrate_range(unsigned long start,
 		if (cc.nr_migratepages)
 			putback_movable_pages(&cc.migratepages);
 	}
-	trace_printk("%lu\n", total_reclaimed << PAGE_SHIFT);
+	pr_debug("%lu\n", total_reclaimed << PAGE_SHIFT);
 }
 
 #ifdef CONFIG_PROCESS_RECLAIM
@@ -2281,7 +2281,7 @@ static ssize_t mem_boost_mode_store(struct kobject *kobj,
 		return -EINVAL;
 
 	mem_boost_mode = mode;
-	trace_printk("memboost start\n");
+	pr_debug("memboost start\n");
 	last_mode_change = jiffies;
 	if (mem_boost_mode == BOOST_HIGH) {
 #ifdef CONFIG_ION_RBIN_HEAP

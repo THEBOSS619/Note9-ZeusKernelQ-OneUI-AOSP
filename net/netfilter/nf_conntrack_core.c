@@ -356,7 +356,6 @@ static void nf_ct_add_to_dying_list(struct nf_conn *ct)
 {
 	struct ct_pcpu *pcpu;
 
-
 	/* add this conntrack to the (per cpu) dying list */
 	ct->cpu = smp_processor_id();
 	pcpu = per_cpu_ptr(nf_ct_net(ct)->ct.pcpu_lists, ct->cpu);

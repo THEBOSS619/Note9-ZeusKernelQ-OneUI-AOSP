@@ -146,12 +146,6 @@
 #include <net/tcp.h>
 #include <net/busy_poll.h>
 
-/* START_OF_KNOX_NPA */
-#include <linux/sched.h>
-#include <linux/pid.h>
-#include <net/ncm.h>
-/* END_OF_KNOX_NPA */
-
 static DEFINE_MUTEX(proto_list_mutex);
 static LIST_HEAD(proto_list);
 
@@ -733,12 +727,6 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
 
 	if (optname == SO_BINDTODEVICE)
 		return sock_setbindtodevice(sk, optval, optlen);
-
-	/* START_OF_KNOX_NPA */
-	if (optname == SO_SET_DOMAIN_NAME)
-		return sock_set_domain_name(sk, optval, optlen);
-	if (optname == SO_SET_DNS_UID)
-		return sock_set_dns_uid(sk, optval, optlen);
 
 	if (optlen < sizeof(int))
 		return -EINVAL;
@@ -1495,8 +1483,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
 		      struct proto *prot, int kern)
 {
 	struct sock *sk;
-
-
 	sk = sk_prot_alloc(prot, priority | __GFP_ZERO, family);
 	if (sk) {
 		sk->sk_family = family;

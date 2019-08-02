@@ -82,4 +82,3 @@ obj-y				+= l3mdev/
 endif
 obj-$(CONFIG_QRTR)		+= qrtr/
 obj-$(CONFIG_NET_NCSI)		+= ncsi/
-obj-$(CONFIG_KNOX_NCM)	+= ncm/

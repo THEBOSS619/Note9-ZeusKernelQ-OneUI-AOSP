@@ -146,12 +146,6 @@
 #include <net/tcp.h>
 #include <net/busy_poll.h>
 
-/* START_OF_KNOX_NPA */
-#include <linux/sched.h>
-#include <linux/pid.h>
-#include <net/ncm.h>
-/* END_OF_KNOX_NPA */
-
 static DEFINE_MUTEX(proto_list_mutex);
 static LIST_HEAD(proto_list);
 
@@ -773,15 +767,6 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
 
 	if (optname == SO_BINDTODEVICE)
 		return sock_setbindtodevice(sk, optval, optlen);
-
-	/* START_OF_KNOX_NPA */
-	if (optname == SO_SET_DOMAIN_NAME)
-		return sock_set_domain_name(sk, optval, optlen);
-	if (optname == SO_SET_DNS_UID)
-		return sock_set_dns_uid(sk, optval, optlen);
-	if (optname == SO_SET_DNS_PID)
-		return sock_set_dns_pid(sk, optval, optlen);
-	/* END_OF_KNOX_NPA */
 
 	if (optlen < sizeof(int))
 		return -EINVAL;
@@ -1538,18 +1523,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
 		      struct proto *prot, int kern)
 {
 	struct sock *sk;
-
-	/* START_OF_KNOX_NPA */
-	struct pid *pid_struct = NULL;
-	struct task_struct *task = NULL;
-	int process_returnValue = -1;
-	char full_process_name[PROCESS_NAME_LEN_NAP] = {0};
-	struct pid *parent_pid_struct = NULL;
-	struct task_struct *parent_task = NULL;
-	int parent_returnValue = -1;
-	char full_parent_process_name[PROCESS_NAME_LEN_NAP] = {0};
-	/* END_OF_KNOX_NPA */
-
 	sk = sk_prot_alloc(prot, priority | __GFP_ZERO, family);
 	if (sk) {
 		sk->sk_family = family;

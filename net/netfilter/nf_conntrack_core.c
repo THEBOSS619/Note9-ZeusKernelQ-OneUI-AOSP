@@ -356,14 +356,6 @@ static void nf_ct_add_to_dying_list(struct nf_conn *ct)
 {
 	struct ct_pcpu *pcpu;
 
-	// KNOX NPA - START
-	/* Add 'del_timer(&ct->npa_timeout)' if struct nf_conn->timeout is of type struct timer_list; */
-	/* send dying conntrack entry to collect data */
-	if ( (check_ncm_flag()) && (ct != NULL) && (atomic_read(&ct->startFlow)) ) {
-		knox_collect_conntrack_data(ct, NCM_FLOW_TYPE_CLOSE, 10);
-	}
-	// KNOX NPA - END
-
 	/* add this conntrack to the (per cpu) dying list */
 	ct->cpu = smp_processor_id();
 	pcpu = per_cpu_ptr(nf_ct_net(ct)->ct.pcpu_lists, ct->cpu);

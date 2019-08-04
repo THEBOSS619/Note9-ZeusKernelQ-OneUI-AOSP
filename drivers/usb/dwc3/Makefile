@@ -3,7 +3,10 @@ CFLAGS_trace.o				:= -I$(src)
 
 obj-$(CONFIG_USB_DWC3)			+= dwc3.o
 
-dwc3-y					:= core.o debug.o trace.o
+dwc3-y					:= core.o trace.o
+
+dwc3-$(CONFIG_DEBUG_KERNEL)		+= debug_ipc.o
+
 
 dwc3-y					+= otg.o
 

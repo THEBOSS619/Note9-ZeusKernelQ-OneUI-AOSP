@@ -1191,7 +1191,7 @@ static void sec_ts_read_event(struct sec_ts_data *ts)
 								ts->coord[t_id].x, ts->coord[t_id].y,
 								ts->coord[t_id].palm_count, max_force_p);
 #else
-						input_info(true, &ts->client->dev,
+						input_dbg(true, &ts->client->dev,
 								"%s[R] tID:%d p:%s dd:%d,%d mc:%d tc:%d pc:%d f:%d\n",
 								ts->dex_name, t_id, location,
 								ts->coord[t_id].x - ts->coord[t_id].p_x,
@@ -1254,7 +1254,7 @@ static void sec_ts_read_event(struct sec_ts_data *ts)
 								ts->coord[t_id].ttype, ts->touch_noise_status,
 								ts->external_noise_mode);
 #else
-						input_info(true, &ts->client->dev,
+						input_dbg(true, &ts->client->dev,
 								"%s[P] tID:%d.%d z:%d major:%d minor:%d p:%s tc:%d type:%X noise:%x,%d\n",
 								ts->dex_name, t_id, (ts->input_dev->mt->trkid - 1) & TRKID_MAX, ts->coord[t_id].z,
 								ts->coord[t_id].major, ts->coord[t_id].minor,
@@ -1323,7 +1323,7 @@ static void sec_ts_read_event(struct sec_ts_data *ts)
 							|| (ts->coord[t_id].action == SEC_TS_COORDINATE_ACTION_MOVE)) {
 
 						if (ts->coord[t_id].ttype != pre_ttype) {
-							input_info(true, &ts->client->dev, "%s : tID:%d ttype(%x->%x)\n",
+							input_dbg(true, &ts->client->dev, "%s : tID:%d ttype(%x->%x)\n",
 									__func__, ts->coord[t_id].id,
 									pre_ttype, ts->coord[t_id].ttype);
 						}
@@ -1344,7 +1344,7 @@ static void sec_ts_read_event(struct sec_ts_data *ts)
 			switch (p_gesture_status->stype) {
 			case SEC_TS_GESTURE_CODE_SPAY:
 				ts->scrub_id = SPONGE_EVENT_TYPE_SPAY;
-				input_info(true, &ts->client->dev, "%s: SPAY: %d\n", __func__, ts->scrub_id);
+				input_dbg(true, &ts->client->dev, "%s: SPAY: %d\n", __func__, ts->scrub_id);
 				input_report_key(ts->input_dev, KEY_BLACK_UI_GESTURE, 1);
 				ts->all_spay_count++;
 				break;
@@ -1356,7 +1356,7 @@ static void sec_ts_read_event(struct sec_ts_data *ts)
 							| (p_gesture_status->gesture_data_3 & 0x0F);
 
 #ifdef CONFIG_SAMSUNG_PRODUCT_SHIP
-				input_info(true, &ts->client->dev, "%s: AOD: %d\n", __func__, ts->scrub_id);
+				input_dbg(true, &ts->client->dev, "%s: AOD: %d\n", __func__, ts->scrub_id);
 #else
 				input_info(true, &ts->client->dev, "%s: AOD: %d, %d, %d\n",
 						__func__, ts->scrub_id, ts->scrub_x, ts->scrub_y);
@@ -1393,7 +1393,7 @@ static void sec_ts_read_event(struct sec_ts_data *ts)
 					}
 
 					if (ts->pressure_setting_mode)
-						input_info(true, &ts->client->dev, "%s: skip force events in pressure setting mode\n", __func__);
+						input_dbg(true, &ts->client->dev, "%s: skip force events in pressure setting mode\n", __func__);
 					else
 						input_report_key(ts->input_dev, KEY_BLACK_UI_GESTURE, 1);
 				} else {
@@ -1420,7 +1420,7 @@ static void sec_ts_read_event(struct sec_ts_data *ts)
 							| (p_gesture_status->gesture_data_3 & 0x0F);
 
 #ifdef CONFIG_SAMSUNG_PRODUCT_SHIP
-				input_info(true, &ts->client->dev, "%s: FORCE: %d\n", __func__, ts->scrub_id);
+				input_dbg(true, &ts->client->dev, "%s: FORCE: %d\n", __func__, ts->scrub_id);
 #else
 				input_info(true, &ts->client->dev, "%s: FORCE: %d, %d, %d\n",
 								__func__, ts->scrub_id, ts->scrub_x, ts->scrub_y);

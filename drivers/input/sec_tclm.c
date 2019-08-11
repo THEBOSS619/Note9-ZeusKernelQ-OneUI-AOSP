@@ -11,6 +11,7 @@
 
 #include <linux/input/sec_tclm.h>
 #include <linux/input.h>
+#include <linux/module.h>
 
 struct sec_cal_position sec_cal_positions[CALPOSITION_MAX] = {
 	{CAL_POS_CMD("NONE",	'N'),}, /* 0, NONe */
@@ -336,4 +337,3 @@ void sec_tclm_initialize(struct sec_tclm_data *data)
 
 MODULE_DESCRIPTION("Samsung tclm command");
 MODULE_LICENSE("GPL");
-

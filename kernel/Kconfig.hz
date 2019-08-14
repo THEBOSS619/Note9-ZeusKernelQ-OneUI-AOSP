@@ -37,6 +37,11 @@ choice
 	  on SMP and NUMA systems. If you are going to be using NTSC video
 	  or multimedia, selected 300Hz instead.
 
+	config HZ_256
+		bool "256 HZ"
+	help
+	 Say N.
+
 	config HZ_300
 		bool "300 HZ"
 	help
@@ -65,6 +70,7 @@ config HZ
 	default 80 if HZ_80
 	default 100 if HZ_100
 	default 250 if HZ_250
+	default 256 if HZ_256
 	default 300 if HZ_300
 	default 500 if HZ_500
 	default 1000 if HZ_1000

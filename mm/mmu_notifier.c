@@ -203,6 +203,8 @@ int __mmu_notifier_invalidate_range_start(struct mm_struct *mm,
 				pr_info("%pS callback failed with %d in %sblockable context.\n",
 						mn->ops->invalidate_range_start, _ret,
 						!blockable ? "non-" : "");
+				WARN_ON(mmu_notifier_range_blockable(range) ||
+					ret != -EAGAIN);
 				ret = _ret;
 			}
 		}

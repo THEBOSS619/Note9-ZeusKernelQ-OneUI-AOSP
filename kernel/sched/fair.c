@@ -4226,7 +4226,7 @@ enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
 	if (flags & ENQUEUE_WAKEUP)
 		place_entity(cfs_rq, se, 0);
 
-	check_schedstat_required();
+	// check_schedstat_required();
 	update_stats_enqueue(cfs_rq, se, flags);
 	check_spread(cfs_rq, se);
 	if (!curr)

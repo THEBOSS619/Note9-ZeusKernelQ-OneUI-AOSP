@@ -4992,8 +4992,8 @@
 			shared-cpus = "0-3";
 
 			boost_table = < 175 598000 170 715000 165 832000 160 949000 130 1053000 100 >;
-			up_rate_limit_table = < 4 >;
-			down_rate_limit_table = < 4 >;
+			up_rate_limit_table = < 10 >;
+			down_rate_limit_table = < 10 >;
 			upscale_ratio_table = < 80 1053000 85 1248000 90 1456000 100 >;
 			st_table = < 5 >;
 		};
@@ -5003,8 +5003,8 @@
 			shared-cpus = "4-7";
 
 			boost_table = < 160 858000 130 962000 115 1261000 100 >;
-			up_rate_limit_table = < 4 >;
-			down_rate_limit_table = < 4 >;
+			up_rate_limit_table = < 10 >;
+			down_rate_limit_table = < 10 >;
 			upscale_ratio_table = < 70 962000 75 1469000 80 1794000 85 2314000 90 >;
 			st_table = < 5 >;
 		};

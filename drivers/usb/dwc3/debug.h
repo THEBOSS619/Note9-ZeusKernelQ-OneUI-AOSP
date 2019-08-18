@@ -310,9 +310,8 @@ static inline const char *dwc3_gadget_generic_cmd_status_string(int status)
 	}
 }
 
-void dwc3_trace(void (*trace)(struct va_format *), const char *fmt, ...);
-
 #ifdef CONFIG_DEBUG_KERNEL
+void dwc3_trace(void (*trace)(struct va_format *), const char *fmt, ...);
 void dwc3_dbg_print(struct dwc3 *dwc, u8 ep_num,
 		const char *name, int status, const char *extra);
 void dwc3_dbg_done(struct dwc3 *dwc, u8 ep_num,
@@ -326,6 +325,9 @@ void dwc3_dbg_setup(struct dwc3 *dwc, u8 ep_num,
 void dwc3_dbg_print_reg(struct dwc3 *dwc,
 		const char *name, int reg);
 #else
+static inline void dwc3_trace(void (*trace)(struct va_format *), const char *fmt, ...)
+{
+}
 static inline void dwc3_dbg_print(struct dwc3 *dwc, u8 ep_num,
 		const char *name, int status, const char *extra)
 {

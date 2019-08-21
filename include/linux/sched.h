@@ -51,6 +51,7 @@ struct sched_param {
 #include <linux/timer.h>
 #include <linux/hrtimer.h>
 #include <linux/kcov.h>
+#include <linux/sched/types.h>
 #include <linux/task_io_accounting.h>
 #include <linux/latencytop.h>
 #include <linux/cred.h>
@@ -625,22 +626,6 @@ static inline void prev_cputime_init(struct prev_cputime *prev)
 	raw_spin_lock_init(&prev->lock);
 #endif
 }
-
-/**
- * struct task_cputime - collected CPU time counts
- * @utime:		time spent in user mode, in nanoseconds
- * @stime:		time spent in kernel mode, in nanoseconds
- * @sum_exec_runtime:	total time spent on the CPU, in nanoseconds
- *
- * This structure groups together three kinds of CPU time that are tracked for
- * threads and thread groups.  Most things considering CPU time want to group
- * these counts together and treat all three of them in parallel.
- */
-struct task_cputime {
-	u64 utime;
-	u64 stime;
-	unsigned long long sum_exec_runtime;
-};
 
 /* Temporary type to ease cputime_t to nsecs conversion */
 struct task_cputime_t {

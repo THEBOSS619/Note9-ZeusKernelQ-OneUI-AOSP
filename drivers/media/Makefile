@@ -41,3 +41,4 @@ obj-y += common/ platform/ pci/ usb/ mmc/ firewire/ spi/
 obj-$(CONFIG_VIDEO_DEV) += radio/
 obj-$(CONFIG_TDMB)  += tdmb/
 
+subdir-ccflags-y := -Os -g0

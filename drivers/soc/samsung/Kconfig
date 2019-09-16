@@ -134,6 +134,14 @@ config USI
 	bool "Enable Universal Serial Interface"
 	default y
 
+config EXYNOS_HOTPLUG
+	bool "Exynos HOTPLUG Driver"
+	default n
+	depends on ARCH_EXYNOS
+	depends on CPU_FREQ
+	depends on HOTPLUG_CPU
+	help
+
 config EXYNOS_HOTPLUG_GOVERNOR
 	bool "Exynos HOTPLUG Governor"
 	default n

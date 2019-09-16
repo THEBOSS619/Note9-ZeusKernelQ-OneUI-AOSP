@@ -38,7 +38,7 @@ obj-$(CONFIG_USI_V2) += usi_v2.o
 obj-$(CONFIG_ARM64_EXYNOS_CPUIDLE)	+= cpuidle_profiler.o
 
 #CPUHOTPLUG
-obj-$(CONFIG_ARCH_EXYNOS)	+= exynos-cpu_hotplug.o
+obj-$(CONFIG_EXYNOS_HOTPLUG)		+= exynos-cpu_hotplug.o
 obj-$(CONFIG_EXYNOS_HOTPLUG_GOVERNOR)	+= exynos-hotplug_governor.o
 
 # DVFS

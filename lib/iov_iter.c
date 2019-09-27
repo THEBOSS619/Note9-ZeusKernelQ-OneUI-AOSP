@@ -587,6 +587,90 @@ size_t copy_from_iter_nocache(void *addr, size_t bytes, struct iov_iter *i)
 }
 EXPORT_SYMBOL(copy_from_iter_nocache);
 
+#ifdef CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE
+/**
+ * _copy_from_iter_flushcache - write destination through cpu cache
+ * @addr: destination kernel address
+ * @bytes: total transfer length
+ * @iter: source iterator
+ *
+ * The pmem driver arranges for filesystem-dax to use this facility via
+ * dax_copy_from_iter() for ensuring that writes to persistent memory
+ * are flushed through the CPU cache. It is differentiated from
+ * _copy_from_iter_nocache() in that guarantees all data is flushed for
+ * all iterator types. The _copy_from_iter_nocache() only attempts to
+ * bypass the cache for the ITER_IOVEC case, and on some archs may use
+ * instructions that strand dirty-data in the cache.
+ */
+size_t _copy_from_iter_flushcache(void *addr, size_t bytes, struct iov_iter *i)
+{
+	char *to = addr;
+	if (unlikely(iov_iter_is_pipe(i))) {
+		WARN_ON(1);
+		return 0;
+	}
+	iterate_and_advance(i, bytes, v,
+		__copy_from_user_flushcache((to += v.iov_len) - v.iov_len,
+					 v.iov_base, v.iov_len),
+		memcpy_page_flushcache((to += v.bv_len) - v.bv_len, v.bv_page,
+				 v.bv_offset, v.bv_len),
+		memcpy_flushcache((to += v.iov_len) - v.iov_len, v.iov_base,
+			v.iov_len)
+	)
+
+	return bytes;
+}
+EXPORT_SYMBOL_GPL(_copy_from_iter_flushcache);
+#endif
+
+bool _copy_from_iter_full_nocache(void *addr, size_t bytes, struct iov_iter *i)
+{
+	char *to = addr;
+	if (unlikely(iter_is_iovec(i))) {
+		WARN_ON(1);
+		return false;
+	}
+	if (unlikely(i->count < bytes))
+		return false;
+	iterate_all_kinds(i, bytes, v, ({
+		if (__copy_from_user_inatomic_nocache((to += v.iov_len) - v.iov_len,
+					     v.iov_base, v.iov_len))
+			return false;
+		0;}),
+		memcpy_from_page((to += v.bv_len) - v.bv_len, v.bv_page,
+				 v.bv_offset, v.bv_len),
+		memcpy((to += v.iov_len) - v.iov_len, v.iov_base, v.iov_len)
+	)
+
+	iov_iter_advance(i, bytes);
+	return true;
+}
+EXPORT_SYMBOL(_copy_from_iter_full_nocache);
+
+static inline bool page_copy_sane(struct page *page, size_t offset, size_t n)
+{
+	struct page *head;
+	size_t v = n + offset;
+
+	/*
+	 * The general case needs to access the page order in order
+	 * to compute the page size.
+	 * However, we mostly deal with order-0 pages and thus can
+	 * avoid a possible cache line miss for requests that fit all
+	 * page orders.
+	 */
+	if (n <= v && v <= PAGE_SIZE)
+		return true;
+
+	head = compound_head(page);
+	v += (page - head) << PAGE_SHIFT;
+
+	if (likely(n <= v && v <= (PAGE_SIZE << compound_order(head))))
+		return true;
+	WARN_ON(1);
+	return false;
+}
+
 size_t copy_page_to_iter(struct page *page, size_t offset, size_t bytes,
 			 struct iov_iter *i)
 {

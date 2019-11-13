@@ -661,14 +661,22 @@ static void wake_oom_reaper(struct task_struct *tsk)
 {
 	if (!oom_reaper_th)
 		return;
+    /*
+     * Move the lock here to avoid scenario of queuing
+     * the same task by both OOM killer and any other SIGKILL
+     * path.
+     */        
+
+    spin_lock(&oom_reaper_lock);
 
 	/* mm is already queued? */
-	if (test_and_set_bit(MMF_OOM_REAP_QUEUED, &tsk->signal->oom_mm->flags))
+	if (test_and_set_bit(MMF_OOM_REAP_QUEUED, &tsk->signal->oom_mm->flags)) {
+        spin_unlock(&oom_reaper_lock);
 		return;
+    }
 
 	get_task_struct(tsk);
 
-	spin_lock(&oom_reaper_lock);
 	tsk->oom_reaper_list = oom_reaper_list;
 	oom_reaper_list = tsk;
 	spin_unlock(&oom_reaper_lock);

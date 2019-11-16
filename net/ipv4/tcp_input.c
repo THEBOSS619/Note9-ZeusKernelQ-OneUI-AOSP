@@ -5754,13 +5754,14 @@ static void __tcp_ack_snd_check(struct sock *sk, int ofo_possible)
 	    /* More than one full frame received... */
 	if (((tp->rcv_nxt - tp->rcv_wup) > (inet_csk(sk)->icsk_ack.rcv_mss) *
 	    sysctl_tcp_delack_seg &&
+	    (tp->fast_ack_mode == 1 ||
 	     /* ... and right edge of window advances far enough.
 	      * (tcp_recvmsg() will send ACK otherwise). Or...
 	      */
 #ifdef CONFIG_MPTCP
 	     tp->ops->__select_window(sk) >= tp->rcv_wnd) ||
 #else
-	     __tcp_select_window(sk) >= tp->rcv_wnd) ||
+	       __tcp_select_window(sk) >= tp->rcv_wnd)) ||
 #endif
 	    /* We ACK each frame or... */
 	    tcp_in_quickack_mode(sk) ||

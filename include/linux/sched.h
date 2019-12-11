@@ -3894,13 +3894,13 @@ static inline void rseq_migrate(struct task_struct *t)
 
 /*
  * If parent process has a registered restartable sequences area, the
- * child inherits. Only applies when forking a process, not a thread. In
+ * child inherits. Unregister rseq for a clone with CLONE_VM set. Only applies when forking a process, not a thread. In
  * case a parent fork() in the middle of a restartable sequence, set the
  * resume notifier to force the child to retry.
  */
 static inline void rseq_fork(struct task_struct *t, unsigned long clone_flags)
 {
-	if (clone_flags & CLONE_THREAD) {
+	if (clone_flags & CLONE_VM) {
 		t->rseq = NULL;
 		t->rseq_sig = 0;
 		t->rseq_event_mask = 0;

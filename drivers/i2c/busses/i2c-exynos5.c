@@ -1370,6 +1370,7 @@ static struct platform_driver exynos5_i2c_driver = {
 		.name	= "exynos5-hsi2c",
 		.pm	= &exynos5_i2c_pm,
 		.of_match_table = exynos5_i2c_match,
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 	},
 };
 

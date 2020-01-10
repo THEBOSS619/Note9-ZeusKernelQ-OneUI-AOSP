@@ -147,6 +147,8 @@ static int sdcardfs_d_delete(const struct dentry *d)
 
 static void sdcardfs_d_release(struct dentry *dentry)
 {
+	if (!dentry || !dentry->d_fsdata)
+		return;
 	/* release and reset the lower paths */
 	if (has_graft_path(dentry))
 		sdcardfs_put_reset_orig_path(dentry);
@@ -207,3 +209,4 @@ const struct dentry_operations sdcardfs_ci_dops = {
 	.d_compare	= sdcardfs_cmp_ci,
 	.d_canonical_path = sdcardfs_canonical_path,
 };
+

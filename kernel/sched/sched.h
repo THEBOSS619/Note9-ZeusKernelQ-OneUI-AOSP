@@ -1230,6 +1230,12 @@ static inline void sched_ttwu_pending(void) { }
 #include "stats.h"
 #include "autogroup.h"
 
+#ifdef CONFIG_NO_HZ_COMMON
+void calc_load_nohz_remote(struct rq *rq);
+#else
+static inline void calc_load_nohz_remote(struct rq *rq) { }
+#endif /* CONFIG_NO_HZ_COMMON */
+
 #ifdef CONFIG_CGROUP_SCHED
 
 /*

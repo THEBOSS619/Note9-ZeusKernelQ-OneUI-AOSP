@@ -6689,11 +6689,8 @@ int select_energy_cpu_idx(struct energy_env *eenv)
 			eenv->cpu[cpu_idx].nrg_delta = 0;
 		/* update the schedule candidate with min(nrg_delta) */
 		if (eenv->cpu[cpu_idx].nrg_delta <
-		    eenv->cpu[eenv->next_idx].nrg_delta) {
+		    eenv->cpu[eenv->next_idx].nrg_delta)
 			eenv->next_idx = cpu_idx;
-			if (sched_feat(FBT_STRICT_ORDER))
-				break;
-		}
 	}
 
 	return eenv->next_idx;

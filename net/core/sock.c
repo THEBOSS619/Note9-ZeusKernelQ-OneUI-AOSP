@@ -1502,10 +1502,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
 		cgroup_sk_alloc(&sk->sk_cgrp_data);
 		sock_update_classid(&sk->sk_cgrp_data);
 		sock_update_netprioidx(&sk->sk_cgrp_data);
-        /* START_OF_KNOX_NPA */
-        sk->knox_uid = current->cred->uid.val;
-        sk->knox_pid = current->tgid;
-        /* END_OF_KNOX_NPA */
 	}
 
 	return sk;

@@ -7834,6 +7834,42 @@ struct sched_domain *build_sched_domain(struct sched_domain_topology_level *tl,
 }
 
 /*
+ * Ensure topology masks are sane, i.e. there are no conflicts (overlaps) for
+ * any two given CPUs at this (non-NUMA) topology level.
+ */
+static bool topology_span_sane(struct sched_domain_topology_level *tl,
+			      const struct cpumask *cpu_map, int cpu)
+{
+	int i;
+
+	/* NUMA levels are allowed to overlap */
+	if (tl->flags & SDTL_OVERLAP)
+		return true;
+
+	/*
+	 * Non-NUMA levels cannot partially overlap - they must be either
+	 * completely equal or completely disjoint. Otherwise we can end up
+	 * breaking the sched_group lists - i.e. a later get_group() pass
+	 * breaks the linking done for an earlier span.
+	 */
+	for_each_cpu(i, cpu_map) {
+		if (i == cpu)
+			continue;
+		/*
+		 * We should 'and' all those masks with 'cpu_map' to exactly
+		 * match the topology we're about to build, but that can only
+		 * remove CPUs, which only lessens our ability to detect
+		 * overlaps
+		 */
+		if (!cpumask_equal(tl->mask(cpu), tl->mask(i)) &&
+		    cpumask_intersects(tl->mask(cpu), tl->mask(i)))
+			return false;
+	}
+
+	return true;
+}
+
+/*
  * Find the sched_domain_topology_level where all CPU capacities are visible
  * for all CPUs.
  */
@@ -7923,6 +7959,9 @@ static int build_sched_domains(const struct cpumask *cpu_map,
 
 			if (tl == tl_asym)
 				dflags |= SD_ASYM_CPUCAPACITY;
+
+			if (WARN_ON(!topology_span_sane(tl, cpu_map, i)))
+				goto error;
 
 			sd = build_sched_domain(tl, cpu_map, attr, sd, dflags, i);
 			if (tl == sched_domain_topology)

@@ -878,9 +878,10 @@ int fimc_is_kernel_log_dump(bool overwrite)
 				resourcemgr->kernel_log_buf,
 				(void *)virt_to_phys(resourcemgr->kernel_log_buf),
 				log_kernel);
+#ifdef CONFIG_SEC_DEBUG
 		memcpy(resourcemgr->kernel_log_buf, log_kernel,
 				exynos_ss_get_item_size("log_kernel"));
-
+#endif
 		dumped = 1;
 	}
 
@@ -1132,7 +1133,7 @@ int __init fimc_is_resourcemgr_probe(struct fimc_is_resourcemgr *resourcemgr,
 #ifdef CONFIG_CMU_EWF
 	get_cmuewf_index(np, &idx_ewf);
 #endif
-#ifdef ENABLE_KERNEL_LOG_DUMP
+#ifdef CONFIG_SEC_DEBUG
 	resourcemgr->kernel_log_buf = kzalloc(exynos_ss_get_item_size("log_kernel"),
 						GFP_KERNEL);
 #endif

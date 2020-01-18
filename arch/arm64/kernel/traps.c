@@ -101,6 +101,7 @@ static void dump_mem(const char *lvl, const char *str, unsigned long bottom,
 
 	set_fs(fs);
 }
+#if defined(CONFIG_SEC_DEBUG_AUTO_SUMMARY) && !defined(CONFIG_SEC_DEBUG_BRANCH_VERIFIER)
 
 static void dump_backtrace_entry(unsigned long where)
 {
@@ -110,7 +111,6 @@ static void dump_backtrace_entry(unsigned long where)
 	print_ip_sym(where);
 }
 
-#if defined(CONFIG_SEC_DEBUG_AUTO_SUMMARY) && !defined(CONFIG_SEC_DEBUG_BRANCH_VERIFIER)
 static void dump_backtrace_entry_auto_summary(unsigned long where)
 {
 	/*
@@ -152,7 +152,7 @@ static void dump_instr(const char *lvl, struct pt_regs *regs)
 		__dump_instr(lvl, regs);
 	}
 }
-
+#ifdef CONFIG_SEC_DEBUG_AUTO_SUMMARY
 static bool on_valid_stack(struct task_struct *tsk, unsigned long sp, unsigned long irq_sp)
 {
 	unsigned long low = (unsigned long)task_stack_page(tsk);
@@ -261,7 +261,6 @@ static void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk)
 	put_task_stack(tsk);
 }
 
-#ifdef CONFIG_SEC_DEBUG_AUTO_SUMMARY
 static void dump_backtrace_auto_summary(struct pt_regs *regs, struct task_struct *tsk)
 {
 	struct stackframe frame;
@@ -363,13 +362,13 @@ static void dump_backtrace_auto_summary(struct pt_regs *regs, struct task_struct
 	}
 }
 #endif
-
 void show_stack(struct task_struct *tsk, unsigned long *sp)
 {
+#ifdef CONFIG_SEC_DEBUG
 	dump_backtrace(NULL, tsk);
+#endif
 	barrier();
 }
-
 #ifdef CONFIG_PREEMPT
 #define S_PREEMPT " PREEMPT"
 #else
@@ -404,15 +403,14 @@ static int __die(const char *str, int err, struct pt_regs *regs)
 
 #ifdef CONFIG_SEC_DEBUG_AUTO_SUMMARY
 		dump_backtrace_auto_summary(regs, tsk);
-#else
 		dump_backtrace(regs, tsk);
 #endif
 
 		dump_instr(KERN_EMERG, regs);
 	}
-
+#ifdef CONFIG_SEC_DEBUG
 	print_ppmpu_protection(regs);
-
+#endif
 	return ret;
 }
 
@@ -929,18 +927,18 @@ int is_valid_bugaddr(unsigned long addr)
 	 */
 	return 1;
 }
-
 static int bug_handler(struct pt_regs *regs, unsigned int esr)
 {
 	if (user_mode(regs))
 		return DBG_HOOK_ERROR;
+#ifdef CONFIG_SEC_DEBUG
 
 	/*
 	 * If recalling hardlockup core has been run before,
 	 * PC value must be replaced to real PC value.
 	 */
 	exynos_ss_hook_hardlockup_entry((void *)regs);
-
+#endif
 	switch (report_bug(regs->pc, regs)) {
 	case BUG_TRAP_TYPE_BUG:
 #ifdef CONFIG_SEC_DEBUG_EXTRA_INFO
@@ -951,7 +949,9 @@ static int bug_handler(struct pt_regs *regs, unsigned int esr)
 
 	case BUG_TRAP_TYPE_WARN:
 		/* Ideally, report_bug() should backtrace for us... but no. */
+#ifdef CONFIG_SEC_DEBUG
 		dump_backtrace(regs, NULL);
+#endif
 		break;
 
 	default:

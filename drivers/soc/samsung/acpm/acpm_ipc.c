@@ -179,7 +179,6 @@ void acpm_log_print(void)
 				reg_id = NO_SET_REGMAP;
 			else
 				reg_id = get_reg_id(val >> 12);
-
 			if (reg_id == NO_SS_RANGE)
 				exynos_ss_regulator(time, "outSc", val >> 12, (val >> 4) & 0xFF, (val >> 4) & 0xFF, val & 0xF);
 			else if (reg_id == NO_SET_REGMAP)

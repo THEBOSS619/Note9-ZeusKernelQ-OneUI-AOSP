@@ -19,6 +19,7 @@
 #include <linux/platform_device.h>
 #include <linux/soc/samsung/exynos-soc.h>
 #include <linux/interrupt.h>
+#ifdef CONFIG_SEC_DEBUG
 #include <linux/sec_debug.h>
 
 struct exynos_handler {
@@ -236,3 +237,4 @@ static int __init exynos_handler_init(void)
 	return init_fn(np);
 }
 subsys_initcall(exynos_handler_init);
+#endif

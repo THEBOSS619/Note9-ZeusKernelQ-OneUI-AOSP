@@ -330,6 +330,7 @@ struct sec_debug_ksyms {
 	uint64_t kimage_voffset;
 };
 
+#ifdef CONFIG_SEC_DEBUG_AUTO_SUMMARY
 struct sec_debug_shared_info {
 	/* initial magic code */
 	unsigned int magic[4];
@@ -349,6 +350,7 @@ struct sec_debug_shared_info {
 	/* last 1KB of kernel log */
 	char last_klog[SZ_1K];
 };
+#endif
 
 extern void sec_debug_set_kallsyms_info(struct sec_debug_ksyms *ksyms, int magic);
 

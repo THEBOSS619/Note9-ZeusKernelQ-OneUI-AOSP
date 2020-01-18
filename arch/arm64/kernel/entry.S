@@ -449,7 +449,9 @@ END(vectors)
 	stp	x2, x3, [sp,#0x10]
 
 	/* check sj locked */
+#ifdef CONFIG_SEC_DEBUG
 	ldr_l	x0, __debug_sj_lock
+#endif
 	cmp	x0, #0
 	b.ne	3f
 

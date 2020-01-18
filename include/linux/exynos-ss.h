@@ -98,7 +98,7 @@ extern void exynos_ss_hrtimer(void *timer, s64 *now, void *fn, int en);
 struct s3c24xx_uart_port;
 extern void exynos_ss_uart(struct s3c24xx_uart_port *ourport, int flag, int en);
 #else
-#define exynos_ss_uart(a,b,c)		do { } while(0)
+extern void exynos_ss_uart(struct s3c24xx_uart_port *ourport, int flag, int en);
 #endif
 
 #ifdef CONFIG_EXYNOS_SNAPSHOT_I2C
@@ -185,13 +185,14 @@ extern void exynos_ss_get_softlockup_info(unsigned int cpu, void *info);
 #endif
 
 #else
+#define s3c2410wdt_keepalive_emergency(a, b)	do { } while (0)
 #define exynos_ss_acpm(a, b, c)		do { } while (0)
 #define exynos_ss_task(a, b)		do { } while (0)
 #define exynos_ss_work(a, b, c, d)	do { } while (0)
 #define exynos_ss_clockevent(a, b, c)	do { } while (0)
 #define exynos_ss_cpuidle(a, b, c, d)	do { } while (0)
 #define exynos_ss_suspend(a, b, c)	do { } while (0)
-#define exynos_ss_regulator(a, b, c, d)	do { } while (0)
+#define exynos_ss_regulator(a, b, c, d, e, f)         do { } while (0)
 #define exynos_ss_thermal(a, b, c, d)	do { } while (0)
 #define exynos_ss_irq(a, b, c, d)	do { } while (0)
 #define exynos_ss_irq_exit(a, b)	do { } while (0)
@@ -232,16 +233,17 @@ extern void exynos_ss_get_softlockup_info(unsigned int cpu, void *info);
 #define exynos_ss_hook_hardlockup_exit() do { } while (0)
 #define exynos_ss_get_hardlockup_info(a, b)	do { } while (0)
 #define exynos_ss_get_softlockup_info(a, b)	do { } while (0)
-
+#ifdef CONFIG_SEC_DEBUG
 static int exynos_ss_get_debug_level(void)
 {
 	return 1;
 }
+
 static int exynos_ss_get_debug_level_reg(void)
 {
 	return 1;
 }
-
+#endif
 static inline unsigned long exynos_ss_get_item_vaddr(char *name)
 {
 	return 0;
@@ -263,6 +265,7 @@ static inline unsigned long exynos_ss_get_spare_paddr(unsigned int offset)
 
 static inline void exynos_ss_bug_func(void) {BUG();}
 static inline void exynos_ss_spin_func(void) {do {wfi();} while(1);}
+#define exynos_ss_uart(a,b,c)		do { } while(0)
 
 /**
  * esslog_flag - added log information supported.

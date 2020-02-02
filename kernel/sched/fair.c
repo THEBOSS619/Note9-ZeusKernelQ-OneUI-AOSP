@@ -6860,6 +6860,10 @@ static inline bool task_fits_max(struct task_struct *p, int cpu)
 	if (capacity == max_capacity)
 		return true;
 
+	if (schedtune_prefer_perf(p) > 0 &&
+		cpumask_test_cpu(cpu, cpu_coregroup_mask(0)))
+		return false;
+
 	return __task_fits(p, cpu, 0);
 }
 

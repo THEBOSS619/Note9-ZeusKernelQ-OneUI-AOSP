@@ -3462,7 +3462,6 @@ static void sched_tick_remote(struct work_struct *work)
 	if (is_idle_task(curr))
 		goto out_unlock;
 
-	curr = rq->curr;
 	update_rq_clock(rq);
 	delta = rq_clock_task(rq) - curr->se.exec_start;
 

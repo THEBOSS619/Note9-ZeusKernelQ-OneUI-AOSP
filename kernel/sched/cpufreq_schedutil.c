@@ -365,7 +365,7 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
 	RV_DECLARE(rv);
 #endif
 
-	freq = (freq + (freq >> 2)) * util / max;
+	freq = (freq + (freq >> 2)) * int_sqrt(util * 100 / max) / 10;
 
 #ifdef CONFIG_SCHED_KAIR_GLUE
 	legacy_freq = freq;

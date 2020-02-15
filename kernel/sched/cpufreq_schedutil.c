@@ -210,7 +210,7 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
 	unsigned int freq = arch_scale_freq_invariant() ?
 				policy->cpuinfo.max_freq : policy->cur;
 
-	freq = freqvar_tipping_point(policy->cpu, freq) * util / max;
+	freq = freqvar_tipping_point(policy->cpu, freq) * int_sqrt(util * 100 / max) / 10;
 
 	if (freq == sg_policy->cached_raw_freq && !sg_policy->need_freq_update)
 		return sg_policy->next_freq;

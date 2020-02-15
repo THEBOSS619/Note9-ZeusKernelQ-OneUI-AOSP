@@ -1810,10 +1810,10 @@ struct sched_dl_entity {
 
 union rcu_special {
 	struct {
-		u8 blocked;
-		u8 need_qs;
-		u8 exp_hint; /* Hint for performance. */
-		u8 deferred_qs;
+		u8			blocked;
+		u8			need_qs;
+		u8			exp_hint; /* Hint for performance. */
+		u8			pad; /* No garbage from compiler! */
 	} b; /* Bits. */
 	u32 s; /* Set of bits. */
 };

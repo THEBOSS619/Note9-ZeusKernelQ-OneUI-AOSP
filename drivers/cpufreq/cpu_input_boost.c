@@ -12,6 +12,7 @@
 #include <linux/moduleparam.h>
 #include <linux/fb.h>
 #include <linux/slab.h>
+#include <linux/sched/sysctl.h>
 #include <linux/version.h>
 
 /* The sched_param struct is located elsewhere in newer kernels */
@@ -316,6 +317,7 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 
 	/* Boost CPU to max frequency for max boost */
 	if (test_bit(MAX_BOOST, &b->state)) {
+		sysctl_sched_energy_aware = 0;
 		policy->min = get_max_boost_freq(policy);
 		update_stune_boost(b, stune_boost);
 		return NOTIFY_OK;
@@ -332,6 +334,8 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 		policy->min = get_min_freq(policy);
 		clear_stune_boost(b);
 	}
+
+	sysctl_sched_energy_aware = 1;
 
 	return NOTIFY_OK;
 }

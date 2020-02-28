@@ -61,7 +61,6 @@
 
 extern struct ion_device *ion_exynos;
 extern struct decon_device *decon_drvdata[MAX_DECON_CNT];
-extern int decon_log_level;
 extern int dpu_bts_log_level;
 extern int win_update_log_level;
 extern int decon_systrace_enable;
@@ -114,47 +113,17 @@ void dpu_debug_printk(const char *function_name, const char *format, ...);
 
 #define decon_err(fmt, ...)							\
 	do {									\
-		if (decon_log_level >= 3) {					\
 			pr_err(pr_fmt(fmt), ##__VA_ARGS__);			\
-		}								\
 	} while (0)
 
-#define decon_warn(fmt, ...)							\
-	do {									\
-		if (decon_log_level >= 4) {					\
-			pr_warn(pr_fmt(fmt), ##__VA_ARGS__);			\
-		}								\
-	} while (0)
+#define decon_warn(fmt, ...) do {} while (0)
+#define decon_info(fmt, ...) do {} while (0)
 
-#define decon_info(fmt, ...)							\
-	do {									\
-		if (decon_log_level >= 6)					\
-			pr_info(pr_fmt(fmt), ##__VA_ARGS__);			\
-	} while (0)
+#define decon_dbg(fmt, ...) do {} while (0)
+#define DPU_DEBUG_WIN(fmt, args...) do {} while (0)
 
-#define decon_dbg(fmt, ...)							\
-	do {									\
-		if (decon_log_level >= 7)					\
-			pr_info(pr_fmt(fmt), ##__VA_ARGS__);			\
-	} while (0)
-
-#define DPU_DEBUG_WIN(fmt, args...)						\
-	do {									\
-		if (win_update_log_level >= 7)					\
-			dpu_debug_printk("WIN_UPDATE", fmt,  ##args);		\
-	} while (0)
-
-#define DPU_DEBUG_BTS(fmt, args...)						\
-	do {									\
-		if (dpu_bts_log_level >= 7)					\
-			dpu_debug_printk("BTS", fmt,  ##args);			\
-	} while (0)
-
-#define DPU_INFO_BTS(fmt, args...)						\
-	do {									\
-		if (dpu_bts_log_level >= 6)					\
-			dpu_debug_printk("BTS", fmt,  ##args);			\
-	} while (0)
+#define DPU_DEBUG_BTS(fmt, args...) do {} while (0)
+#define DPU_INFO_BTS(fmt, args...) do {} while (0)
 
 #define DPU_ERR_BTS(fmt, args...)						\
 	do {									\

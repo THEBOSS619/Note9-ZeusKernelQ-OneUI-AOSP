@@ -48,8 +48,6 @@
 #include "dpp.h"
 #include "displayport.h"
 
-int decon_log_level = 0;
-module_param(decon_log_level, int, 0644);
 int dpu_bts_log_level = 0;
 module_param(dpu_bts_log_level, int, 0644);
 int win_update_log_level = 0;

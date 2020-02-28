@@ -670,7 +670,6 @@ err:
 static int decon_enable(struct decon_device *decon)
 {
 	int ret = 0;
-	enum decon_state prev_state = decon->state;
 	enum decon_state next_state = DECON_STATE_ON;
 
 	mutex_lock(&decon->lock);
@@ -703,7 +702,6 @@ out:
 static int decon_doze(struct decon_device *decon)
 {
 	int ret = 0;
-	enum decon_state prev_state = decon->state;
 	enum decon_state next_state = DECON_STATE_DOZE;
 
 	mutex_lock(&decon->lock);
@@ -901,7 +899,6 @@ err:
 static int decon_disable(struct decon_device *decon)
 {
 	int ret = 0;
-	enum decon_state prev_state = decon->state;
 	enum decon_state next_state = DECON_STATE_OFF;
 
 	mutex_lock(&decon->lock);
@@ -937,7 +934,6 @@ out:
 static int decon_doze_suspend(struct decon_device *decon)
 {
 	int ret = 0;
-	enum decon_state prev_state = decon->state;
 	enum decon_state next_state = DECON_STATE_DOZE_SUSPEND;
 
 	mutex_lock(&decon->lock);

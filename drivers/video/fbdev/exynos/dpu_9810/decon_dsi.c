@@ -1036,7 +1036,6 @@ int decon_exit_hiber(struct decon_device *decon)
 #ifdef CONFIG_DECON_HIBER
 	struct decon_mode_info psr;
 	struct decon_param p;
-	enum decon_state prev_state = decon->state;
 
 	DPU_EVENT_START();
 
@@ -1103,7 +1102,6 @@ int decon_enter_hiber(struct decon_device *decon)
 	int ret = 0;
 #ifdef CONFIG_DECON_HIBER
 	struct decon_mode_info psr;
-	enum decon_state prev_state = decon->state;
 
 	DPU_EVENT_START();
 

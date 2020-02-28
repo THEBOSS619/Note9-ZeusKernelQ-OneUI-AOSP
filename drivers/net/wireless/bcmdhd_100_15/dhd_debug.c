@@ -612,56 +612,6 @@ dhd_dbg_verboselog_printf(dhd_pub_t *dhdp, prcd_event_log_hdr_t *plog_hdr,
 #endif /* DHD_LOG_PRINT_RATE_LIMIT */
 	/* print the message out in a logprint. Logprint expects raw format number */
 	if (!(raw_event->fmts)) {
-		if (dhdp->dbg) {
-			log_level = dhdp->dbg->dbg_rings[FW_VERBOSE_RING_ID].log_level;
-			for (id = 0; id < ARRAYSIZE(fw_verbose_level_map); id++) {
-				if ((fw_verbose_level_map[id].tag == plog_hdr->tag) &&
-					(fw_verbose_level_map[id].log_level > log_level))
-					return;
-			}
-		}
-
-		if (plog_hdr->binary_payload) {
-			DHD_ECNTR_LOG(("%06d.%03d EL:tag=%d len=%d fmt=0x%x",
-				(uint32)(log_ptr[plog_hdr->count - 1] / EL_MSEC_PER_SEC),
-				(uint32)(log_ptr[plog_hdr->count - 1] % EL_MSEC_PER_SEC),
-				plog_hdr->tag,
-				plog_hdr->count,
-				plog_hdr->fmt_num_raw));
-
-			for (count = 0; count < (plog_hdr->count - 1); count++) {
-				if (count && (count % LOG_PRINT_CNT_MAX == 0)) {
-					DHD_ECNTR_LOG(("\n\t%08x", log_ptr[count]));
-				} else {
-					DHD_ECNTR_LOG((" %08x", log_ptr[count]));
-				}
-			}
-			DHD_ECNTR_LOG(("\n"));
-		}
-		else {
-			bcm_binit(&b, fmtstr_loc_buf, FMTSTR_SIZE);
-			bcm_bprintf(&b, "%06d.%03d EL:%s:%u:%u %d %d 0x%x",
-				(uint32)(log_ptr[plog_hdr->count - 1] / EL_MSEC_PER_SEC),
-				(uint32)(log_ptr[plog_hdr->count - 1] % EL_MSEC_PER_SEC),
-				EL_PARSE_VER, logset, block,
-				plog_hdr->tag,
-				plog_hdr->count,
-				plog_hdr->fmt_num_raw);
-			for (count = 0; count < (plog_hdr->count - 1); count++) {
-				bcm_bprintf(&b, " %x", log_ptr[count]);
-			}
-
-			/* ensure preserve fw logs go to debug_dump only in case of customer4 */
-			if (logset < dhdp->event_log_max_sets &&
-				((0x01u << logset) & dhdp->logset_prsrv_mask)) {
-				DHD_PRSRV_MEM(("%s\n", b.origbuf));
-			} else {
-				DHD_FWLOG(("%s\n", b.origbuf));
-#ifdef DHD_LOG_PRINT_RATE_LIMIT
-				log_print_count++;
-#endif /* DHD_LOG_PRINT_RATE_LIMIT */
-			}
-		}
 		return;
 	}
 

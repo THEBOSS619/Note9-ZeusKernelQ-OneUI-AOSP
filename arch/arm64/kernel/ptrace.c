@@ -374,8 +374,9 @@ static int ptrace_hbp_get_resource_info(unsigned int note_type, u32 *info)
 	default:
 		return -EINVAL;
 	}
-
+#ifdef CONFIG_DEBUG_MONITORS
 	reg |= debug_monitors_arch();
+#endif
 	reg <<= 8;
 	reg |= num;
 
@@ -1112,15 +1113,18 @@ static int compat_ptrace_hbp_num_to_idx(compat_long_t num)
 
 static int compat_ptrace_hbp_get_resource_info(u32 *kdata)
 {
-	u8 num_brps, num_wrps, debug_arch, wp_len;
+	u8 num_brps, num_wrps, wp_len;
 	u32 reg = 0;
 
 	num_brps	= hw_breakpoint_slots(TYPE_INST);
 	num_wrps	= hw_breakpoint_slots(TYPE_DATA);
-
+#ifdef CONFIG_DEBUG_MONITORS
 	debug_arch	= debug_monitors_arch();
+#endif
 	wp_len		= 8;
+#ifdef CONFIG_DEBUG_MONITORS
 	reg		|= debug_arch;
+#endif
 	reg		<<= 8;
 	reg		|= wp_len;
 	reg		<<= 8;

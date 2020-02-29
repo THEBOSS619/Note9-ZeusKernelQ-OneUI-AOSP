@@ -238,7 +238,9 @@ static int hw_breakpoint_control(struct perf_event *bp,
 	struct perf_event **slots;
 	struct debug_info *debug_info = &current->thread.debug;
 	int i, max_slots, ctrl_reg, val_reg, reg_enable;
+#ifdef CONFIG_DEBUG_MONITORS
 	enum dbg_active_el dbg_el = debug_exception_level(info->ctrl.privilege);
+#endif
 	u32 ctrl;
 
 	if (info->ctrl.type == ARM_BREAKPOINT_EXECUTE) {
@@ -268,7 +270,9 @@ static int hw_breakpoint_control(struct perf_event *bp,
 		 * Ensure debug monitors are enabled at the correct exception
 		 * level.
 		 */
+#ifdef CONFIG_DEBUG_MONITORS
 		enable_debug_monitors(dbg_el);
+#endif
 		/* Fall through */
 	case HW_BREAKPOINT_RESTORE:
 		/* Setup the address register. */
@@ -287,7 +291,9 @@ static int hw_breakpoint_control(struct perf_event *bp,
 		 * Release the debug monitors for the correct exception
 		 * level.
 		 */
+#ifdef CONFIG_DEBUG_MONITORS
 		disable_debug_monitors(dbg_el);
+#endif
 		break;
 	}
 
@@ -689,13 +695,14 @@ unlock:
 
 		if (*kernel_step != ARM_KERNEL_STEP_NONE)
 			return 0;
-
+#ifdef CONFIG_DEBUG_MONITORS
 		if (kernel_active_single_step()) {
 			*kernel_step = ARM_KERNEL_STEP_SUSPEND;
 		} else {
 			*kernel_step = ARM_KERNEL_STEP_ACTIVE;
 			kernel_enable_single_step(regs);
 		}
+#endif
 	}
 
 	return 0;
@@ -830,13 +837,14 @@ static int watchpoint_handler(unsigned long addr, unsigned int esr,
 
 		if (*kernel_step != ARM_KERNEL_STEP_NONE)
 			return 0;
-
+#ifdef CONFIG_DEBUG_MONITORS
 		if (kernel_active_single_step()) {
 			*kernel_step = ARM_KERNEL_STEP_SUSPEND;
 		} else {
 			*kernel_step = ARM_KERNEL_STEP_ACTIVE;
 			kernel_enable_single_step(regs);
 		}
+#endif
 	}
 
 	return 0;
@@ -888,7 +896,9 @@ int reinstall_suspended_bps(struct pt_regs *regs)
 			toggle_bp_registers(AARCH64_DBG_REG_WCR, DBG_ACTIVE_EL0, 1);
 
 		if (*kernel_step != ARM_KERNEL_STEP_SUSPEND) {
+#ifdef CONFIG_DEBUG_MONITORS
 			kernel_disable_single_step();
+#endif
 			handled_exception = 1;
 		} else {
 			handled_exception = 0;

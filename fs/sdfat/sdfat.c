@@ -141,17 +141,6 @@ static int __sdfat_cmpi(const struct dentry *dentry, unsigned int len,
 /*************************************************************************
  * FUNCTIONS WHICH HAS KERNEL VERSION DEPENDENCY
  *************************************************************************/
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)
-static inline void inode_set_iversion(struct inode *inode, u64 val)
-{
-	inode->i_version = val;
-}
-static inline u64 inode_peek_iversion(struct inode *inode)
-{
-	return inode->i_version;
-}
-#endif
-
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 0)
        /* EMPTY */

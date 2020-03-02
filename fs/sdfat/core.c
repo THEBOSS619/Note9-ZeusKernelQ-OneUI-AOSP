@@ -44,13 +44,6 @@
 /*************************************************************************
  * FUNCTIONS WHICH HAS KERNEL VERSION DEPENDENCY
  *************************************************************************/
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)
-static inline u64 inode_peek_iversion(struct inode *inode)
-{
-	return inode->i_version;
-}
-#endif
-
 
 /*----------------------------------------------------------------------*/
 /*  Constant & Macro Definitions                                        */

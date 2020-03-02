@@ -359,7 +359,7 @@ static int ext4_file_open(struct inode * inode, struct file * filp)
 		return ret;
 
 	if (ext4_encrypted_inode(dir) &&
-	    !ext4_is_child_context_consistent_with_parent(dir, inode)) {
+	    !fscrypt_has_permitted_context(dir, inode)) {
 		ext4_warning(inode->i_sb,
 			     "Inconsistent encryption contexts: %lu/%lu\n",
 			     (unsigned long) dir->i_ino,

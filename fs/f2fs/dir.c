@@ -7,6 +7,7 @@
  */
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
+#include <linux/iversion.h>
 #include <linux/sched.h>
 #include "f2fs.h"
 #include "node.h"

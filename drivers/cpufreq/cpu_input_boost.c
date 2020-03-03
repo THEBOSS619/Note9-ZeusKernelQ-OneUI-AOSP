@@ -312,6 +312,7 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 	if (test_bit(SCREEN_OFF, &b->state)) {
 		policy->min = get_min_freq(policy);
 		clear_stune_boost(b);
+		sysctl_sched_energy_aware = 1;
 		return NOTIFY_OK;
 	}
 
@@ -335,6 +336,7 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 		clear_stune_boost(b);
 	}
 
+	/* If we are not boosting max for app launch/device wake, enable EAS */
 	sysctl_sched_energy_aware = 1;
 
 	return NOTIFY_OK;

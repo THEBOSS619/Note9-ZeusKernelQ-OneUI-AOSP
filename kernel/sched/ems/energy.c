@@ -265,14 +265,6 @@ int select_energy_cpu(struct task_struct *p, int prev_cpu, int sd_flag)
 	rcu_read_unlock();
 
 	/*
-	 * We cannot do energy-aware wakeup placement sensibly for tasks
-	 * with 0 utilization, so let them be placed according to the normal
-	 * strategy.
-	 */
-	if (!task_util(p))
-		return -1;
-
-	/*
 	 * Find eco-friendly target.
 	 * After selecting the best cpu according to strategy,
 	 * we choose a cpu that is energy efficient compared to prev cpu.

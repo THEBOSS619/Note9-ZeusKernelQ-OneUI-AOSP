@@ -161,6 +161,14 @@ int exynos_wakeup_balance(struct task_struct *p, int prev_cpu, int sd_flag, int 
 	char state[30] = "fail";
 
 	/*
+	 * Prefer pure CFS path for tasks with 0 utilization
+	 */
+	if (!task_util_est(p)) {
+		strcpy(state, "zero util");
+		goto out;
+	}
+
+	/*
 	 * Since the utilization of a task is accumulated before sleep, it updates
 	 * the utilization to determine which cpu the task will be assigned to.
 	 * Exclude new task.

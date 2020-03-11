@@ -756,9 +756,9 @@ export DISABLE_CFI
 endif
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
-KBUILD_CFLAGS   += -Os
+KBUILD_CFLAGS	+= -Os $(call cc-disable-warning,maybe-uninitialized,)
 else
-KBUILD_CFLAGS   += -O2
+KBUILD_CFLAGS   += -O3 -pipe $(call cc-disable-warning,maybe-uninitialized,)
 endif
 
 KBUILD_CFLAGS += $(call cc-ifversion, -gt, 0900, \

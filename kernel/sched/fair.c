@@ -7676,6 +7676,16 @@ out:
 static inline bool nohz_kick_needed(struct rq *rq, bool only_update);
 static void nohz_balancer_kick(bool only_update);
 
+static bool ontime_sync_allowed(struct task_struct *p)
+{
+	if (schedtune_ontime_en(p)) {
+		if (!schedtune_prefer_perf(p))
+			return false;
+	}
+
+	return true;
+}
+
 /*
  * select_task_rq_fair: Select target runqueue for the waking task in domains
  * that have the 'sd_flag' flag set. In practice, this is SD_BALANCE_WAKE,
@@ -7706,7 +7716,8 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
 
 			if (sysctl_sched_sync_hint_enable && sync &&
 			    !_wake_cap && about_to_idle &&
-			    cpu_is_in_target_set(p, cpu))
+			    cpu_is_in_target_set(p, cpu) &&
+			    ontime_sync_allowed(p))
 				return cpu;
 		}
 

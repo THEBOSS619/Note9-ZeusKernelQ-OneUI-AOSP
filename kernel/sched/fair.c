@@ -7563,13 +7563,14 @@ task_is_boosted(struct task_struct *p) {
 
  /*
  * Check whether cpu is in the fastest set of cpu's that p should run on.
- * If p is boosted, prefer that p runs on a faster cpu; otherwise, allow p
- * to run on any cpu.
+ * If p is boosted, or a prefer_perf task, prefer that p runs on a faster
+ * cpu; otherwise, allow p to run on any cpu.
  */
 static inline bool
 cpu_is_in_target_set(struct task_struct *p, int cpu)
 {
-	int first_cpu = start_cpu(task_is_boosted(p));
+	bool boosted = (schedtune_prefer_perf(p) || task_is_boosted(p));
+	int first_cpu = start_cpu(boosted);
 	int next_usable_cpu = cpumask_next(first_cpu - 1, tsk_cpus_allowed(p));
 	return cpu >= next_usable_cpu || next_usable_cpu >= nr_cpu_ids;
 }

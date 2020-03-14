@@ -24,6 +24,8 @@ static DEFINE_SPINLOCK(sync_timeline_list_lock);
 static LIST_HEAD(sync_file_list_head);
 static DEFINE_SPINLOCK(sync_file_list_lock);
 
+#ifdef CONFIG_DEBUG_TIMELINE
+
 void sync_timeline_debug_add(struct sync_timeline *obj)
 {
 	unsigned long flags;
@@ -59,6 +61,35 @@ void sync_file_debug_remove(struct sync_file *sync_file)
 	list_del(&sync_file->sync_file_list);
 	spin_unlock_irqrestore(&sync_file_list_lock, flags);
 }
+
+#define DUMP_CHUNK 256
+static char sync_dump_buf[64 * 1024];
+
+void sync_dump(void)
+{
+	struct seq_file s = {
+		.buf = sync_dump_buf,
+		.size = sizeof(sync_dump_buf) - 1,
+	};
+	int i;
+
+	sync_debugfs_show(&s, NULL);
+
+	for (i = 0; i < s.count; i += DUMP_CHUNK) {
+		if ((s.count - i) > DUMP_CHUNK) {
+			char c = s.buf[i + DUMP_CHUNK];
+
+			s.buf[i + DUMP_CHUNK] = 0;
+			pr_cont("%s", s.buf + i);
+			s.buf[i + DUMP_CHUNK] = c;
+		} else {
+			s.buf[s.count] = 0;
+			pr_cont("%s", s.buf + i);
+		}
+	}
+}
+
+#endif
 
 static const char *sync_status_str(int status)
 {
@@ -215,29 +246,3 @@ static __init int sync_debugfs_init(void)
 	return 0;
 }
 late_initcall(sync_debugfs_init);
-
-#define DUMP_CHUNK 256
-static char sync_dump_buf[64 * 1024];
-void sync_dump(void)
-{
-	struct seq_file s = {
-		.buf = sync_dump_buf,
-		.size = sizeof(sync_dump_buf) - 1,
-	};
-	int i;
-
-	sync_debugfs_show(&s, NULL);
-
-	for (i = 0; i < s.count; i += DUMP_CHUNK) {
-		if ((s.count - i) > DUMP_CHUNK) {
-			char c = s.buf[i + DUMP_CHUNK];
-
-			s.buf[i + DUMP_CHUNK] = 0;
-			pr_cont("%s", s.buf + i);
-			s.buf[i + DUMP_CHUNK] = c;
-		} else {
-			s.buf[s.count] = 0;
-			pr_cont("%s", s.buf + i);
-		}
-	}
-}

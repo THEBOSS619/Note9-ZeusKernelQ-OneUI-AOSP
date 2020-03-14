@@ -64,28 +64,30 @@ struct sync_pt {
 	struct work_struct defer_wq;
 };
 
-#ifdef CONFIG_SW_SYNC
-
 extern const struct file_operations sw_sync_debugfs_fops;
-
+#if defined(CONFIG_DEBUG_FS) && defined(CONFIG_DEBUG_TIMELINE)
 void sync_timeline_debug_add(struct sync_timeline *obj);
 void sync_timeline_debug_remove(struct sync_timeline *obj);
 void sync_file_debug_add(struct sync_file *fence);
 void sync_file_debug_remove(struct sync_file *fence);
 void sync_dump(void);
+struct sync_timeline *sync_timeline_create(const char *name);
+struct sync_pt *sync_pt_create(struct sync_timeline *obj, int size,
+			     unsigned int value);
+void sync_timeline_signal(struct sync_timeline *obj, unsigned int inc);
+void sync_timeline_put(struct sync_timeline *obj);
+#else
+static void inline sync_timeline_debug_add(struct sync_timeline *obj) {}
+static void inline sync_timeline_debug_remove(struct sync_timeline *obj) {}
+static void inline sync_file_debug_add(struct sync_file *fence) {}
+static void inline sync_file_debug_remove(struct sync_file *fence) {}
+static void inline sync_dump(void) {}
 
 struct sync_timeline *sync_timeline_create(const char *name);
 struct sync_pt *sync_pt_create(struct sync_timeline *obj, int size,
 			     unsigned int value);
 void sync_timeline_signal(struct sync_timeline *obj, unsigned int inc);
 void sync_timeline_put(struct sync_timeline *obj);
-
-#else
-# define sync_timeline_debug_add(obj)
-# define sync_timeline_debug_remove(obj)
-# define sync_file_debug_add(fence)
-# define sync_file_debug_remove(fence)
-# define sync_dump()
 #endif
 
 #endif /* _LINUX_SYNC_H */

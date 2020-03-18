@@ -1620,6 +1620,11 @@ config CC_OPTIMIZE_FOR_SIZE
 
 endchoice
 
+config LTO
+	bool "Enable Link Time Optimization"
+	default y
+	select THIN_ARCHIVES
+
 config SYSCTL
 	bool
 

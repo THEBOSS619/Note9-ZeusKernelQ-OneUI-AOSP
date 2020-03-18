@@ -10,9 +10,9 @@ obj-$(CONFIG_ARCH_EXYNOS)	+= exynos-el3_mon.o
 # CAL
 obj-$(CONFIG_CAL_IF)		+= cal-if/
 obj-$(CONFIG_EXYNOS_CHIPID)	+= exynos-chipid.o
-obj-$(CONFIG_EXYNOS_PD)        += exynos-pd.o exynos-pd-dbg.o
+obj-$(CONFIG_EXYNOS_PD)        += exynos-pd.o
 obj-$(CONFIG_EXYNOS_RGT)        += exynos-rgt.o
-obj-$(CONFIG_EXYNOS_FLEXPMU_DBG)        += exynos-flexpmu-dbg.o
+obj-$(CONFIG_EXYNOS_FLEXPMU_DBG)        += exynos-flexpmu-dbg.o exynos-pd-dbg.o
 
 # ACPM
 obj-$(CONFIG_EXYNOS_ACPM)       += acpm/

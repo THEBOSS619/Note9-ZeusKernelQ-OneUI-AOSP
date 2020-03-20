@@ -39,6 +39,7 @@
 #include <linux/rcupdate_wait.h>
 #include <linux/kprobes.h>
 #include <linux/slab.h>
+#include <linux/irq_work.h>
 
 #define CREATE_TRACE_POINTS
 

@@ -100,6 +100,25 @@ static struct prefer_perf *find_prefer_perf(int boost)
 	return NULL;
 }
 
+int prefer_perf_on_big(struct task_struct *p)
+{
+	struct prefer_perf *pp;
+	int boost;
+
+	if (!prefer_perf_services)
+		return 0;
+
+	boost = schedtune_prefer_perf(p);
+	if (boost <= 0)
+		return 0;
+
+	pp = find_prefer_perf(boost);
+	if (!pp)
+		return 0;
+
+	return task_util_est(p) > pp->threshold;
+}
+
 static int
 select_prefer_cpu(struct task_struct *p, int coregroup_count, struct cpumask *prefer_cpus)
 {

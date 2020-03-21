@@ -111,6 +111,14 @@ static unsigned long get_lower_boundary(int cpu)
 		return 0;
 }
 
+int ontime_on_big(struct task_struct *p)
+{
+	if (!schedtune_ontime_en(p))
+		return 0;
+
+	return ontime_load_avg(p) > get_upper_boundary(0);
+}
+
 static unsigned long get_coverage_ratio(int cpu)
 {
 	struct ontime_cond *curr = get_current_cond(cpu);

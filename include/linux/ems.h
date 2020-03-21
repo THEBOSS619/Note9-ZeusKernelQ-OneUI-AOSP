@@ -59,6 +59,7 @@ extern int ontime_can_migration(struct task_struct *p, int cpu);
 extern void ontime_update_load_avg(u64 delta, int cpu, unsigned long weight, struct sched_avg *sa);
 extern void ontime_new_entity_load(struct task_struct *parent, struct sched_entity *se);
 extern void ontime_trace_task_info(struct task_struct *p);
+extern int ontime_on_big(struct task_struct *p);
 
 /* load balance trigger */
 extern bool lbt_overutilized(int cpu, int level);
@@ -98,6 +99,10 @@ static inline int ontime_can_migration(struct task_struct *p, int cpu)
 static inline void ontime_update_load_avg(u64 delta, int cpu, unsigned long weight, struct sched_avg *sa) { }
 static inline void ontime_new_entity_load(struct task_struct *p, struct sched_entity *se) { }
 static inline void ontime_trace_task_info(struct task_struct *p) { }
+static inline int ontime_on_big(struct task_struct *p)
+{
+	return 0;
+}
 
 static inline bool lbt_overutilized(int cpu, int level)
 {

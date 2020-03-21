@@ -32,6 +32,7 @@
 #include <linux/task_work.h>
 #include <linux/module.h>
 #include <linux/ems.h>
+#include <linux/ems_service.h>
 
 #include <trace/events/sched.h>
 
@@ -6560,11 +6561,18 @@ static inline bool __task_fits(struct task_struct *p, int cpu, int util)
 
 static inline bool task_fits_max(struct task_struct *p, int cpu)
 {
+	struct root_domain *rd = cpu_rq(cpu)->rd;
 	unsigned long capacity = capacity_orig_of(cpu);
-	unsigned long max_capacity = cpu_rq(cpu)->rd->max_cpu_capacity.val;
+	unsigned long max_capacity = rd->max_cpu_capacity.val;
+	int min_cap_cpu = rd->min_cap_orig_cpu;
 
 	if (capacity == max_capacity)
 		return true;
+
+	if (cpumask_test_cpu(cpu, cpu_coregroup_mask(min_cap_cpu))) {
+		if (ontime_on_big(p) || prefer_perf_on_big(p))
+			return false;
+	}
 
 	return __task_fits(p, cpu, 0);
 }
@@ -8359,6 +8367,7 @@ enum group_type {
 #define LBF_NEED_BREAK	0x02
 #define LBF_DST_PINNED  0x04
 #define LBF_SOME_PINNED	0x08
+#define LBF_IGNORE_PERF_TASKS 0x100
 
 struct lb_env {
 	struct sched_domain	*sd;
@@ -8476,11 +8485,6 @@ static inline int migrate_degrades_locality(struct task_struct *p,
 }
 #endif
 
-static inline bool smaller_cpu_capacity(int cpu, int ref)
-{
-	return capacity_orig_of(cpu) < capacity_orig_of(ref);
-}
-
 /*
  * can_migrate_task - may task p from runqueue rq be migrated to this_cpu?
  */
@@ -8501,12 +8505,6 @@ int can_migrate_task(struct task_struct *p, struct lb_env *env)
 	 */
 	if (!ontime_can_migration(p, env->dst_cpu))
 		return 0;
-
-#ifdef CONFIG_SCHED_TUNE
-	if (smaller_cpu_capacity(env->dst_cpu, env->src_cpu) &&
-	    schedtune_prefer_perf(p))
-		return 0;
-#endif
 
 	if (throttled_lb_pair(task_group(p), env->src_cpu, env->dst_cpu))
 		return 0;
@@ -8543,6 +8541,11 @@ int can_migrate_task(struct task_struct *p, struct lb_env *env)
 
 	/* Record that we found atleast one task that could run on dst_cpu */
 	env->flags &= ~LBF_ALL_PINNED;
+
+	/* Don't detach task if it doesn't fit on the destination */
+	if (env->flags & LBF_IGNORE_PERF_TASKS &&
+		!task_fits_max(p, env->dst_cpu))
+		return 0;
 
 	if (task_running(env->src_rq, p)) {
 		schedstat_inc(p->se.statistics.nr_failed_migrations_running);
@@ -8630,12 +8633,17 @@ static int detach_tasks(struct lb_env *env)
 	struct task_struct *p;
 	unsigned long load;
 	int detached = 0;
+	int orig_loop = env->loop;
 
 	lockdep_assert_held(&env->src_rq->lock);
 
 	if (env->imbalance <= 0)
 		return 0;
 
+	if (capacity_orig_of(env->dst_cpu) < capacity_orig_of(env->src_cpu))
+		env->flags |= LBF_IGNORE_PERF_TASKS;
+
+redo:
 	while (!list_empty(tasks)) {
 		/*
 		 * We don't want to steal all, otherwise we may be treated likewise,
@@ -8695,6 +8703,13 @@ static int detach_tasks(struct lb_env *env)
 		continue;
 next:
 		list_move_tail(&p->se.group_node, tasks);
+	}
+
+	if ((env->flags & LBF_IGNORE_PERF_TASKS) && !detached) {
+		tasks = &env->src_rq->cfs_tasks;
+		env->flags &= ~LBF_IGNORE_PERF_TASKS;
+		env->loop = orig_loop;
+		goto redo;
 	}
 
 	/*

@@ -30,7 +30,9 @@ struct kpp {
 /* prefer perf */
 extern int kpp_status(int grp_idx);
 extern void kpp_request(int grp_idx, struct kpp *req, int value);
+extern int prefer_perf_on_big(struct task_struct *p);
 #else
 static inline int kpp_status(int grp_idx) { return 0; }
 static inline void kpp_request(int grp_idx, struct kpp *req, int value) { }
+static inline int prefer_perf_on_big(struct task_struct *p) { return 0; }
 #endif

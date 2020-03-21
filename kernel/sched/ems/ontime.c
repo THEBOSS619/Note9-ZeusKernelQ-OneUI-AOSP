@@ -61,10 +61,22 @@ struct ontime_env {
 	int			boost_migration;
 };
 DEFINE_PER_CPU(struct ontime_env, ontime_env);
+extern long schedtune_margin(unsigned long signal, long boost);
 
 static inline struct sched_entity *se_of(struct sched_avg *sa)
 {
 	return container_of(sa, struct sched_entity, avg);
+}
+
+static inline unsigned long ontime_load_avg(struct task_struct *p)
+{
+	int boost = schedtune_task_boost(p);
+	unsigned long load_avg = ontime_of(p)->avg.load_avg;
+
+	if (boost == 0)
+		return load_avg;
+
+	return load_avg + schedtune_margin(load_avg, boost);
 }
 
 struct ontime_cond *get_current_cond(int cpu)
@@ -100,6 +112,14 @@ static unsigned long get_lower_boundary(int cpu, struct task_struct *p)
 		return l_boundary(curr, p);
 	else
 		return 0;
+}
+
+int ontime_on_big(struct task_struct *p)
+{
+	if (!schedtune_ontime_en(p))
+		return 0;
+
+	return ontime_load_avg(p) > get_upper_boundary(task_cpu(p), p);
 }
 
 static unsigned long get_coverage_ratio(int cpu)

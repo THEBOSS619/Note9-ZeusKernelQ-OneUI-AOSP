@@ -54,6 +54,7 @@ exynos_wakeup_balance(struct task_struct *p, int prev_cpu, int sd_flag, int sync
 /* ontime migration */
 extern void ontime_migration(void);
 extern int ontime_can_migration(struct task_struct *p, int cpu);
+extern int ontime_on_big(struct task_struct *p);
 
 /* load balance trigger */
 extern bool lbt_overutilized(int cpu, int level);
@@ -111,6 +112,10 @@ static inline void ontime_migration(void) { }
 static inline int ontime_can_migration(struct task_struct *p, int cpu)
 {
 	return 1;
+}
+static inline int ontime_on_big(struct task_struct *p)
+{
+	return 0;
 }
 
 static inline bool lbt_overutilized(int cpu, int level)

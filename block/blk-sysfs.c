@@ -797,7 +797,7 @@ static void blk_wb_init(struct request_queue *q)
 		return;
 #endif
 
-	rwb = wbt_init(q->backing_dev_info, &wb_stat_ops, q);
+	rwb = wbt_init(&q->backing_dev_info, &wb_stat_ops, q);
 
 	/*
 	 * If this fails, we don't get throttling

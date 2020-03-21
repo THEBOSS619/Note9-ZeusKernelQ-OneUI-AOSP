@@ -55,10 +55,8 @@ void __blk_mq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
 /*
  * CPU hotplug helpers
  */
-#ifndef CONFIG_EXYNOS_HOTPLUG_GOVERNOR
 void blk_mq_enable_hotplug(void);
 void blk_mq_disable_hotplug(void);
-#endif
 
 /*
  * CPU -> queue mappings
@@ -132,11 +130,12 @@ static inline void blk_mq_set_alloc_data(struct blk_mq_alloc_data *data,
  * Internal helpers for request allocation/init/free
  */
 void blk_mq_rq_ctx_init(struct request_queue *q, struct blk_mq_ctx *ctx,
-			struct request *rq, unsigned int op);
+			       struct request *rq, int op,
+			       unsigned int op_flags);
 void __blk_mq_free_request(struct blk_mq_hw_ctx *hctx, struct blk_mq_ctx *ctx,
 				struct request *rq);
-struct request *__blk_mq_alloc_request(struct blk_mq_alloc_data *data,
-					unsigned int op);
+struct request *
+__blk_mq_alloc_request(struct blk_mq_alloc_data *data, int op, int op_flags);
 
 static inline bool blk_mq_hctx_stopped(struct blk_mq_hw_ctx *hctx)
 {

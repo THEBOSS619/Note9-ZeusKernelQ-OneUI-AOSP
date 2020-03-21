@@ -324,20 +324,4 @@ static inline bool blk_qc_t_is_internal(blk_qc_t cookie)
 	return (cookie & BLK_QC_T_INTERNAL) != 0;
 }
 
-struct blk_issue_stat {
-	u64 time;
-};
-
-#define BLK_RQ_STAT_BATCH	64
-
-struct blk_rq_stat {
-	s64 mean;
-	u64 min;
-	u64 max;
-	s32 nr_samples;
-	s32 nr_batch;
-	u64 batch;
-	s64 time;
-};
-
 #endif /* __LINUX_BLK_TYPES_H */

@@ -23,6 +23,7 @@
 #include <linux/delay.h>
 #include <linux/crash_dump.h>
 #include <linux/prefetch.h>
+#include <linux/cpuhotplug.h>
 
 #include <trace/events/block.h>
 
@@ -241,7 +242,7 @@ struct request *__blk_mq_alloc_request(struct blk_mq_alloc_data *data, int op, i
 EXPORT_SYMBOL_GPL(__blk_mq_alloc_request);
 
 struct request *blk_mq_alloc_request(struct request_queue *q, int rw,
-		unsigned int flags)
+		unsigned int flags, unsigned int hctx_idx)
 {
 	struct blk_mq_ctx *ctx;
 	struct blk_mq_hw_ctx *hctx;
@@ -1318,7 +1319,6 @@ static struct request *blk_mq_map_request(struct request_queue *q,
 	struct request *rq;
 	int op = bio_data_dir(bio);
 	int op_flags = 0;
-	struct blk_mq_alloc_data alloc_data;
 
 	blk_queue_enter_live(q);
 	ctx = blk_mq_get_ctx(q);
@@ -2607,10 +2607,10 @@ static unsigned long blk_mq_poll_nsecs(struct request_queue *q,
 	 * important on devices where the completion latencies are longer
 	 * than ~10 usec.
 	 */
-	if (req_op(rq) == REQ_OP_READ && stat[BLK_STAT_READ].nr_samples)
-		ret = (stat[BLK_STAT_READ].mean + 1) / 2;
-	else if (req_op(rq) == REQ_OP_WRITE && stat[BLK_STAT_WRITE].nr_samples)
-		ret = (stat[BLK_STAT_WRITE].mean + 1) / 2;
+	if (req_op(rq) == REQ_OP_READ && stat[0].nr_samples)
+		ret = (stat[0].mean + 1) / 2;
+	else if (req_op(rq) == REQ_OP_WRITE && stat[1].nr_samples)
+		ret = (stat[1].mean + 1) / 2;
 
 	return ret;
 }

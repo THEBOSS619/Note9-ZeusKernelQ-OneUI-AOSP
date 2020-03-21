@@ -224,3 +224,16 @@ void blk_stat_set_issue_time(struct blk_issue_stat *stat)
 	stat->time = (stat->time & BLK_STAT_MASK) |
 			(ktime_to_ns(ktime_get()) & BLK_STAT_TIME_MASK);
 }
+
+/*
+ * Enable stat tracking, return whether it was enabled
+ */
+bool blk_stat_enable(struct request_queue *q)
+{
+	if (!test_bit(QUEUE_FLAG_STATS, &q->queue_flags)) {
+		set_bit(QUEUE_FLAG_STATS, &q->queue_flags);
+		return false;
+	}
+
+	return true;
+}

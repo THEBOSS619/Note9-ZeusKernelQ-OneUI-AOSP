@@ -17,9 +17,6 @@
 
 #define DEBUG_MAXIM_DSM
 #ifdef DEBUG_MAXIM_DSM
-#define dbg_maxdsm(format, args...)	\
-pr_info("[MAXIM_DSM] %s: " format "\n", __func__, ## args)
-#else
 #define dbg_maxdsm(format, args...)
 #endif /* DEBUG_MAXIM_DSM */
 

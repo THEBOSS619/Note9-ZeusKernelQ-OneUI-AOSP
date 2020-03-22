@@ -459,6 +459,7 @@ int madera_core_destroy(struct madera_priv *priv)
 }
 EXPORT_SYMBOL_GPL(madera_core_destroy);
 
+#if 0
 static void madera_debug_dump_domain_groups(const struct madera_priv *priv)
 {
 	struct madera *madera = priv->madera;
@@ -468,6 +469,7 @@ static void madera_debug_dump_domain_groups(const struct madera_priv *priv)
 		dev_dbg(madera->dev, "domain_grp_ref[%d]=%d\n", i,
 			priv->domain_group_ref[i]);
 }
+#endif
 
 int madera_domain_clk_ev(struct snd_soc_dapm_widget *w,
 			 struct snd_kcontrol *kcontrol,
@@ -502,9 +504,9 @@ int madera_domain_clk_ev(struct snd_soc_dapm_widget *w,
 	default:
 		break;
 	}
-
+#if 0
 	madera_debug_dump_domain_groups(priv);
-
+#endif
 	mutex_unlock(&priv->rate_lock);
 
 	return 0;

@@ -36,9 +36,6 @@
 
 #define DEBUG_MAX98512
 #ifdef DEBUG_MAX98512
-#define msg_maxim(format, args...) \
-	pr_info("[MAX98512_DEBUG] %s: " format "\n", __func__, ## args)
-#else
 #define msg_maxim(format, args...)
 #endif /* DEBUG_MAX98512 */
 

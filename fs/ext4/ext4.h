@@ -3297,10 +3297,6 @@ static inline bool ext4_android_claim_sec_r_blocks(unsigned int flags) {
 	if (flags & EXT4_MB_USE_EXTRA_ROOT_BLOCKS)
 		return true;
 
-#if ANDROID_VERSION < 90000
-	if (in_group_p(AID_USE_SEC_RESERVED))
-		return true;
-#endif
 
 	return false;
 }

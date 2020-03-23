@@ -72,12 +72,8 @@ static int parse_options(struct super_block *sb, char *options, int silent,
 	vfsopts->gid = 0;
 	/* by default, 0MB is reserved */
 	opts->reserved_mb = 0;
-#if ANDROID_VERSION > 80000
 	/* by default, gid derivation is off */
 	opts->gid_derivation = false;
-#else
-	opts->gid_derivation = true;
-#endif
 	opts->default_normal = false;
 	opts->nocache = false;
 
@@ -311,12 +307,6 @@ static int sdcardfs_read_super(struct vfsmount *mnt, struct super_block *sb,
 	lower_sb = lower_path.dentry->d_sb;
 	atomic_inc(&lower_sb->s_active);
 	sdcardfs_set_lower_super(sb, lower_sb);
-
-#if ANDROID_VERSION == 90000
-	if (lower_sb->s_magic != EXT4_SUPER_MAGIC &&
-			lower_sb->s_magic != F2FS_SUPER_MAGIC)
-		sb_info->options.nocache = true;
-#endif
 
 	sb->s_stack_depth = lower_sb->s_stack_depth + 1;
 	if (sb->s_stack_depth > FILESYSTEM_MAX_STACK_DEPTH) {

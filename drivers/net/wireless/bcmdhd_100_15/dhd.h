@@ -2559,49 +2559,19 @@ extern uint dhd_pktgen_len;
 extern char fw_path2[MOD_PARAM_PATHLEN];
 #endif // endif
 
-#if defined(ANDROID_PLATFORM_VERSION)
-#if (ANDROID_PLATFORM_VERSION < 7)
-#define DHD_LEGACY_FILE_PATH
-#define VENDOR_PATH "/system"
-#elif (ANDROID_PLATFORM_VERSION == 7)
-#define VENDOR_PATH "/system"
-#elif (ANDROID_PLATFORM_VERSION >= 8)
 #define VENDOR_PATH "/vendor"
-#endif /* ANDROID_PLATFORM_VERSION < 7 */
-#else
-#define VENDOR_PATH ""
-#endif /* ANDROID_PLATFORM_VERSION */
-
-#if defined(ANDROID_PLATFORM_VERSION)
-#if (ANDROID_PLATFORM_VERSION < 9)
-#ifdef WL_STATIC_IF
-#undef WL_STATIC_IF
-#endif /* WL_STATIC_IF */
-#ifdef WL_STATIC_IFNAME_PREFIX
-#undef WL_STATIC_IFNAME_PREFIX
-#endif /* WL_STATIC_IFNAME_PREFIX */
-#endif /* ANDROID_PLATFORM_VERSION < 9 */
-#endif /* ANDROID_PLATFORM_VERSION */
 
 #if defined(DHD_LEGACY_FILE_PATH)
 #define PLATFORM_PATH	"/data/"
 #elif defined(PLATFORM_SLP)
 #define PLATFORM_PATH	"/opt/etc/"
 #else
-#if defined(ANDROID_PLATFORM_VERSION)
-#if (ANDROID_PLATFORM_VERSION >= 9)
 #define PLATFORM_PATH	"/data/vendor/conn/"
 #define DHD_MAC_ADDR_EXPORT
 #define DHD_ADPS_BAM_EXPORT
 #define DHD_EXPORT_CNTL_FILE
 #define DHD_SOFTAP_DUAL_IF_INFO
 #define DHD_SEND_HANG_PRIVCMD_ERRORS
-#else
-#define PLATFORM_PATH   "/data/misc/conn/"
-#endif /* ANDROID_PLATFORM_VERSION >= 9 */
-#else
-#define PLATFORM_PATH   "/data/misc/conn/"
-#endif /* ANDROID_PLATFORM_VERSION */
 #endif /* DHD_LEGACY_FILE_PATH */
 
 #ifdef DHD_MAC_ADDR_EXPORT

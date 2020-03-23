@@ -278,14 +278,9 @@ static unsigned int __sbitmap_weight(const struct sbitmap *sb, bool set)
 	return weight;
 }
 
-static unsigned int sbitmap_weight(const struct sbitmap *sb)
+unsigned int sbitmap_weight(const struct sbitmap *sb)
 {
 	return __sbitmap_weight(sb, true);
-}
-
-static unsigned int sbitmap_cleared(const struct sbitmap *sb)
-{
-	return __sbitmap_weight(sb, false);
 }
 
 static unsigned int sbq_calc_wake_batch(struct sbitmap_queue *sbq,

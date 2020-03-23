@@ -13,6 +13,8 @@
 #include "blk-mq.h"
 #include "blk-mq-tag.h"
 
+extern unsigned int sbitmap_weight(const struct sbitmap *sb);
+
 bool blk_mq_has_free_tags(struct blk_mq_tags *tags)
 {
 	if (!tags)

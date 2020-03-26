@@ -1280,7 +1280,9 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
 		lv = sizeof(u64);
 		if (len < lv)
 			return -EINVAL;
+#ifdef CONFIG_INET_DIAG
 		v.val64 = sock_gen_cookie(sk);
+#endif
 		break;
 	default:
 		/* We implement the SO_SNDLOWAT etc to not be settable

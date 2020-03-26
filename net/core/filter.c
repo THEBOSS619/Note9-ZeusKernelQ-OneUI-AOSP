@@ -2549,7 +2549,11 @@ static const struct bpf_func_proto bpf_xdp_event_output_proto = {
 
 BPF_CALL_1(bpf_get_socket_cookie, struct sk_buff *, skb)
 {
+#ifdef CONFIG_INET_DIAG
 	return skb->sk ? sock_gen_cookie(skb->sk) : 0;
+#else
+	return 0;
+#endif
 }
 
 static const struct bpf_func_proto bpf_get_socket_cookie_proto = {

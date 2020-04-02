@@ -100,6 +100,8 @@ torture_param(int, stall_cpu, 0, "Stall duration (s), zero to disable.");
 torture_param(int, stall_cpu_holdoff, 10,
 	     "Time to wait before starting stall (s).");
 torture_param(int, stall_cpu_irqsoff, 0, "Disable interrupts while stalling.");
+torture_param(int, stall_gp_kthread, 0,
+	      "Grace-period kthread stall duration (s).");
 torture_param(int, stat_interval, 60,
 	     "Number of seconds between stats printk()s");
 torture_param(int, stutter, 5, "Number of seconds to run/halt test");
@@ -1595,7 +1597,17 @@ static int rcu_torture_stall(void *args)
 		schedule_timeout_interruptible(stall_cpu_holdoff * HZ);
 		VERBOSE_TOROUT_STRING("rcu_torture_stall end holdoff");
 	}
-	if (!kthread_should_stop()) {
+	if (!kthread_should_stop() && stall_gp_kthread > 0) {
+		VERBOSE_TOROUT_STRING("rcu_torture_stall begin GP stall");
+		rcu_gp_set_torture_wait(stall_gp_kthread * HZ);
+		for (idx = 0; idx < stall_gp_kthread + 2; idx++) {
+			if (kthread_should_stop())
+				break;
+			schedule_timeout_uninterruptible(HZ);
+		}
+	}
+	if (!kthread_should_stop() && stall_cpu > 0) {
+		VERBOSE_TOROUT_STRING("rcu_torture_stall begin CPU stall");
 		stop_at = ktime_get_seconds() + stall_cpu;
 		/* RCU CPU stall is expected behavior in following code. */
 		rcu_read_lock();
@@ -1613,8 +1625,8 @@ static int rcu_torture_stall(void *args)
 		else
 			preempt_enable();
 		rcu_read_unlock();
-		pr_alert("rcu_torture_stall end.\n");
 	}
+	pr_alert("rcu_torture_stall end.\n");
 	torture_shutdown_absorb("rcu_torture_stall");
 	while (!kthread_should_stop())
 		schedule_timeout_interruptible(10 * HZ);
@@ -1624,7 +1636,7 @@ static int rcu_torture_stall(void *args)
 /* Spawn CPU-stall kthread, if stall_cpu specified. */
 static int __init rcu_torture_stall_init(void)
 {
-	if (stall_cpu <= 0)
+	if (stall_cpu <= 0 && stall_gp_kthread <= 0)
 		return 0;
 	return torture_create_kthread(rcu_torture_stall, NULL, stall_task);
 }

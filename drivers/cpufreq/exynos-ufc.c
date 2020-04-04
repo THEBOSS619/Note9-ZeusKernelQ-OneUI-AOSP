@@ -17,7 +17,6 @@
 #include <linux/cpumask.h>
 #include <linux/cpufreq.h>
 #include <linux/pm_opp.h>
-#include <linux/ehmp.h>
 
 #include <soc/samsung/exynos-cpu_hotplug.h>
 
@@ -108,12 +107,8 @@ static bool boosted;
 static inline void control_boost(bool enable)
 {
 	if (boosted && !enable) {
-		request_kernel_prefer_perf(STUNE_TOPAPP, 0);
-		request_kernel_prefer_perf(STUNE_FOREGROUND, 0);
 		boosted = false;
 	} else if (!boosted && enable) {
-		request_kernel_prefer_perf(STUNE_TOPAPP, 1);
-		request_kernel_prefer_perf(STUNE_FOREGROUND, 1);
 		boosted = true;
 	}
 }

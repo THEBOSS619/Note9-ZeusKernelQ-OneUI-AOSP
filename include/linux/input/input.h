@@ -7,7 +7,7 @@
 
 #ifdef CONFIG_SCHED_HMP
 #define USE_HMP_BOOST
-#elif defined CONFIG_SCHED_EHMP
+#elif defined CONFIG_SCHED_EMS
 #define USE_EHMP_BOOST
 #endif
 
@@ -71,10 +71,14 @@
 	} \
 }
 #elif defined USE_EHMP_BOOST
-#include <linux/ehmp.h>
+#include <linux/ems_service.h>
 
 static DEFINE_MUTEX(input_lock);
 int hmp_boost_value = INIT_ZERO;
+
+static struct kpp kpp_ta;
+static struct kpp kpp_fg;
+
 #define set_hmp(enable) { \
 	mutex_lock(&input_lock); \
 	if (enable != current_hmp_boost) { \
@@ -84,12 +88,14 @@ int hmp_boost_value = INIT_ZERO;
 			printk("[Input Booster2] ******      ERROR : set_ehmp unexpected enable request happened ( %s )\n", __FUNCTION__); \
 		} else { \
 			pr_booster("[Input Booster2] ******      set_ehmp : %d ( %s )\n", enable, __FUNCTION__); \
-			request_kernel_prefer_perf(STUNE_TOPAPP, enable); \
-			request_kernel_prefer_perf(STUNE_FOREGROUND, enable); \
 			if (enable) { \
 				hmp_boost_value++; \
+				kpp_request(STUNE_TOPAPP, &kpp_ta, 1); \
+				kpp_request(STUNE_FOREGROUND, &kpp_fg, 1); \
 			} else { \
 				hmp_boost_value--; \
+				kpp_request(STUNE_TOPAPP, &kpp_ta, 0); \
+				kpp_request(STUNE_FOREGROUND, &kpp_fg, 0); \
 			} \
 			current_hmp_boost = enable; \
 		} \

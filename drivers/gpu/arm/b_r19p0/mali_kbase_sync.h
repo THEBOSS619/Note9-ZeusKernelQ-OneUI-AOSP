@@ -53,7 +53,6 @@
  */
 struct kbase_sync_fence_info {
 	void *fence;
-	char name[32];
 	int status;
 };
 

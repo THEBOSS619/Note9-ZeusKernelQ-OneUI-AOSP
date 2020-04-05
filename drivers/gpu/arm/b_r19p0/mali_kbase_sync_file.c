@@ -316,7 +316,7 @@ void kbase_sync_fence_info_get(struct dma_fence *fence,
 	} else  {
 		info->status = 0; /* still active (unsignaled) */
 	}
-
+#if 0
 #if (KERNEL_VERSION(4, 8, 0) > LINUX_VERSION_CODE)
 	scnprintf(info->name, sizeof(info->name), "%u#%u",
 		  fence->context, fence->seqno);
@@ -326,6 +326,7 @@ void kbase_sync_fence_info_get(struct dma_fence *fence,
 #else
 	scnprintf(info->name, sizeof(info->name), "%llu#%llu",
 		  fence->context, fence->seqno);
+#endif
 #endif
 }
 

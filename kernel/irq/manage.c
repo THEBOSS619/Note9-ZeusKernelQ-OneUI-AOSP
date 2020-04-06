@@ -392,6 +392,10 @@ static int irq_setup_affinity(struct irq_desc *desc)
 	}
 
 	cpumask_and(&mask, cpu_online_mask, set);
+
+	if (irqd_has_set(&desc->irq_data, IRQF_PERF_CRITICAL))
+		cpumask_copy(&mask, cpu_perf_mask);
+
 	if (node != NUMA_NO_NODE) {
 		const struct cpumask *nodemask = cpumask_of_node(node);
 
@@ -1324,9 +1328,6 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
 			if (ret)
 				goto out_thread;
 		}
-
-		if (new->flags & IRQF_PERF_CRITICAL)
-			affine_one_perf_thread(new->thread);
 	}
 
 	/*

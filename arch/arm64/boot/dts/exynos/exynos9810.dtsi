@@ -4979,11 +4979,11 @@
 		single_change_ms = <30>;
 		dual_change_ms = <30>;
 		quad_change_ms = <15>;
-		big_heavy_thr = <600>;
-		lit_heavy_thr = <180>;
-		big_idle_thr = <106>;
-		lit_idle_thr = <46>;
-		ldsum_heavy_thr = <800>;
+		big_heavy_thr = <640>;
+		lit_heavy_thr = <300>;
+		big_idle_thr = <113>;
+		lit_idle_thr = <85>;
+		ldsum_heavy_thr = <850>;
 		ldsum_enabled = <0>;
 		skip_lit_enabled = <0>;
 		cl_busy_ratio = <65>;

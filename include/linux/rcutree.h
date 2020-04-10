@@ -51,6 +51,7 @@ void kfree_call_rcu(struct rcu_head *head, rcu_callback_t func);
 void rcu_barrier(void);
 bool rcu_eqs_special_set(int cpu);
 void kfree_rcu_scheduler_running(void);
+bool rcu_gp_might_be_stalled(void);
 unsigned long get_state_synchronize_rcu(void);
 void cond_synchronize_rcu(unsigned long oldstate);
 

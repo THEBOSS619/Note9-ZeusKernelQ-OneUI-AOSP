@@ -9,6 +9,8 @@
  * published by the Free Software Foundation.
  */
 
+#include <dt-bindings/soc/samsung/crown_conf.h>
+
 &reserved_memory {
 	camera {
 		compatible = "exynos8890-ion,camera";

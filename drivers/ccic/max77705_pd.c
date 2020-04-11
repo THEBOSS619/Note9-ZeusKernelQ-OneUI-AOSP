@@ -538,8 +538,7 @@ static void max77705_pd_check_pdmsg(struct max77705_usbc_platform_data *usbc_dat
 		psy_charger = power_supply_get_by_name("max77705-charger");
 		if (psy_charger) {
 			val.intval = 0;
-			psy_charger->desc->set_property(psy_charger,
-				POWER_SUPPLY_EXT_PROP_CHGINSEL, &val);
+			psy_do_property("max77705-charger", set, POWER_SUPPLY_EXT_PROP_CHGINSEL, val);
 		} else {
 			pr_err("%s: Fail to get psy charger\n", __func__);
 		}
@@ -735,7 +734,7 @@ static void max77705_datarole_irq_handler(void *data, int irq)
 				if (pd_data->previous_dr != 0xFF)
 					msg_maxim("%s detach previous usb connection\n", __func__);
 				max77705_notify_dr_status(usbc_data, 1);
-#if defined(CONFIG_TYPEC) 
+#if defined(CONFIG_TYPEC)
 				if (usbc_data->typec_try_state_change == TRY_ROLE_SWAP_DR ||
 					usbc_data->typec_try_state_change == TRY_ROLE_SWAP_TYPE) {
 					/* Role change try and new mode detected */
@@ -743,7 +742,7 @@ static void max77705_datarole_irq_handler(void *data, int irq)
 					usbc_data->typec_try_state_change = TRY_ROLE_SWAP_NONE;
 					complete(&usbc_data->typec_reverse_completion);
 				}
-#endif 
+#endif
 			}
 			msg_maxim(" UFP");
 			break;
@@ -756,7 +755,7 @@ static void max77705_datarole_irq_handler(void *data, int irq)
 					msg_maxim("%s detach previous usb connection\n", __func__);
 
 				max77705_notify_dr_status(usbc_data, 1);
-#if defined(CONFIG_TYPEC) 
+#if defined(CONFIG_TYPEC)
 				if (usbc_data->typec_try_state_change == TRY_ROLE_SWAP_DR ||
 					usbc_data->typec_try_state_change == TRY_ROLE_SWAP_TYPE) {
 					/* Role change try and new mode detected */
@@ -764,7 +763,7 @@ static void max77705_datarole_irq_handler(void *data, int irq)
 					usbc_data->typec_try_state_change = TRY_ROLE_SWAP_NONE;
 					complete(&usbc_data->typec_reverse_completion);
 				}
-#endif 
+#endif
 				if (usbc_data->cc_data->current_pr == SNK && !(usbc_data->is_first_booting)) {
 					max77705_vdm_process_set_identity_req(usbc_data);
 					msg_maxim("SEND THE IDENTITY REQUEST FROM DFP HANDLER");

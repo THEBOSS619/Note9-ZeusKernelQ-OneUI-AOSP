@@ -3573,7 +3573,6 @@ out:
 		SEC_ufs_operation_check(hba, cmd->command);
 #endif
 		ufshcd_vops_dbg_register_dump(hba);
-		exynos_ufs_show_uic_info(hba);
 	}
 
 	spin_lock_irqsave(hba->host->host_lock, flags);
@@ -5352,7 +5351,6 @@ static void ufshcd_err_handler(struct work_struct *work)
 
 	hba->ufshcd_state = UFSHCD_STATE_RESET;
 	ufshcd_set_eh_in_progress(hba);
-	exynos_ufs_show_uic_info(hba);
 
 	/* Complete requests that have door-bell cleared by h/w */
 	ufshcd_complete_requests(hba);
@@ -5800,7 +5798,6 @@ static int ufshcd_eh_device_reset_handler(struct scsi_cmnd *cmd)
 
 	/* Dump debugging information to system memory */
 	ufshcd_vops_dbg_register_dump(hba);
-	exynos_ufs_show_uic_info(hba);
 
 	lrbp = &hba->lrb[tag];
 	err = ufshcd_issue_tm_cmd(hba, lrbp->lun, 0, UFS_LOGICAL_RESET, &resp);
@@ -6766,7 +6763,6 @@ out:
 	} else if (ret && re_cnt >= UFS_LINK_SETUP_RETRIES) {
 		dev_err(hba->dev, "%s failed after retries with err %d\n",
 			__func__, ret);
-		exynos_ufs_dump_uic_info(hba);
 		spin_lock_irqsave(hba->host->host_lock, flags);
 		hba->ufshcd_state = UFSHCD_STATE_ERROR;
 		spin_unlock_irqrestore(hba->host->host_lock, flags);

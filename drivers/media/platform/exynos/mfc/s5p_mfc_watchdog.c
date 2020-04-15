@@ -29,7 +29,6 @@
 static void mfc_dump_regs(struct s5p_mfc_dev *dev)
 {
 	int i;
-	struct s5p_mfc_buf_size_v6 *buf_size = NULL;
 	int addr[MFC_SFR_AREA_COUNT][2] = {
 		{ 0x0, 0x80 },
 		{ 0x1000, 0xCD0 },
@@ -63,14 +62,6 @@ static void mfc_dump_regs(struct s5p_mfc_dev *dev)
 		printk("[%04X .. %04X]\n", addr[i][0], addr[i][0] + addr[i][1]);
 		print_hex_dump(KERN_ERR, "", DUMP_PREFIX_ADDRESS, 32, 4, dev->regs_base + addr[i][0],
 				addr[i][1], false);
-		printk("...\n");
-	}
-
-	if (dbg_enable) {
-		buf_size = dev->variant->buf_size->buf;
-		printk("[DBG INFO dump]\n");
-		print_hex_dump(KERN_ERR, "", DUMP_PREFIX_ADDRESS, 32, 4, dev->dbg_info_buf.vaddr,
-			buf_size->dbg_info_buf, false);
 		printk("...\n");
 	}
 }

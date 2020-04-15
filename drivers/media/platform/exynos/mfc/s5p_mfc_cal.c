@@ -76,12 +76,6 @@ void s5p_mfc_cmd_host2risc(struct s5p_mfc_dev *dev, int cmd)
 	if ((cmd != S5P_FIMV_H2R_CMD_NAL_QUEUE) && (cmd != S5P_FIMV_H2R_CMD_STOP_QUEUE))
 		s5p_mfc_watchdog_start_tick(dev);
 
-	if (dbg_enable) {
-		/* For FW debugging */
-		s5p_mfc_dbg_set_addr(dev);
-		s5p_mfc_dbg_enable(dev);
-	}
-
 	dev->last_cmd = cmd;
 	dev->last_cmd_time = ktime_to_timeval(ktime_get());
 

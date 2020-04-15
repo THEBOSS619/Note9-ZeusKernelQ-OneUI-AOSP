@@ -296,14 +296,6 @@ int s5p_mfc_otf_init(struct s5p_mfc_ctx *ctx)
 		return -EINVAL;
 	}
 
-	if (otf_dump) {
-		/* It is for debugging. Do not return error */
-		if (s5p_mfc_otf_alloc_stream_buf(ctx)) {
-			mfc_err_dev("OTF: stream buffer allocation failed\n");
-			s5p_mfc_otf_release_stream_buf(ctx);
-		}
-	}
-
 	mfc_debug(2, "OTF: otf_init is completed\n");
 
 	mfc_debug_leave();
@@ -458,8 +450,6 @@ int s5p_mfc_otf_handle_stream(struct s5p_mfc_ctx *ctx)
 	struct s5p_mfc_dev *dev = ctx->dev;
 	struct s5p_mfc_enc *enc = ctx->enc_priv;
 	struct _otf_handle *handle = ctx->otf_handle;
-	struct _otf_debug *debug = &handle->otf_debug;
-	struct s5p_mfc_special_buf *buf;
 	struct _otf_buf_addr *buf_addr = &handle->otf_buf_addr;
 	struct s5p_mfc_raw_info *raw;
 	dma_addr_t enc_addr[3] = { 0, 0, 0 };
@@ -467,7 +457,6 @@ int s5p_mfc_otf_handle_stream(struct s5p_mfc_ctx *ctx)
 	unsigned int strm_size;
 	unsigned int pic_count;
 	int enc_ret = HWFC_ERR_NONE;
-	unsigned int print_size;
 
 	mfc_debug_enter();
 
@@ -505,23 +494,6 @@ int s5p_mfc_otf_handle_stream(struct s5p_mfc_ctx *ctx)
 	} else {
 		mfc_err_ctx("OTF: stream size is zero\n");
 		enc_ret = -HWFC_ERR_MFC;
-	}
-
-	if (otf_dump && !ctx->is_drm) {
-		buf = &debug->stream_buf[debug->frame_cnt];
-		debug->stream_size[debug->frame_cnt] = strm_size;
-		debug->frame_cnt++;
-		if (debug->frame_cnt >= OTF_MAX_BUF)
-			debug->frame_cnt = 0;
-		/* print stream dump */
-		print_size = (strm_size * 2) + 64;
-		if (print_size > 512 && otf_dump == 1)
-			print_size = 512;
-
-		if (buf->vaddr)
-			print_hex_dump(KERN_ERR, "OTF dump: ",
-					DUMP_PREFIX_ADDRESS, print_size, 0,
-					buf->vaddr, print_size, false);
 	}
 
 	if (call_cop(ctx, recover_buf_ctrls_val, ctx,

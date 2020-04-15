@@ -1016,7 +1016,6 @@ static void mfc_nal_q_handle_frame_output_move(struct s5p_mfc_ctx *ctx,
 			dma_addr_t dspl_y_addr, unsigned int released_flag)
 {
 	struct s5p_mfc_dec *dec = ctx->dec_priv;
-	struct s5p_mfc_dev *dev = ctx->dev;
 	struct s5p_mfc_buf *dst_mb;
 	unsigned int index;
 
@@ -1585,13 +1584,6 @@ int s5p_mfc_nal_q_enqueue_in_buf(struct s5p_mfc_dev *dev, struct s5p_mfc_ctx *ct
 		return ret;
 	}
 
-	if (nal_q_dump == 1) {
-		mfc_err_dev("[NAL-Q][DUMP][%s INPUT][c: %d] diff: %d, count: %d, exe: %d\n",
-				ctx->type == MFCINST_ENCODER ? "ENC" : "DEC", dev->curr_ctx,
-				input_diff, input_count, input_exe_count);
-		print_hex_dump(KERN_ERR, "", DUMP_PREFIX_ADDRESS, 32, 4, (int *)pStr, 256, false);
-		printk("...\n");
-	}
 	input_count++;
 
 	s5p_mfc_update_nal_queue_input_count(dev, input_count);
@@ -1668,14 +1660,6 @@ EncoderOutputStr *s5p_mfc_nal_q_dequeue_out_buf(struct s5p_mfc_dev *dev,
 	}
 
 	ctx = dev->ctx[nal_q_out_handle->nal_q_ctx];
-	if (nal_q_dump == 1) {
-		mfc_err_dev("[NAL-Q][DUMP][%s OUTPUT][c: %d] diff: %d, count: %d, exe: %d\n",
-				ctx->type == MFCINST_ENCODER ? "ENC" : "DEC",
-				nal_q_out_handle->nal_q_ctx,
-				output_diff, output_count, output_exe_count);
-		print_hex_dump(KERN_ERR, "", DUMP_PREFIX_ADDRESS, 32, 4, (int *)pStr, 256, false);
-		printk("...\n");
-	}
 	nal_q_out_handle->out_exe_count++;
 
 	if (pStr->ErrorCode) {

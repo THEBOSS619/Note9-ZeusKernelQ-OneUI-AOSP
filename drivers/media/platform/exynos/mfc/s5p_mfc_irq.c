@@ -187,7 +187,6 @@ static void mfc_handle_frame_copy_timestamp(struct s5p_mfc_ctx *ctx)
 static void mfc_handle_frame_output_move(struct s5p_mfc_ctx *ctx,
 		dma_addr_t dspl_y_addr, unsigned int released_flag)
 {
-	struct s5p_mfc_dev *dev = ctx->dev;
 	struct s5p_mfc_dec *dec = ctx->dec_priv;
 	struct s5p_mfc_buf *ref_mb;
 	int index;
@@ -1495,10 +1494,10 @@ irqreturn_t s5p_mfc_irq(int irq, void *priv)
 	MFC_TRACE_DEV("<< INT: %d\n", reason);
 
 	dev->preempt_ctx = MFC_NO_INSTANCE_SET;
-
+#if 0
 	if (dbg_enable && (reason != S5P_FIMV_R2H_CMD_QUEUE_DONE_RET))
 		s5p_mfc_dbg_disable(dev);
-
+#endif
 #ifdef NAL_Q_ENABLE
 	if (dev->nal_q_handle) {
 		ret = mfc_nal_q_irq(dev, reason, err);

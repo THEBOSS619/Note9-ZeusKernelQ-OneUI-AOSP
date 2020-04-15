@@ -59,20 +59,9 @@ void s5p_mfc_otf_set_frame_addr(struct s5p_mfc_ctx *ctx, int num_planes)
 void s5p_mfc_otf_set_stream_size(struct s5p_mfc_ctx *ctx, unsigned int size)
 {
 	struct s5p_mfc_dev *dev = ctx->dev;
-	struct _otf_handle *handle = ctx->otf_handle;
-	struct _otf_debug *debug = &handle->otf_debug;
-	struct s5p_mfc_special_buf *buf;
 
 	mfc_debug(2, "OTF: set stream buffer full size, %u\n", size);
 	MFC_WRITEL(size, S5P_FIMV_E_STREAM_BUFFER_SIZE);
-
-	if (otf_dump && !ctx->is_drm) {
-		buf = &debug->stream_buf[debug->frame_cnt];
-		mfc_debug(2, "OTF: set stream addr for debugging\n");
-		mfc_debug(2, "OTF: buf[%d] daddr: 0x%08llx\n",
-				debug->frame_cnt, buf->daddr);
-		MFC_WRITEL(buf->daddr, S5P_FIMV_E_STREAM_BUFFER_ADDR);
-	}
 }
 
 void s5p_mfc_otf_set_hwfc_index(struct s5p_mfc_ctx *ctx, int job_id)

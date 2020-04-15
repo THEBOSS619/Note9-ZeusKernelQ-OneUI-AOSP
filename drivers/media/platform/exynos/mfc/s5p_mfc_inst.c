@@ -35,11 +35,6 @@ void s5p_mfc_open_inst(struct s5p_mfc_ctx *ctx)
 		/* Set OTF_CONTROL[2:1], 0: Non-OTF, 1: OTF+HWFC, 2: OTF only */
 		reg |= (0x1 << 1);
 		mfc_info_ctx("HWFC + OTF enabled\n");
-		if (otf_dump && !ctx->is_drm) {
-			/* Set OTF_DEBUG[3] for OTF path dump */
-			reg |= (0x1 << 3);
-			mfc_info_ctx("Debugging mode enabled\n");
-		}
 	}
 	MFC_WRITEL(reg, S5P_FIMV_CODEC_CONTROL);
 

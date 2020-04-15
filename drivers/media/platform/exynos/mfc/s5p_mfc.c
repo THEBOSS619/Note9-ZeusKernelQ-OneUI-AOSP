@@ -352,10 +352,10 @@ static int mfc_init_instance(struct s5p_mfc_dev *dev, struct s5p_mfc_ctx *ctx)
 	ret = s5p_mfc_alloc_common_context(dev);
 	if (ret)
 		goto err_context_alloc;
-
+#if 0
 	if (dbg_enable)
 		s5p_mfc_alloc_dbg_info_buffer(dev);
-
+#endif
 	ret = s5p_mfc_get_hwlock_dev(dev);
 	if (ret < 0) {
 		mfc_err_dev("Failed to get hwlock.\n");
@@ -704,13 +704,14 @@ static int s5p_mfc_release(struct file *file)
 		del_timer_sync(&dev->watchdog_timer);
 
 		flush_workqueue(dev->butler_wq);
-
+#if 0
 		mfc_debug(2, "power off\n");
+#endif
 		s5p_mfc_pm_power_off(dev);
-
+#if 0
 		if (dbg_enable)
 			s5p_mfc_release_dbg_info_buffer(dev);
-
+#endif
 		s5p_mfc_release_common_context(dev);
 
 #ifdef CONFIG_EXYNOS_CONTENT_PATH_PROTECTION

@@ -138,8 +138,6 @@ static void mfc_qos_operate(struct s5p_mfc_ctx *ctx, int opr_type, int idx)
 static void mfc_qos_set(struct s5p_mfc_ctx *ctx, struct bts_bw *mfc_bw, int i)
 {
 	struct s5p_mfc_dev *dev = ctx->dev;
-	struct s5p_mfc_platdata *pdata = dev->pdata;
-	struct s5p_mfc_qos *qos_table = pdata->qos_table;
 
 	mfc_debug(2, "QoS table[%d] covered mb %d ~ %d (int:%d, mif:%d)\n",
 			i, qos_table[i].threshold_mb,
@@ -629,17 +627,9 @@ static unsigned long mfc_qos_get_fps_by_timestamp(struct s5p_mfc_ctx *ctx, struc
 {
 	struct mfc_timestamp *temp_ts;
 	int found;
-	int index = 0;
 	int min_interval = MFC_MAX_INTERVAL;
 	int time_diff;
 	unsigned long max_framerate;
-
-	if (debug_ts == 1) {
-		/* Debug info */
-		mfc_info_ctx("======================================\n");
-		mfc_info_ctx("New timestamp = %ld.%06ld, count = %d \n",
-			time->tv_sec, time->tv_usec, ctx->ts_count);
-	}
 
 	if (list_empty(&ctx->ts_list)) {
 		mfc_qos_dec_add_timestamp(ctx, time, &ctx->ts_list);
@@ -671,26 +661,7 @@ static unsigned long mfc_qos_get_fps_by_timestamp(struct s5p_mfc_ctx *ctx, struc
 
 	max_framerate = mfc_qos_get_framerate_by_interval(min_interval);
 
-	if (debug_ts == 1) {
-		/* Debug info */
-		index = 0;
-		list_for_each_entry(temp_ts, &ctx->ts_list, list) {
-			mfc_info_ctx("[%d] timestamp [i:%d]: %ld.%06ld\n",
-					index, temp_ts->index,
-					temp_ts->timestamp.tv_sec,
-					temp_ts->timestamp.tv_usec);
-			index++;
-		}
-		mfc_info_ctx("Min interval = %d, It is %ld fps\n",
-				min_interval, max_framerate);
-	} else if (debug_ts == 2) {
-		mfc_info_ctx("Min interval = %d, It is %ld fps\n",
-				min_interval, max_framerate);
-	}
-
 	if (!ctx->ts_is_full) {
-		if (debug_ts == 1)
-			mfc_info_ctx("ts doesn't full, keep %ld fps\n", ctx->framerate);
 		return ctx->framerate;
 	}
 

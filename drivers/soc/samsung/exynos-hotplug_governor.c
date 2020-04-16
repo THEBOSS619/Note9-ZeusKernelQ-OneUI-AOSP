@@ -30,7 +30,7 @@
 
 #define DEFAULT_BOOT_ENABLE_MS (40000)		/* 40 s */
 #define NUM_OF_GROUP	2
-#define ATTR_COUNT	14
+#define ATTR_COUNT	17
 
 #define LIT	0
 #define BIG	1
@@ -72,6 +72,9 @@ struct hpgov_attrib {
 	struct kobj_attribute	ldsum_heavy_thr;
 	struct kobj_attribute	cl_busy_ratio;
 	struct kobj_attribute	user_mode;
+	struct kobj_attribute	dual_freq;
+	struct kobj_attribute	triple_freq;
+	struct kobj_attribute	quad_freq;
 
 	struct attribute_group	attrib_group;
 };
@@ -995,6 +998,35 @@ static int exynos_hpgov_set_single_change_ms(int val)
 	return 0;
 }
 
+static int exynos_hpgov_set_dual_freq(int val)
+{
+	if (!(val >= 0))
+		return -EINVAL;
+
+	exynos_hpgov.maxfreq_table[DUAL] = val;
+
+	return 0;
+}
+
+static int exynos_hpgov_set_triple_freq(int val)
+{
+	if (!(val >= 0))
+		return -EINVAL;
+
+	exynos_hpgov.maxfreq_table[TRIPLE] = val;
+
+	return 0;
+}
+
+static int exynos_hpgov_set_quad_freq(int val)
+{
+	if (!(val >= 0))
+		return -EINVAL;
+
+	exynos_hpgov.maxfreq_table[QUAD] = val;
+
+	return 0;
+}
 
 #define HPGOV_PARAM(_name, _param) \
 static ssize_t exynos_hpgov_attr_##_name##_show(struct kobject *kobj, \
@@ -1047,12 +1079,15 @@ HPGOV_PARAM(single_change_ms, exynos_hpgov.single_change_ms);
 HPGOV_PARAM(dual_change_ms, exynos_hpgov.dual_change_ms);
 HPGOV_PARAM(triple_change_ms, exynos_hpgov.triple_change_ms);
 HPGOV_PARAM(quad_change_ms, exynos_hpgov.quad_change_ms);
+HPGOV_PARAM(dual_freq, exynos_hpgov.maxfreq_table[DUAL]);
+HPGOV_PARAM(triple_freq, exynos_hpgov.maxfreq_table[TRIPLE]);
+HPGOV_PARAM(quad_freq, exynos_hpgov.maxfreq_table[QUAD]);
 
 static void hpgov_boot_enable(struct work_struct *work);
 static DECLARE_DELAYED_WORK(hpgov_boot_work, hpgov_boot_enable);
 static void hpgov_boot_enable(struct work_struct *work)
 {
-	exynos_hpgov_set_enable(true);
+	//exynos_hpgov_set_enable(true);
 }
 
 static int exynos_hp_gov_pm_suspend_notifier(struct notifier_block *notifier,
@@ -1277,6 +1312,9 @@ static int __init exynos_hpgov_init(void)
 	HPGOV_RW_ATTRIB(attr_count - (i_attr--), dual_change_ms);
 	HPGOV_RW_ATTRIB(attr_count - (i_attr--), triple_change_ms);
 	HPGOV_RW_ATTRIB(attr_count - (i_attr--), quad_change_ms);
+	HPGOV_RW_ATTRIB(attr_count - (i_attr--), dual_freq);
+	HPGOV_RW_ATTRIB(attr_count - (i_attr--), triple_freq);
+	HPGOV_RW_ATTRIB(attr_count - (i_attr--), quad_freq);
 
 	exynos_hpgov.attrib.attrib_group.name = "governor";
 	ret = sysfs_create_group(exynos_cpu_hotplug_kobj(),

@@ -151,16 +151,6 @@ static const char *const comments[] = {
 	[NF_IP_TRACE_COMMENT_POLICY]	= "policy",
 };
 
-static struct nf_loginfo trace_loginfo = {
-	.type = NF_LOG_TYPE_LOG,
-	.u = {
-		.log = {
-			.level = 4,
-			.logflags = NF_LOG_DEFAULT_MASK,
-		},
-	},
-};
-
 /* Mildly perf critical (only if packet tracing is on) */
 static inline int
 get_chainname_rulenum(const struct ipt_entry *s, const struct ipt_entry *e,
@@ -216,9 +206,9 @@ static void trace_packet(struct net *net,
 		    &chainname, &comment, &rulenum) != 0)
 			break;
 
-	nf_log_trace(net, AF_INET, hook, skb, in, out, &trace_loginfo,
-		     "TRACE: %s:%s:%s:%u ",
-		     tablename, chainname, comment, rulenum);
+	// nf_log_trace(net, AF_INET, hook, skb, in, out, &trace_loginfo,
+	// 	     "TRACE: %s:%s:%s:%u ",
+	// 	     tablename, chainname, comment, rulenum);
 }
 #endif
 

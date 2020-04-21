@@ -16,7 +16,7 @@
 #include "exynos-hdcp2.h"
 #include "exynos-hdcp2-log.h"
 
-extern void __inval_cache_range(const void *start, const void *end);
+extern void __inval_dcache_area(void *addr, size_t len);
 
 static struct hci_ctx hctx = {
 	.msg = NULL,
@@ -95,7 +95,7 @@ int hdcp_tee_comm(struct hci_message *hci)
 	 */
 	__flush_dcache_area((void *)hci, sizeof(struct hci_message));
 	ret = exynos_smc(SMC_HDCP_PROT_MSG, 0, 0, 0);
-	__inval_cache_range((void *)hci, (void *)((uint8_t *)hci + sizeof(struct hci_message)));
+	__inval_dcache_area((void *)hci, sizeof(struct hci_message));
 
 	if (ret) {
 		hdcp_info("SWd returned(%x)\n", ret);

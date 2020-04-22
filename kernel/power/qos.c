@@ -767,10 +767,9 @@ bool pm_qos_update_flags(struct pm_qos_flags *pqf,
 			 struct pm_qos_flags_request *req,
 			 enum pm_qos_req_action action, s32 val)
 {
-	unsigned long irqflags;
 	s32 prev_value, curr_value;
 
-	spin_lock_irqsave(&pm_qos_lock, irqflags);
+	spin_lock(&pm_qos_lock);
 
 	prev_value = list_empty(&pqf->list) ? 0 : pqf->effective_flags;
 
@@ -794,7 +793,7 @@ bool pm_qos_update_flags(struct pm_qos_flags *pqf,
 
 	curr_value = list_empty(&pqf->list) ? 0 : pqf->effective_flags;
 
-	spin_unlock_irqrestore(&pm_qos_lock, irqflags);
+	spin_unlock(&pm_qos_lock);
 
 	trace_pm_qos_update_flags(action, prev_value, curr_value);
 	return prev_value != curr_value;
@@ -810,18 +809,17 @@ bool pm_qos_update_flags(struct pm_qos_flags *pqf,
 int pm_qos_read_req_value(int pm_qos_class, struct pm_qos_request *req)
 {
 	struct plist_node *p;
-	unsigned long flags;
 
-	spin_lock_irqsave(&pm_qos_lock, flags);
+	spin_lock(&pm_qos_lock);
 
 	plist_for_each(p, &pm_qos_array[pm_qos_class]->constraints->list) {
 		if (req == container_of(p, struct pm_qos_request, node)) {
-			spin_unlock_irqrestore(&pm_qos_lock, flags);
+			spin_unlock(&pm_qos_lock);
 			return p->prio;
 		}
 	}
 
-	spin_unlock_irqrestore(&pm_qos_lock, flags);
+	spin_unlock(&pm_qos_lock);
 
 	return -ENODATA;
 }

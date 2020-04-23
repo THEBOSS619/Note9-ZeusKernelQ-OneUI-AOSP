@@ -39,7 +39,7 @@ include/generated/compile.h: FORCE
 	@$($(quiet)chk_compile.h)
 	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/mkcompile_h $@	\
 	"$(UTS_MACHINE)" "$(CONFIG_SMP)" "$(CONFIG_PREEMPT)"	\
-	"$(CC) $(KBUILD_CFLAGS)" "$(LD)"
+	"$(CONFIG_CC_VERSION_TEXT) $(KBUILD_CFLAGS)" "$(LD)"
 
 # optimise for size
 subdir-ccflags-y += $(call cc-option, -g0)

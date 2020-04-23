@@ -4,7 +4,7 @@ TARGET=$1
 ARCH=$2
 SMP=$3
 PREEMPT=$4
-CC=$5
+CC_VERSION="$5"
 LD=$6
 
 vecho() { [ "${quiet}" = "silent_" ] || echo "$@" ; }

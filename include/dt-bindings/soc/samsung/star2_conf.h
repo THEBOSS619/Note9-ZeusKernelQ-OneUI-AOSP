@@ -1,7 +1,7 @@
 /*
  *
  * Automatically generated file; DO NOT EDIT.
- * Linux/arm64 4.9.218 Kernel Configuration
+ * Linux/arm64 4.9.219 Kernel Configuration
  *
  */
 #define CONFIG_RING_BUFFER 1
@@ -1010,7 +1010,6 @@
 #define CONFIG_GPIOLIB 1
 #define CONFIG_MMC_DW 1
 #define CONFIG_ARM_EXYNOS_DEVFREQ_DEBUG 1
-#define CONFIG_DEBUG_EXCEPTION_STACK 1
 #define CONFIG_CHARGER_MAX77705_OTG_LIMIT 1
 #define CONFIG_KEYS_COMPAT 1
 #define CONFIG_EXYNOS_DPP 1

@@ -511,8 +511,8 @@ struct maxim_dsm {
 
 #ifdef CONFIG_SND_SOC_MAXIM_DSM
 #define USE_DSM_UPDATE_CAL
-#define USE_DSM_LOG
-#define USE_DSM_DEBUG
+//#define USE_DSM_LOG
+//#define USE_DSM_DEBUG
 
 #ifdef USE_DSM_LOG
 enum {

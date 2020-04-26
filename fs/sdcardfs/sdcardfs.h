@@ -192,12 +192,7 @@ struct sdcardfs_inode_data {
 	bool under_android;
 	bool under_cache;
 	bool under_obb;
-
 	bool under_knox;
-	struct {
-		struct inode *owner;
-		struct task_struct *free_task;
-	} d;
 };
 
 /* sdcardfs inode data in memory */
@@ -207,6 +202,7 @@ struct sdcardfs_inode_info {
 	struct sdcardfs_inode_data *data;
 
 	/* top folder for ownership */
+	spinlock_t top_lock;
 	struct sdcardfs_inode_data *top_data;
 
 	struct inode vfs_inode;
@@ -380,34 +376,26 @@ static inline bool sbinfo_has_sdcard_magic(struct sdcardfs_sb_info *sbinfo)
 static inline struct sdcardfs_inode_data *data_get(
 		struct sdcardfs_inode_data *data)
 {
-	if (data) {
-#if defined(CONFIG_DEBUG_SLAB) || defined(CONFIG_SLUB_DEBUG_ON)
-		BUG_ON(atomic_read(&data->refcount.refcount) ==
-				(POISON_FREE << 24 | POISON_FREE << 16 |
-				 POISON_FREE << 8 | POISON_FREE));
-#endif
-		BUG_ON(atomic_read(&data->refcount.refcount) <= 0);
+	if (data)
 		kref_get(&data->refcount);
-	}
 	return data;
 }
 
 static inline struct sdcardfs_inode_data *top_data_get(
 		struct sdcardfs_inode_info *info)
 {
-	return data_get(info->top_data);
+	struct sdcardfs_inode_data *top_data;
+
+	spin_lock(&info->top_lock);
+	top_data = data_get(info->top_data);
+	spin_unlock(&info->top_lock);
+	return top_data;
 }
 
 extern void data_release(struct kref *ref);
 
 static inline void data_put(struct sdcardfs_inode_data *data)
 {
-#if defined(CONFIG_DEBUG_SLAB) || defined(CONFIG_SLUB_DEBUG_ON)
-	BUG_ON(atomic_read(&data->refcount.refcount) ==
-			(POISON_FREE << 24 | POISON_FREE << 16 |
-			POISON_FREE << 8 | POISON_FREE));
-#endif
-	BUG_ON(atomic_read(&data->refcount.refcount) <= 0);
 	kref_put(&data->refcount, data_release);
 }
 
@@ -418,22 +406,25 @@ static inline void release_own_data(struct sdcardfs_inode_info *info)
 	 * originally held this data is about to be freed, and all references
 	 * to it are held as a top value, and will likely be released soon.
 	 */
-	BUG_ON(info->data->abandoned == true);
-
 	info->data->abandoned = true;
 	data_put(info->data);
 }
 
 static inline void set_top(struct sdcardfs_inode_info *info,
-			struct sdcardfs_inode_data *top)
+			struct sdcardfs_inode_info *top_owner)
 {
-	struct sdcardfs_inode_data *old_top = info->top_data;
+	struct sdcardfs_inode_data *old_top;
+	struct sdcardfs_inode_data *new_top = NULL;
 
-	if (top)
-		data_get(top);
-	info->top_data = top;
+	if (top_owner)
+		new_top = top_data_get(top_owner);
+
+	spin_lock(&info->top_lock);
+	old_top = info->top_data;
+	info->top_data = new_top;
 	if (old_top)
 		data_put(old_top);
+	spin_unlock(&info->top_lock);
 }
 
 static inline int get_gid(struct vfsmount *mnt,
@@ -557,8 +548,7 @@ struct limit_search {
 };
 
 extern void setup_derived_state(struct inode *inode, perm_t perm,
-		userid_t userid, uid_t uid, bool under_android,
-		struct sdcardfs_inode_data *top);
+			userid_t userid, uid_t uid);
 extern void get_derived_permission(struct dentry *parent, struct dentry *dentry);
 extern void get_derived_permission_new(struct dentry *parent,
 		struct dentry *dentry, const struct qstr *name);
@@ -647,9 +637,9 @@ static inline int check_min_free_space(struct dentry *dentry, size_t size, int d
 
 	if (sbi->options.reserved_mb) {
 		/* Get fs stat of lower filesystem. */
-		sdcardfs_get_lower_path(dentry->d_sb->s_root, &lower_path);
+		sdcardfs_get_lower_path(dentry, &lower_path);
 		err = vfs_statfs(&lower_path, &statfs);
-		sdcardfs_put_lower_path(dentry->d_sb->s_root, &lower_path);
+		sdcardfs_put_lower_path(dentry, &lower_path);
 
 		if (unlikely(err))
 			goto out_invalid;

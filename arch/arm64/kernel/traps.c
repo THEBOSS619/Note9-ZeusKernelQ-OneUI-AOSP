@@ -1014,7 +1014,7 @@ static int refcount_overflow_handler(struct pt_regs *regs, unsigned int esr)
 	return DBG_HOOK_HANDLED;
 }
 
-static struct break_hook refcount_break_hook = {
+static struct break_hook __maybe_unused refcount_break_hook = {
 	.fn	= refcount_overflow_handler,
 	.imm	= REFCOUNT_BRK_IMM,
 };

@@ -159,7 +159,7 @@ void kbase_pm_suspend(struct kbase_device *kbdev)
 	/* Wait for the active count to reach zero. This is not the same as
 	 * waiting for a power down, since not all policies power down when this
 	 * reaches zero. */
-	wait_event(kbdev->pm.zero_active_count_wait, kbdev->pm.active_count == 0);
+	wait_event_interruptible(kbdev->pm.zero_active_count_wait, kbdev->pm.active_count == 0);
 
 	/* NOTE: We synchronize with anything that was just finishing a
 	 * kbase_pm_context_idle() call by locking the pm.lock below */

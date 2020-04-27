@@ -195,7 +195,7 @@ static void mali_kutf_irq_latency(struct kutf_context *context)
 		kbase_reg_write(kbdev, GPU_CONTROL_REG(GPU_IRQ_RAWSTAT),
 				TEST_IRQ);
 
-		ret = wait_event_timeout(wait, triggered != false, IRQ_TIMEOUT);
+		ret = wait_event_interruptible_timeout(wait, triggered != false, IRQ_TIMEOUT);
 
 		if (ret == 0) {
 			kutf_test_fail(context, "Timed out waiting for IRQ\n");

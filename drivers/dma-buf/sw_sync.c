@@ -57,7 +57,6 @@
  */
 struct sw_sync_create_fence_data {
 	__u32	value;
-	char	name[32];
 	__s32	fence; /* fd of new fence */
 };
 
@@ -200,7 +199,7 @@ static const char *timeline_fence_get_timeline_name(struct fence *fence)
 {
 	struct sync_timeline *parent = fence_parent(fence);
 
-	return parent->name;
+	return parent;
 }
 
 static void timeline_fence_defer_release(struct work_struct *wq)

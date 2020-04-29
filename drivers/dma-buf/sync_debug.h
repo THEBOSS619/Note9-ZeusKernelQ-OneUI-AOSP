@@ -31,7 +31,6 @@
  */
 struct sync_timeline {
 	struct kref		kref;
-	char			name[32];
 
 	/* protected by child_list_lock */
 	u64			context;
@@ -65,7 +64,7 @@ struct sync_pt {
 };
 
 extern const struct file_operations sw_sync_debugfs_fops;
-#if defined(CONFIG_DEBUG_FS) && defined(CONFIG_DEBUG_TIMELINE)
+#if 0
 void sync_timeline_debug_add(struct sync_timeline *obj);
 void sync_timeline_debug_remove(struct sync_timeline *obj);
 void sync_file_debug_add(struct sync_file *fence);

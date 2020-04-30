@@ -2,7 +2,6 @@
 # Makefile for the HID driver
 #
 hid-y			:= hid-core.o hid-input.o
-hid-$(CONFIG_DEBUG_FS)		+= hid-debug.o
 
 obj-$(CONFIG_HID)		+= hid.o
 obj-$(CONFIG_UHID)		+= uhid.o
@@ -18,7 +17,6 @@ hid-logitech-$(CONFIG_LOGIG940_FF)	+= hid-lg3ff.o
 hid-logitech-$(CONFIG_LOGIWHEELS_FF)	+= hid-lg4ff.o
 
 hid-wiimote-y		:= hid-wiimote-core.o hid-wiimote-modules.o
-hid-wiimote-$(CONFIG_DEBUG_FS)	+= hid-wiimote-debug.o
 
 obj-$(CONFIG_HID_A4TECH)	+= hid-a4tech.o
 obj-$(CONFIG_HID_ALPS)		+= hid-alps.o
@@ -75,7 +73,6 @@ hid-picolcd-$(CONFIG_HID_PICOLCD_BACKLIGHT)	+= hid-picolcd_backlight.o
 hid-picolcd-$(CONFIG_HID_PICOLCD_LCD)	+= hid-picolcd_lcd.o
 hid-picolcd-$(CONFIG_HID_PICOLCD_LEDS)	+= hid-picolcd_leds.o
 hid-picolcd-$(CONFIG_HID_PICOLCD_CIR)	+= hid-picolcd_cir.o
-hid-picolcd-$(CONFIG_DEBUG_FS)		+= hid-picolcd_debugfs.o
 
 obj-$(CONFIG_HID_PLANTRONICS)	+= hid-plantronics.o
 obj-$(CONFIG_HID_PRIMAX)	+= hid-primax.o

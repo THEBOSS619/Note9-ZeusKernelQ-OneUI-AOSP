@@ -911,7 +911,7 @@ bool dma_buf_get_privflag(struct dma_buf *dmabuf, bool clear)
 }
 EXPORT_SYMBOL_GPL(dma_buf_get_privflag);
 
-#ifdef CONFIG_DEBUG_FS
+#if 0
 static int dma_buf_debug_show(struct seq_file *s, void *unused)
 {
 	int ret;

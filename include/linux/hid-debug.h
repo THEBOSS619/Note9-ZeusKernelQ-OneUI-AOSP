@@ -22,7 +22,7 @@
  *
  */
 
-#ifdef CONFIG_DEBUG_FS
+#if 0
 
 #include <linux/kfifo.h>
 

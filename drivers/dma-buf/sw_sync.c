@@ -280,7 +280,7 @@ static const struct fence_ops timeline_fence_ops = {
 	.fence_value_str = timeline_fence_value_str,
 	.timeline_value_str = timeline_fence_timeline_value_str,
 };
-
+#if 0
 /*
  * *WARNING*
  *
@@ -395,3 +395,4 @@ const struct file_operations sw_sync_debugfs_fops = {
 	.unlocked_ioctl = sw_sync_ioctl,
 	.compat_ioctl	= sw_sync_ioctl,
 };
+#endif

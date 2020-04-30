@@ -367,7 +367,7 @@ int mmc_add_card(struct mmc_card *card)
 			uhs_bus_speed_mode, type, card->rca);
 	}
 
-#ifdef CONFIG_DEBUG_FS
+#if 0
 	mmc_add_card_debugfs(card);
 #endif
 	mmc_init_context_info(card->host);
@@ -391,7 +391,7 @@ int mmc_add_card(struct mmc_card *card)
  */
 void mmc_remove_card(struct mmc_card *card)
 {
-#ifdef CONFIG_DEBUG_FS
+#if 0
 	mmc_remove_card_debugfs(card);
 #endif
 

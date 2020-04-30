@@ -279,7 +279,7 @@ extern ssize_t wiimote_cmd_read(struct wiimote_data *wdata, __u32 offset,
 extern void wiiproto_req_rmem(struct wiimote_data *wdata, bool eeprom,
 						__u32 offset, __u16 size);
 
-#ifdef CONFIG_DEBUG_FS
+#if 0
 
 extern int wiidebug_init(struct wiimote_data *wdata);
 extern void wiidebug_deinit(struct wiimote_data *wdata);

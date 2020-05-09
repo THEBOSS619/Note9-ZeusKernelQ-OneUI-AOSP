@@ -512,7 +512,7 @@ static void exit_tfm(struct crypto_skcipher *tfm)
 	crypto_free_skcipher(ctx->child);
 }
 
-static void free(struct skcipher_instance *inst)
+static void free_inst(struct skcipher_instance *inst)
 {
 	crypto_drop_skcipher(skcipher_instance_ctx(inst));
 	kfree(inst);
@@ -640,6 +640,7 @@ err_free_inst:
 static struct crypto_template crypto_tmpl = {
 	.name = "lrw",
 	.create = create,
+	.free = free_inst,
 	.module = THIS_MODULE,
 };
 

@@ -39,12 +39,9 @@
 	dev_crit(_dsp->dev, "DSP%d: " fmt, _dsp->num, ##__VA_ARGS__)
 #define adsp_err(_dsp, fmt, ...) \
 	dev_err(_dsp->dev, "DSP%d: " fmt, _dsp->num, ##__VA_ARGS__)
-#define adsp_warn(_dsp, fmt, ...) \
-	dev_warn(_dsp->dev, "DSP%d: " fmt, _dsp->num, ##__VA_ARGS__)
-#define adsp_info(_dsp, fmt, ...) \
-	dev_info(_dsp->dev, "DSP%d: " fmt, _dsp->num, ##__VA_ARGS__)
-#define adsp_dbg(_dsp, fmt, ...) \
-	dev_dbg(_dsp->dev, "DSP%d: " fmt, _dsp->num, ##__VA_ARGS__)
+#define adsp_warn(_dsp, fmt, ...)
+#define adsp_info(_dsp, fmt, ...)
+#define adsp_dbg(_dsp, fmt, ...)
 
 #define ADSP1_CONTROL_1                   0x00
 #define ADSP1_CONTROL_2                   0x02

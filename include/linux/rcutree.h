@@ -69,6 +69,7 @@ void rcu_scheduler_starting(void);
 extern int rcu_scheduler_active __read_mostly;
 void rcu_end_inkernel_boot(void);
 bool rcu_is_watching(void);
+bool __rcu_is_watching(void);
 #ifndef CONFIG_PREEMPT
 void rcu_all_qs(void);
 #endif

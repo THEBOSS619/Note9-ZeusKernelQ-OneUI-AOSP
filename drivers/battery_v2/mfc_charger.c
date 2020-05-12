@@ -947,31 +947,32 @@ static int datacmp(const char *cs, const char *ct, int count)
 	return 0;
 }
 
+#define SENDSZ 16
+
 static int mfc_reg_multi_write_verify(struct i2c_client *client, u16 reg, const u8 * val, int size)
 {
 	int ret = 0;
-	const int sendsz = 16;
 	int cnt = 0;
 	int retry_cnt = 0;
-	unsigned char data[sendsz+2];
-	u8 rdata[sendsz+2];
+	unsigned char data[SENDSZ+2];
+	u8 rdata[SENDSZ+2];
 
 //	dev_dbg(&client->dev, "%s: size: 0x%x\n", __func__, size);
-	while(size > sendsz) {
+	while(size > SENDSZ) {
 		data[0] = (reg+cnt) >>8;
 		data[1] = (reg+cnt) & 0xff;
-		memcpy(data+2, val+cnt, sendsz);
+		memcpy(data+2, val+cnt, SENDSZ);
 //		dev_dbg(&client->dev, "%s: addr: 0x%x, cnt: 0x%x\n", __func__, reg+cnt, cnt);
-		ret = i2c_master_send(client, data, sendsz+2);
-		if (ret < sendsz+2) {
+		ret = i2c_master_send(client, data, SENDSZ+2);
+		if (ret < SENDSZ+2) {
 			pr_err("%s: i2c write error, reg: 0x%x\n", __func__, reg);
 			return ret < 0 ? ret : -EIO;
 		}
-		if (mfc_reg_multi_read(client, reg+cnt, rdata, sendsz) < 0) {
+		if (mfc_reg_multi_read(client, reg+cnt, rdata, SENDSZ) < 0) {
 			pr_err("%s, read failed(%d)\n", __func__, reg+cnt);
 			return -1;
 		}
-		if (datacmp(val+cnt, rdata, sendsz)) {
+		if (datacmp(val+cnt, rdata, SENDSZ)) {
 			pr_err("%s, data is not matched. retry(%d)\n", __func__, retry_cnt);
 			retry_cnt++;
 			if (retry_cnt > 4) {
@@ -982,8 +983,8 @@ static int mfc_reg_multi_write_verify(struct i2c_client *client, u16 reg, const 
 			continue;
 		}
 //		pr_debug("%s, data is matched!\n", __func__);
-		cnt += sendsz;
-		size -= sendsz;
+		cnt += SENDSZ;
+		size -= SENDSZ;
 		retry_cnt = 0;
 	}
 	while (size > 0) {
@@ -1020,26 +1021,25 @@ static int mfc_reg_multi_write(struct i2c_client *client, u16 reg, const u8 * va
 {
 	struct mfc_charger_data *charger = i2c_get_clientdata(client);
 	int ret = 0;
-	const int sendsz = 16;
-	unsigned char data[sendsz+2];
+	unsigned char data[SENDSZ+2];
 	int cnt = 0;
 
 	pr_err("%s: size: 0x%x\n",
 				__func__, size);
-	while(size > sendsz) {
+	while(size > SENDSZ) {
 		data[0] = (reg+cnt) >>8;
 		data[1] = (reg+cnt) & 0xff;
-		memcpy(data+2, val+cnt, sendsz);
+		memcpy(data+2, val+cnt, SENDSZ);
 		mutex_lock(&charger->io_lock);
-		ret = i2c_master_send(client, data, sendsz+2);
+		ret = i2c_master_send(client, data, SENDSZ+2);
 		mutex_unlock(&charger->io_lock);
-		if (ret < sendsz+2) {
+		if (ret < SENDSZ+2) {
 			pr_err("%s: i2c write error, reg: 0x%x\n",
 					__func__, reg);
 			return ret < 0 ? ret : -EIO;
 		}
-		cnt = cnt + sendsz;
-		size = size - sendsz;
+		cnt = cnt + SENDSZ;
+		size = size - SENDSZ;
 	}
 	if (size > 0) {
 		data[0] = (reg+cnt) >>8;
@@ -1086,11 +1086,10 @@ static int LoadOTPLoaderInRAM(struct mfc_charger_data *charger, u16 addr)
 static int mfc_firmware_verify(struct mfc_charger_data *charger)
 {
 	int ret = 0;
-	const u16 sendsz = 16;
 	size_t i = 0;
 	int block_len = 0;
 	int block_addr = 0;
-	u8 rdata[sendsz+2];
+	u8 rdata[SENDSZ+2];
 
 /* I2C WR to prepare boot-loader write */
 
@@ -1114,8 +1113,8 @@ static int mfc_firmware_verify(struct mfc_charger_data *charger)
 	}
 	ret = 1;
 	wake_lock(&charger->wpc_update_lock);
-	for (i = 0; i < charger->firm_data_bin->size; i += sendsz) {
-		block_len = (i + sendsz) > charger->firm_data_bin->size ? charger->firm_data_bin->size - i : sendsz;
+	for (i = 0; i < charger->firm_data_bin->size; i += SENDSZ) {
+		block_len = (i + SENDSZ) > charger->firm_data_bin->size ? charger->firm_data_bin->size - i : SENDSZ;
 		block_addr = 0x8000 + i;
 
 		if (mfc_reg_multi_read(charger->client, block_addr, rdata, block_len) < 0) {

@@ -574,7 +574,6 @@ void forced_release_key(struct wacom_i2c *wac_i2c)
 
 void wacom_i2c_softkey(struct wacom_i2c *wac_i2c, s16 key, s16 pressed)
 {
-	struct i2c_client *client = wac_i2c->client;
 
 #ifdef WACOM_USE_SOFTKEY_BLOCK
 	if (wac_i2c->block_softkey && pressed) {
@@ -1910,7 +1909,6 @@ static irqreturn_t wacom_interrupt(int irq, void *dev_id)
 static irqreturn_t wacom_interrupt_pdct(int irq, void *dev_id)
 {
 	struct wacom_i2c *wac_i2c = dev_id;
-	struct i2c_client *client = wac_i2c->client;
 	int ret;
 
 	if (wac_i2c->query_status == false)
@@ -2521,7 +2519,6 @@ void wacom_i2c_unload_fw(struct wacom_i2c *wac_i2c)
 
 int wacom_fw_update(struct wacom_i2c *wac_i2c, u8 fw_update_way, bool bforced)
 {
-	struct i2c_client *client = wac_i2c->client;
 	u32 fw_ver_ic = wac_i2c->wac_feature->fw_version;
 	int ret;
 

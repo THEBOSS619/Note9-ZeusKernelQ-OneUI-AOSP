@@ -328,7 +328,6 @@ int sec_ts_i2c_write(struct sec_ts_data *ts, u8 reg, u8 *data, int len)
 	int ret;
 	unsigned char retry;
 	struct i2c_msg msg;
-	int i;
 
 #ifdef CONFIG_SECURE_TOUCH
 	if (atomic_read(&ts->secure_enabled) == SECURE_TOUCH_ENABLE) {
@@ -380,9 +379,6 @@ int sec_ts_i2c_write(struct sec_ts_data *ts, u8 reg, u8 *data, int len)
 		if (retry > 1) {
 			input_err(true, &ts->client->dev, "%s: I2C retry %d, ret:%d\n", __func__, retry + 1, ret);
 			ts->comm_err_count++;
-			if (ts->debug_flag & SEC_TS_DEBUG_SEND_UEVENT)
-				send_event_to_user(ts, 0, UEVENT_TSP_I2C_ERROR);
-
 		}
 	}
 
@@ -395,13 +391,6 @@ int sec_ts_i2c_write(struct sec_ts_data *ts, u8 reg, u8 *data, int len)
 		if (ts->probe_done && !ts->reset_is_on_going)
 			schedule_delayed_work(&ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
 #endif
-	}
-
-	if (ts->debug_flag & SEC_TS_DEBUG_PRINT_I2C_WRITE_CMD) {
-		pr_info("sec_input:i2c_cmd: W: %02X | ", reg);
-		for (i = 0; i < len; i++)
-			pr_cont("%02X ", data[i]);
-		pr_cont("\n");
 	}
 
 	if (ret == 1)
@@ -417,7 +406,6 @@ int sec_ts_i2c_read(struct sec_ts_data *ts, u8 reg, u8 *data, int len)
 	unsigned char retry;
 	struct i2c_msg msg[2];
 	int remain = len;
-	int i;
 
 #ifdef CONFIG_SECURE_TOUCH
 	if (atomic_read(&ts->secure_enabled) == SECURE_TOUCH_ENABLE) {
@@ -469,9 +457,6 @@ int sec_ts_i2c_read(struct sec_ts_data *ts, u8 reg, u8 *data, int len)
 				input_err(true, &ts->client->dev, "%s: I2C retry %d, ret:%d\n",
 					__func__, retry + 1, ret);
 				ts->comm_err_count++;
-				if (ts->debug_flag & SEC_TS_DEBUG_SEND_UEVENT)
-					send_event_to_user(ts, 0, UEVENT_TSP_I2C_ERROR);
-
 			}
 		}
 
@@ -541,13 +526,6 @@ int sec_ts_i2c_read(struct sec_ts_data *ts, u8 reg, u8 *data, int len)
 			schedule_delayed_work(&ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
 #endif
 
-	}
-
-	if (ts->debug_flag & SEC_TS_DEBUG_PRINT_I2C_READ_CMD) {
-		pr_info("sec_input:i2c_cmd: R: %02X | ", reg);
-		for (i = 0; i < len; i++)
-			pr_cont("%02X ", data[i]);
-		pr_cont("\n");
 	}
 
 	return ret;
@@ -970,13 +948,6 @@ static void sec_ts_read_event(struct sec_ts_data *ts)
 		return;
 	}
 
-	if (ts->debug_flag & SEC_TS_DEBUG_PRINT_ONEEVENT)
-		input_info(true, &ts->client->dev, "ONE: %02X %02X %02X %02X %02X %02X %02X %02X\n",
-				read_event_buff[0][0], read_event_buff[0][1],
-				read_event_buff[0][2], read_event_buff[0][3],
-				read_event_buff[0][4], read_event_buff[0][5],
-				read_event_buff[0][6], read_event_buff[0][7]);
-
 	if (read_event_buff[0][0] == 0) {
 		input_info(true, &ts->client->dev, "%s: event buffer is empty\n", __func__);
 		return;
@@ -1010,11 +981,6 @@ static void sec_ts_read_event(struct sec_ts_data *ts)
 	do {
 		event_buff = read_event_buff[curr_pos];
 		event_id = event_buff[0] & 0x3;
-
-		if (ts->debug_flag & SEC_TS_DEBUG_PRINT_ALLEVENT)
-			input_info(true, &ts->client->dev, "ALL: %02X %02X %02X %02X %02X %02X %02X %02X\n",
-					event_buff[0], event_buff[1], event_buff[2], event_buff[3],
-					event_buff[4], event_buff[5], event_buff[6], event_buff[7]);
 
 		switch (event_id) {
 		case SEC_TS_STATUS_EVENT:
@@ -1637,31 +1603,6 @@ void sec_ts_set_grip_type(struct sec_ts_data *ts, u8 set_type)
 
 	if (mode)
 		set_grip_data_to_ic(ts, mode);
-
-}
-
-/* for debugging--------------------------------------------------------------------------------------*/
-
-static int sec_ts_pinctrl_configure(struct sec_ts_data *ts, bool enable)
-{
-	struct pinctrl_state *state;
-
-	input_info(true, &ts->client->dev, "%s: %s\n", __func__, enable ? "ACTIVE" : "SUSPEND");
-
-	if (enable) {
-		state = pinctrl_lookup_state(ts->plat_data->pinctrl, "on_state");
-		if (IS_ERR(ts->plat_data->pinctrl))
-			input_err(true, &ts->client->dev, "%s: could not get active pinstate\n", __func__);
-	} else {
-		state = pinctrl_lookup_state(ts->plat_data->pinctrl, "off_state");
-		if (IS_ERR(ts->plat_data->pinctrl))
-			input_err(true, &ts->client->dev, "%s: could not get suspend pinstate\n", __func__);
-	}
-
-	if (!IS_ERR_OR_NULL(state))
-		return pinctrl_select_state(ts->plat_data->pinctrl, state);
-
-	return 0;
 
 }
 
@@ -2341,8 +2282,6 @@ static int sec_ts_probe(struct i2c_client *client, const struct i2c_device_id *i
 
 	input_info(true, &client->dev, "%s: init resource\n", __func__);
 
-	sec_ts_pinctrl_configure(ts, true);
-
 	/* power enable */
 	sec_ts_power(ts, true);
 	if (!pdata->regulator_boot_on)
@@ -2772,9 +2711,6 @@ static void sec_ts_reset_work(struct work_struct *work)
 		schedule_delayed_work(&ts->reset_work, msecs_to_jiffies(TOUCH_RESET_DWORK_TIME));
 		mutex_unlock(&ts->modechange);
 
-		if (ts->debug_flag & SEC_TS_DEBUG_SEND_UEVENT)
-			send_event_to_user(ts, 0, UEVENT_TSP_I2C_RESET);
-
 		wake_unlock(&ts->wakelock);
 
 		return;
@@ -2826,9 +2762,6 @@ static void sec_ts_reset_work(struct work_struct *work)
 		if (ts->fix_active_mode)
 			sec_ts_fix_tmode(ts, TOUCH_SYSTEM_MODE_TOUCH, TOUCH_MODE_STATE_TOUCH);
 	}
-
-	if (ts->debug_flag & SEC_TS_DEBUG_SEND_UEVENT)
-		send_event_to_user(ts, 0, UEVENT_TSP_I2C_RESET);
 
 	wake_unlock(&ts->wakelock);
 }
@@ -3202,9 +3135,6 @@ static void sec_ts_input_close(struct input_dev *dev)
 			ts->irq_gpio_status, ts->irq_depth, ts->irq_count, ts->irq_unhandled, thread_flags);
 
 
-#ifdef TCLM_CONCEPT
-	sec_tclm_debug_info(ts->tdata);
-#endif
 #ifdef MINORITY_REPORT
 	minority_report_sync_latest_value(ts);
 #endif
@@ -3344,8 +3274,6 @@ static int sec_ts_remove(struct i2c_client *client)
 
 static void sec_ts_shutdown(struct i2c_client *client)
 {
-	struct sec_ts_data *ts = i2c_get_clientdata(client);
-
 	input_info(true, &ts->client->dev, "%s\n", __func__);
 
 	sec_ts_remove(client);
@@ -3380,8 +3308,6 @@ int sec_ts_stop_device(struct sec_ts_data *ts)
 	if (ts->plat_data->enable_sync)
 		ts->plat_data->enable_sync(false);
 
-	sec_ts_pinctrl_configure(ts, false);
-
 out:
 	mutex_unlock(&ts->device_mutex);
 	return 0;
@@ -3392,8 +3318,6 @@ int sec_ts_start_device(struct sec_ts_data *ts)
 	int ret = -1;
 
 	input_info(true, &ts->client->dev, "%s\n", __func__);
-
-	sec_ts_pinctrl_configure(ts, true);
 
 	mutex_lock(&ts->device_mutex);
 

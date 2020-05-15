@@ -3381,7 +3381,6 @@ static void module_on_master(void *device_data)
 static void get_chip_vendor(void *device_data)
 {
 	struct sec_cmd_data *sec = (struct sec_cmd_data *)device_data;
-	struct sec_ts_data *ts = container_of(sec, struct sec_ts_data, sec);
 	char buff[16] = { 0 };
 
 	strncpy(buff, "SEC", sizeof(buff));
@@ -3614,7 +3613,6 @@ static void get_y_num(void *device_data)
 static void get_x_cross_routing(void *device_data)
 {
 	struct sec_cmd_data *sec = (struct sec_cmd_data *)device_data;
-	struct sec_ts_data *ts = container_of(sec, struct sec_ts_data, sec);
 	char buff[16] = { 0 };
 
 	sec_cmd_set_default_result(sec);

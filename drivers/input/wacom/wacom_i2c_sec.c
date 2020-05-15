@@ -71,7 +71,6 @@ static ssize_t epen_firm_update_status_show(struct device *dev,
 					    char *buf)
 {
 	struct wacom_i2c *wac_i2c = dev_get_drvdata(dev);
-	struct i2c_client *client = wac_i2c->client;
 	int status = wac_i2c->wac_feature->update_status;
 	int ret = 0;
 
@@ -93,7 +92,6 @@ static ssize_t epen_firm_version_show(struct device *dev,
 				      struct device_attribute *attr, char *buf)
 {
 	struct wacom_i2c *wac_i2c = dev_get_drvdata(dev);
-	struct i2c_client *client = wac_i2c->client;
 
 	input_info(true, &client->dev, "%s: 0x%x|0x%X\n", __func__,
 		   wac_i2c->wac_feature->fw_version, wac_i2c->fw_ver_file);
@@ -694,7 +692,6 @@ static ssize_t epen_wcharging_mode_show(struct device *dev,
 					char *buf)
 {
 	struct wacom_i2c *wac_i2c = dev_get_drvdata(dev);
-	struct i2c_client *client = wac_i2c->client;
 
 	input_info(true, &client->dev, "%s: %s\n", __func__,
 		   !wac_i2c->wcharging_mode ? "NORMAL" : "LOWSENSE");
@@ -912,7 +909,6 @@ void epen_disable_mode(int mode)
 void epen_disable_mode(int mode)
 {
 	struct wacom_i2c *wac_i2c = wacom_get_drv_data(NULL);
-	struct i2c_client *client = wac_i2c->client;
 	static int depth;
 
 	if (mode) {
@@ -981,7 +977,6 @@ static ssize_t epen_dex_enable_show(struct device *dev,
 					char *buf)
 {
 	struct wacom_i2c *wac_i2c = dev_get_drvdata(dev);
-	struct i2c_client *client = wac_i2c->client;
 
 	input_info(true, &client->dev, "%s: %d\n",
 			__func__, wac_i2c->dex_mode);
@@ -1039,7 +1034,6 @@ static ssize_t epen_dex_rate_show(struct device *dev,
 					char *buf)
 {
 	struct wacom_i2c *wac_i2c = dev_get_drvdata(dev);
-	struct i2c_client *client = wac_i2c->client;
 
 	input_info(true, &client->dev, "%s: %d\n",
 			__func__, wac_i2c->pdata->dex_rate);
@@ -1079,7 +1073,6 @@ static ssize_t epen_pen_out_count_show(struct device *dev,
 				       struct device_attribute *attr, char *buf)
 {
 	struct wacom_i2c *wac_i2c = dev_get_drvdata(dev);
-	struct i2c_client *client = wac_i2c->client;
 
 	input_info(true, &client->dev, "%s: %u\n", __func__,
 		   wac_i2c->pen_out_count);
@@ -1112,7 +1105,6 @@ static ssize_t epen_abnormal_reset_count_show(struct device *dev,
 					      char *buf)
 {
 	struct wacom_i2c *wac_i2c = dev_get_drvdata(dev);
-	struct i2c_client *client = wac_i2c->client;
 
 	input_info(true, &client->dev, "%s: %u\n", __func__,
 		   wac_i2c->abnormal_reset_count);
@@ -1146,7 +1138,6 @@ static ssize_t epen_i2c_fail_count_show(struct device *dev,
 					char *buf)
 {
 	struct wacom_i2c *wac_i2c = dev_get_drvdata(dev);
-	struct i2c_client *client = wac_i2c->client;
 
 	input_info(true, &client->dev, "%s: %u\n", __func__,
 		   wac_i2c->i2c_fail_count);
@@ -1179,7 +1170,6 @@ static ssize_t epen_connection_check_show(struct device *dev,
 					char *buf)
 {
 	struct wacom_i2c *wac_i2c = dev_get_drvdata(dev);
-	struct i2c_client *client = wac_i2c->client;
 
 	input_info(true, &client->dev, "%s: SDCONN:%d,SECCNT:%d,SADCVAL:%d,SECLVL:%d,SCALLVL:%d\n",
 			__func__, wac_i2c->connection_check,
@@ -1340,7 +1330,6 @@ static ssize_t get_epen_pos_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
 	struct wacom_i2c *wac_i2c = dev_get_drvdata(dev);
-	struct i2c_client *client = wac_i2c->client;
 	int max_x, max_y;
 
 	if (wac_i2c->pdata->xy_switch) {

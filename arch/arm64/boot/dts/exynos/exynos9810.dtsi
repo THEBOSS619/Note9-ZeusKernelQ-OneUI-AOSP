@@ -4980,9 +4980,9 @@
 		dual_change_ms = <30>;
 		quad_change_ms = <15>;
 		big_heavy_thr = <640>;
-		lit_heavy_thr = <300>;
+		lit_heavy_thr = <200>;
 		big_idle_thr = <113>;
-		lit_idle_thr = <85>;
+		lit_idle_thr = <59>;
 		ldsum_heavy_thr = <850>;
 		ldsum_enabled = <0>;
 		skip_lit_enabled = <0>;

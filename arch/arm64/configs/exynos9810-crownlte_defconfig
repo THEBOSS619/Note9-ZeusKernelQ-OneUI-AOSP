@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 4.9.220 Kernel Configuration
+# Linux/arm64 4.9.224 Kernel Configuration
 #
 CONFIG_ARM64=y
 CONFIG_64BIT=y
@@ -455,6 +455,8 @@ CONFIG_SCHED_MC=y
 # CONFIG_SCHED_SMT is not set
 # CONFIG_DISABLE_CPU_SCHED_DOMAIN_BALANCE is not set
 CONFIG_NR_CPUS=8
+CONFIG_LITTLE_CPU_MASK=15
+CONFIG_BIG_CPU_MASK=240
 CONFIG_HOTPLUG_CPU=y
 # CONFIG_NUMA is not set
 # CONFIG_PREEMPT_NONE is not set

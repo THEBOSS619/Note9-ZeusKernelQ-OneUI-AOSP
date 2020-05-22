@@ -1,7 +1,7 @@
 /*
  *
  * Automatically generated file; DO NOT EDIT.
- * Linux/arm64 4.9.220 Kernel Configuration
+ * Linux/arm64 4.9.224 Kernel Configuration
  *
  */
 #define CONFIG_RING_BUFFER 1
@@ -902,6 +902,7 @@
 #define CONFIG_IP_NF_MATCH_TTL 1
 #define CONFIG_PWRSEQ_EMMC 1
 #define CONFIG_CRYPTO_ACOMP2 1
+#define CONFIG_LITTLE_CPU_MASK 15
 #define CONFIG_SEC_SYSFS 1
 #define CONFIG_NETFILTER_XT_TARGET_TRACE 1
 #define CONFIG_SENSORS_SSP 1
@@ -912,6 +913,7 @@
 #define CONFIG_CRYPTO_LZO 1
 #define CONFIG_SND_PCM 1
 #define CONFIG_MMAP_READAROUND_LIMIT 0
+#define CONFIG_BIG_CPU_MASK 240
 #define CONFIG_PARTITION_ADVANCED 1
 #define CONFIG_USB_U_ETHER 1
 #define CONFIG_HAVE_NET_DSA 1

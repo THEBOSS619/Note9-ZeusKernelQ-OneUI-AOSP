@@ -263,7 +263,7 @@ static inline unsigned int s5p_mfc_version(struct s5p_mfc_dev *dev)
 }
 
 /* Low memory check */
-#define IS_LOW_MEM			(totalram_pages <= ((SZ_1G + SZ_512M) >> PAGE_SHIFT))
+#define IS_LOW_MEM			(totalram_pages() <= ((SZ_1G + SZ_512M) >> PAGE_SHIFT))
 #define SZ_600M				(6 * 1024 * 1024)
 
 #endif /* __S5P_MFC_COMMON_H */

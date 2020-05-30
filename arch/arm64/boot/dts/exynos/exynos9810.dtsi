@@ -343,8 +343,8 @@
 				power-coefficient = <160>;
 			};
 			MEERKAT_ENERGY: meerkat-energy {
-				capacity-mips = <550>;
-				power-coefficient = <800>;
+				capacity-mips = <785>;
+				power-coefficient = <760>;
 			};
 		};
 
@@ -747,12 +747,12 @@
 		governor = "interactive";
 		interactive_info = <338000 94 0>;
 		gpu_dvfs_table_size = <6 7>; /*<row col>*/
-		gpu_dvfs_table = <  572000    78  100   5  1794000  1950000      0
-		                    546000    78   99   1  1794000  1950000      0
-		                    455000    78   85   1  1539000  1794000      0
-		                    338000    78   85   1  1352000  1248000      0
+		gpu_dvfs_table = <  572000    78  100   5  1794000        0      0
+		                    546000    78   99   1  1794000        0      0
+		                    455000    78   85   1  1539000        0      0
+		                    338000    78   85   1  1352000        0      0
 		                    299000    78   85   1  1014000        0      0
-		                    260000    78   85   1   676000        0      0 >;
+		                    260000    78   85   1   421000        0      0 >;
 		gpu_sustainable_info = <0 0 0 0 0>; /* Not used */
 		gpu_pmqos_cpu_cluster_num = <2>;
 		gpu_pmu_status_reg_offset = <0x4044>;
@@ -4963,7 +4963,7 @@
 			boost_table = < 0 >;
 			up_rate_limit_table = < 5000 >;
 			down_rate_limit_table = < 5000 >;
-			upscale_ratio_table = < 80 962000 93 1261000 100 >;
+			upscale_ratio_table = < 50 962000 65 1469000 80 >;
 		};
 	};
 

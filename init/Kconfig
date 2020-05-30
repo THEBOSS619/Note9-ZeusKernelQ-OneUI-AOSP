@@ -967,7 +967,7 @@ config HAVE_UNSTABLE_SCHED_CLOCK
 config GENERIC_SCHED_CLOCK
 	bool
 
-menu "FAIR Scheuler tunables"
+menu "FAIR Scheduler tunables"
 
 choice
 	prompt "Utilization's PELT half-Life"

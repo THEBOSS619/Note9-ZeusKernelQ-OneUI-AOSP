@@ -344,7 +344,7 @@
 			};
 			MEERKAT_ENERGY: meerkat-energy {
 				capacity-mips = <785>;
-				power-coefficient = <760>;
+				power-coefficient = <800>;
 			};
 		};
 
@@ -359,7 +359,7 @@
 				};
 				/* big cores */
 				coregroup1 {
-					lower-boundary = <12>;
+					lower-boundary = <7>;
 					upper-boundary = <100>;
 					coverage-ratio = <75>;
 				};
@@ -397,7 +397,7 @@
 			prefer-perf-service {
 				prefer-perf0 {
 					boost = <1>;
-					light-task-threshold = <51>;
+					light-task-threshold = <10>;
 					prefer-cpus = "4-7", "0-3";
 				};
 			};
@@ -4953,7 +4953,7 @@
 			boost_table = < 0 >;
 			up_rate_limit_table = < 5000 >;
 			down_rate_limit_table = < 5000 >;
-			upscale_ratio_table = < 80 1053000 100 >;
+			upscale_ratio_table = < 80 >;
 		};
 
 		domain@1 {
@@ -4963,7 +4963,7 @@
 			boost_table = < 0 >;
 			up_rate_limit_table = < 5000 >;
 			down_rate_limit_table = < 5000 >;
-			upscale_ratio_table = < 50 962000 65 1469000 80 >;
+			upscale_ratio_table = < 80 1469000 100 >;
 		};
 	};
 
@@ -4979,11 +4979,11 @@
 		single_change_ms = <30>;
 		dual_change_ms = <30>;
 		quad_change_ms = <15>;
-		big_heavy_thr = <640>;
-		lit_heavy_thr = <200>;
-		big_idle_thr = <113>;
-		lit_idle_thr = <59>;
-		ldsum_heavy_thr = <850>;
+		big_heavy_thr = <600>;
+		lit_heavy_thr = <180>;
+		big_idle_thr = <106>;
+		lit_idle_thr = <46>;
+		ldsum_heavy_thr = <800>;
 		ldsum_enabled = <0>;
 		skip_lit_enabled = <0>;
 		cl_busy_ratio = <65>;

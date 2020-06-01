@@ -43,7 +43,6 @@ int jsqz_dma_addr_map(struct device *dev,
 
 void jsqz_dma_addr_unmap(struct device *dev,
 			 struct jsqz_buffer_dma *buf);
-/*
 void jsqz_sync_for_device(struct device *dev,
 			  struct jsqz_buffer_plane_dma *plane,
 			  enum dma_data_direction dir);
@@ -51,5 +50,4 @@ void jsqz_sync_for_device(struct device *dev,
 void jsqz_sync_for_cpu(struct device *dev,
 		       struct jsqz_buffer_plane_dma *plane,
 		       enum dma_data_direction dir);
-*/
 #endif /* JSQZ_HELPER_H_ */

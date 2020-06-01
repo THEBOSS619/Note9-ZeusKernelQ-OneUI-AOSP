@@ -16,7 +16,7 @@
 
 #include <linux/kernel.h>
 #include <linux/exynos_iovmm.h>
-//#include <linux/exynos_ion.h>
+#include <linux/exynos_ion.h>
 
 #include "jsqz-helper.h"
 
@@ -122,7 +122,6 @@ void jsqz_dma_addr_unmap(struct device *dev,
 	plane->dma_addr = 0;
 }
 
-/*
 void jsqz_sync_for_device(struct device *dev,
 			  struct jsqz_buffer_plane_dma *plane,
 			  enum dma_data_direction dir)
@@ -146,4 +145,3 @@ void jsqz_sync_for_cpu(struct device *dev,
 		exynos_iommu_sync_for_cpu(dev, plane->dma_addr,
 					  plane->bytes_used, dir);
 }
-*/

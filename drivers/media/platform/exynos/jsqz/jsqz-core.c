@@ -695,7 +695,6 @@ static struct dma_buf *jsqz_get_dmabuf_from_userptr(
 		off_t *out_offset)
 {
 	struct dma_buf *dmabuf = NULL;
-#if 0
 	struct vm_area_struct *vma;
 
 	dev_dbg(jsqz_device->dev, "%s: BEGIN\n", __func__);
@@ -737,7 +736,6 @@ finish:
 	up_read(&current->mm->mmap_sem);
 	dev_dbg(jsqz_device->dev
 		, "%s: virtual address space semaphore released\n", __func__);
-#endif
 	return dmabuf;
 }
 

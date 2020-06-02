@@ -52,6 +52,7 @@
 #include "jsqz-core.h"
 #include "jsqz-regs.h"
 #include "jsqz-helper.h"
+#include "jsqz-exynos9810-workaround.h"
 
 //The name of the gate clock. This is set in the device-tree entry
 static const char *clk_producer_name = "gate";
@@ -114,6 +115,8 @@ static int jsqz_compute_buffer_size(struct jsqz_ctx *ctx,
 				    size_t *bytes_used,
 				    int buf_index)
 {
+	int srcBitsPerPixel;
+
 	if (!ctx) {
 		pr_err("%s: invalid context!\n", __func__);
 		return -EINVAL;
@@ -166,8 +169,59 @@ static int jsqz_compute_buffer_size(struct jsqz_ctx *ctx,
 			, "%s: DMA_TO_DEVICE, requesting %zu bytes\n"
 			, __func__, *bytes_used);
 
+	} else if (dir == DMA_TO_DEVICE) {
+		struct hwJSQZ_img_info *img_info = &task->user_task.info_out;
+		typeof(img_info->width) new_width  = img_info->width;
+		typeof(img_info->height) new_height = img_info->height;
+		size_t num_pixels = 0;
+
+		/* for the Exynos9810 H/W bug workaround */
+		int ret = 0;
+		size_t buffer_extension_size = 0;
+
+		dev_dbg(ctx->jsqz_dev->dev
+			, "%s: DMA_TO_DEVICE case, width %u height %u\n"
+			, __func__, new_width, new_height);
+
+		ret = jsqz_exynos9810_setup_workaround(ctx->jsqz_dev->dev,
+						       task,
+						       &new_width,
+						       &new_height,
+						       &buffer_extension_size);
+		if (ret < 0) {
+			dev_err(ctx->jsqz_dev->dev,
+				"%s: failed to compute extended buffer size (%d)\n",
+				__func__, ret);
+			return -EINVAL;
+		}
+
+		/* Compute number of bytes we expect from userspace, with
+		 * overflow/wraparound checks
+		 * NOTE: the casts to size_t area to avoid wraparounds and to
+		 *       adjust the result to bytes_used, which is a size_t.
+		 * TODO: move to GCC overflow intrinsics once we move to GCC5+
+		 */
+		if (((size_t)new_width) > (SIZE_MAX / new_height)) {
+			dev_err(ctx->jsqz_dev->dev
+				, "%s: new img size mul wrapped around %u %u\n"
+				, __func__, new_width, new_height);
+			return -ERANGE;
+		}
+		num_pixels = (size_t)new_width * new_height;
+		if (num_pixels > (SIZE_MAX / srcBitsPerPixel)) {
+			dev_err(ctx->jsqz_dev->dev
+				, "%s: new img bytes mul wrapped around %zu %u\n"
+				, __func__, num_pixels, srcBitsPerPixel);
+			return -ERANGE;
+		}
+		*bytes_used = num_pixels * srcBitsPerPixel;
+
+		dev_dbg(ctx->jsqz_dev->dev
+			, "%s: DMA_TO_DEVICE, requesting %zu bytes\n"
+			, __func__, *bytes_used);
+
 	} else {
-		//this shouldn't happen
+		/* this should never happen */
 		dev_err(ctx->jsqz_dev->dev,
 			"%s: invalid DMA direction\n",
 			__func__);

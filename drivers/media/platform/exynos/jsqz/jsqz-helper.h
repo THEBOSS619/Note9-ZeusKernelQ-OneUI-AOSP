@@ -19,6 +19,12 @@
 #include <linux/ion_exynos.h>
 #include "jsqz-core.h"
 
+int ftm_to_bpp(struct device *dev, struct hwJSQZ_img_info *img_info);
+
+u32 blksize_enum_to_int(enum hwJSQZ_blk_size blk_size, int x_or_y);
+u32 blksize_enum_to_x(enum hwJSQZ_blk_size blk_size);
+u32 blksize_enum_to_y(enum hwJSQZ_blk_size blk_size);
+
 /**
  * jsqz_set_dma_address - set DMA address
  */

@@ -58,9 +58,38 @@ enum hwJSQZ_input_cs_format {
 };
 
 /**
+ * enum hwJSQZ_blk_size - The available block sizes
+ *
+ * @JSQZ_ENCODE_MODE_BLK_SIZE_4x4	: Block size 4x4
+ * @JSQZ_ENCODE_MODE_BLK_SIZE_6x6	: Block size 6x6
+ * @JSQZ_ENCODE_MODE_BLK_SIZE_8x8	: Block size 8x8
+ */
+enum hwJSQZ_blk_size {
+	JSQZ_ENCODE_MODE_BLK_SIZE_4x4,
+	JSQZ_ENCODE_MODE_BLK_SIZE_6x6,
+	JSQZ_ENCODE_MODE_BLK_SIZE_8x8,
+};
+
+/**
+ * enum hwJSQZ_input_pixel_format - Available pixel formats for the input image
+ *
+ * @JSQZ_ENCODE_INPUT_PIXEL_FORMAT_RGBA8888	: RGBA8888
+ * @JSQZ_ENCODE_INPUT_PIXEL_FORMAT_ARGB8888	: ARGB8888
+ * @JSQZ_ENCODE_INPUT_PIXEL_FORMAT_BGRA8888	: BGRA8888
+ * @JSQZ_ENCODE_INPUT_PIXEL_FORMAT_ABGR8888	: ABGR8888
+ */
+enum hwJSQZ_input_pixel_format {
+	JSQZ_ENCODE_INPUT_PIXEL_FORMAT_RGBA8888,
+	JSQZ_ENCODE_INPUT_PIXEL_FORMAT_ARGB8888,
+	JSQZ_ENCODE_INPUT_PIXEL_FORMAT_BGRA8888,
+	JSQZ_ENCODE_INPUT_PIXEL_FORMAT_ABGR8888,
+};
+
+/**
  * @brief the image format and size
  */
 struct hwJSQZ_img_info {
+	__u32 fmt;
 	__u32 width;					/**< width of the image */
 	__u32 height;					/**< height of the image */
 	__u32 stride;					/**<: stride of the image */
@@ -99,6 +128,19 @@ struct hwSQZ_buffer {
  * using the corresponding enumerations.
  */
 struct hwJSQZ_config {
+	__u8       encodeBlockSize;
+	__u8       intref_iterations;
+	__u8       partitions;
+	__u8       num_blk_mode;
+	__u8       dual_plane_enable;
+
+	/*
+	 * Explicit padding to align struct to 64bit,
+	 * This way the memory layout should be the same on both 32 and 64bit,
+	 * and will avoid the need for a 32-bit specific structure
+	 * for compat_ioctl
+	 */
+	__u8       reserved[3];
 	enum hwJSQZ_processing_mode		mode;		/**< mode of Jpeg Squeezer */
 	enum hwJSQZ_processing_function	function;	/**< function of Jpeg Squeezer */
 };
@@ -116,9 +158,13 @@ struct hwJSQZ_task {
 	struct hwJSQZ_img_info info_out;    /**< info related to the image sent to the HW for processing */
 	struct hwSQZ_buffer buf_out[2];    /**< info related to the buffer sent to the HW for processing */
 	struct hwJSQZ_config config;        /**< the configuration for HW IP */
+	struct hwJSQZ_img_info info_cap;
+	struct hwJSQZ_config enc_config;
 	unsigned int buf_q[32];             /**< q table that are result of jpeg squeezer */
 	unsigned int buf_init_q[32];        /**< q table that are initial Q */
 	int num_of_buf;                     /**< number of buf_out count */
+	/* private: internal use only */
+	unsigned long reserved[2];
 };
 
 

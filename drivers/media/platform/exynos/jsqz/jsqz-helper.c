@@ -17,8 +17,49 @@
 #include <linux/kernel.h>
 #include <linux/exynos_iovmm.h>
 #include <linux/exynos_ion.h>
+#include <linux/mm.h>
+#include <linux/bitmap.h>
+#include <asm/bitops.h>
 
 #include "jsqz-helper.h"
+
+/* Pixel format to bits-per-pixel */
+int ftm_to_bpp(struct device *dev, struct hwJSQZ_img_info *img_info) {
+	switch (img_info->fmt) {
+	case JSQZ_ENCODE_INPUT_PIXEL_FORMAT_RGBA8888:  /* RGBA 8888 */
+	case JSQZ_ENCODE_INPUT_PIXEL_FORMAT_ARGB8888:  /* ARGB 8888 */
+	case JSQZ_ENCODE_INPUT_PIXEL_FORMAT_BGRA8888:  /* BGRA 8888 */
+	case JSQZ_ENCODE_INPUT_PIXEL_FORMAT_ABGR8888:  /* ABGR 8888 */
+		return 4;
+		break;
+	default:
+		dev_err(dev, "invalid input color format (%u)", img_info->fmt);
+		return -EINVAL;
+	}
+}
+
+/* Convert blksize enum to the corresponding block size in integer */
+u32 blksize_enum_to_int(enum hwJSQZ_blk_size blk_size, int x_or_y)
+{
+	switch (blk_size) {
+	case JSQZ_ENCODE_MODE_BLK_SIZE_4x4: return 4;
+	case JSQZ_ENCODE_MODE_BLK_SIZE_6x6: return 6;
+	case JSQZ_ENCODE_MODE_BLK_SIZE_8x8: return 8;
+	/*
+	 * Example of future case, once the hw supports different block sizes for x/y
+	 * case JSQZ_ENCODE_MODE_BLK_SIZE_4x6: return x_or_y ? 6 : 4;
+	 */
+	}
+
+	/* unsupported block size */
+	return 0;
+}
+u32 blksize_enum_to_x(enum hwJSQZ_blk_size blk_size) {
+	return blksize_enum_to_int(blk_size, 0);
+}
+u32 blksize_enum_to_y(enum hwJSQZ_blk_size blk_size) {
+	return blksize_enum_to_int(blk_size, 1);
+}
 
 int jsqz_map_dma_attachment(struct device *dev,
 		     struct jsqz_buffer_plane_dma *plane,

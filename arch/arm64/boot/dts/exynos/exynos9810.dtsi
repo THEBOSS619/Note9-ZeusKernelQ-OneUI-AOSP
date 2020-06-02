@@ -3362,7 +3362,7 @@
 		clocks = <&clock GATE_JSQZ>;
 		clock-names = "gate";
 		iommus = <&sysmmu_g2d2>;
-		jsqz,int_qos_minlock = <533000>;
+		jsqz,int_qos_minlock = <534000>;
 		samsung,power-domain = <&pd_g2d>;
 	};
 

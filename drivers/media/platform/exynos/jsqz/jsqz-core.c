@@ -1936,7 +1936,7 @@ static int jsqz_probe(struct platform_device *pdev)
 	spin_lock_init(&jsqz->lock_task);
 	spin_lock_init(&jsqz->lock_ctx);
 
-	jsqz->qos_req_level = 533000;
+	jsqz->qos_req_level = 534000;
 
 	//jsqz->timeout_jiffies = -1; //msecs_to_jiffies(500);
 

@@ -1,0 +1,159 @@
+<html lang="en">
+<head>
+<title>Basic PowerPC Built-in Functions Available on ISA 2.05 - Using the GNU Compiler Collection (GCC)</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="Using the GNU Compiler Collection (GCC)">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Basic-PowerPC-Built_002din-Functions.html#Basic-PowerPC-Built_002din-Functions" title="Basic PowerPC Built-in Functions">
+<link rel="prev" href="Basic-PowerPC-Built_002din-Functions-Available-on-all-Configurations.html#Basic-PowerPC-Built_002din-Functions-Available-on-all-Configurations" title="Basic PowerPC Built-in Functions Available on all Configurations">
+<link rel="next" href="Basic-PowerPC-Built_002din-Functions-Available-on-ISA-2_002e06.html#Basic-PowerPC-Built_002din-Functions-Available-on-ISA-2_002e06" title="Basic PowerPC Built-in Functions Available on ISA 2.06">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1988-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Basic-PowerPC-Built-in-Functions-Available-on-ISA-2.05"></a>
+<a name="Basic-PowerPC-Built_002din-Functions-Available-on-ISA-2_002e05"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Basic-PowerPC-Built_002din-Functions-Available-on-ISA-2_002e06.html#Basic-PowerPC-Built_002din-Functions-Available-on-ISA-2_002e06">Basic PowerPC Built-in Functions Available on ISA 2.06</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Basic-PowerPC-Built_002din-Functions-Available-on-all-Configurations.html#Basic-PowerPC-Built_002din-Functions-Available-on-all-Configurations">Basic PowerPC Built-in Functions Available on all Configurations</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Basic-PowerPC-Built_002din-Functions.html#Basic-PowerPC-Built_002din-Functions">Basic PowerPC Built-in Functions</a>
+<hr>
+</div>
+
+<h5 class="subsubsection">6.60.21.2 Basic PowerPC Built-in Functions Available on ISA 2.05</h5>
+
+<p>The basic built-in functions described in this section are
+available on the PowerPC family of processors starting with ISA 2.05
+or later.  Unless specific options are explicitly disabled on the
+command line, specifying option <samp><span class="option">-mcpu=power6</span></samp> has the effect of
+enabling the <samp><span class="option">-mpowerpc64</span></samp>, <samp><span class="option">-mpowerpc-gpopt</span></samp>,
+<samp><span class="option">-mpowerpc-gfxopt</span></samp>, <samp><span class="option">-mmfcrf</span></samp>, <samp><span class="option">-mpopcntb</span></samp>,
+<samp><span class="option">-mfprnd</span></samp>, <samp><span class="option">-mcmpb</span></samp>, <samp><span class="option">-mhard-dfp</span></samp>, and
+<samp><span class="option">-mrecip-precision</span></samp> options.  Specify the
+<samp><span class="option">-maltivec</span></samp> and <samp><span class="option">-mfpgpr</span></samp> options explicitly in
+combination with the above options if they are desired.
+
+ <p>The following functions require option <samp><span class="option">-mcmpb</span></samp>.
+<pre class="smallexample">     unsigned long long __builtin_cmpb (unsigned long long int, unsigned long long int);
+     unsigned int __builtin_cmpb (unsigned int, unsigned int);
+</pre>
+ <p>The <code>__builtin_cmpb</code> function
+performs a byte-wise compare on the contents of its two arguments,
+returning the result of the byte-wise comparison as the returned
+value.  For each byte comparison, the corresponding byte of the return
+value holds 0xff if the input bytes are equal and 0 if the input bytes
+are not equal.  If either of the arguments to this built-in function
+is wider than 32 bits, the function call expands into the form that
+expects <code>unsigned long long int</code> arguments
+which is only available on 64-bit targets.
+
+ <p>The following built-in functions are available
+when hardware decimal floating point
+(<samp><span class="option">-mhard-dfp</span></samp>) is available:
+<pre class="smallexample">     void __builtin_set_fpscr_drn(int);
+     _Decimal64 __builtin_ddedpd (int, _Decimal64);
+     _Decimal128 __builtin_ddedpdq (int, _Decimal128);
+     _Decimal64 __builtin_denbcd (int, _Decimal64);
+     _Decimal128 __builtin_denbcdq (int, _Decimal128);
+     _Decimal64 __builtin_diex (long long, _Decimal64);
+     _Decimal128 _builtin_diexq (long long, _Decimal128);
+     _Decimal64 __builtin_dscli (_Decimal64, int);
+     _Decimal128 __builtin_dscliq (_Decimal128, int);
+     _Decimal64 __builtin_dscri (_Decimal64, int);
+     _Decimal128 __builtin_dscriq (_Decimal128, int);
+     long long __builtin_dxex (_Decimal64);
+     long long __builtin_dxexq (_Decimal128);
+     _Decimal128 __builtin_pack_dec128 (unsigned long long, unsigned long long);
+     unsigned long long __builtin_unpack_dec128 (_Decimal128, int);
+     
+     The <code>__builtin_set_fpscr_drn</code> builtin allows changing the three decimal
+     floating point rounding mode bits.  The argument is a 3-bit value.  The
+     argument can either be a <code>const int</code> or the value can be stored in
+     a variable.
+     The builtin uses the ISA 3.0 instruction <code>mffscdrn</code> if available.
+     Otherwise the builtin reads the FPSCR, masks the current decimal rounding
+     mode bits out and OR's in the new value.
+     
+</pre>
+ <p>The following functions require <samp><span class="option">-mhard-float</span></samp>,
+<samp><span class="option">-mpowerpc-gfxopt</span></samp>, and <samp><span class="option">-mpopcntb</span></samp> options.
+
+<pre class="smallexample">     double __builtin_recipdiv (double, double);
+     float __builtin_recipdivf (float, float);
+     double __builtin_rsqrt (double);
+     float __builtin_rsqrtf (float);
+</pre>
+ <p>The <code>vec_rsqrt</code>, <code>__builtin_rsqrt</code>, and
+<code>__builtin_rsqrtf</code> functions generate multiple instructions to
+implement the reciprocal sqrt functionality using reciprocal sqrt
+estimate instructions.
+
+ <p>The <code>__builtin_recipdiv</code>, and <code>__builtin_recipdivf</code>
+functions generate multiple instructions to implement division using
+the reciprocal estimate instructions.
+
+ <p>The following functions require <samp><span class="option">-mhard-float</span></samp> and
+<samp><span class="option">-mmultiple</span></samp> options.
+
+ <p>The <code>__builtin_unpack_longdouble</code> function takes a
+<code>long double</code> argument and a compile time constant of 0 or 1.  If
+the constant is 0, the first <code>double</code> within the
+<code>long double</code> is returned, otherwise the second <code>double</code>
+is returned.  The <code>__builtin_unpack_longdouble</code> function is only
+available if <code>long double</code> uses the IBM extended double
+representation.
+
+ <p>The <code>__builtin_pack_longdouble</code> function takes two <code>double</code>
+arguments and returns a <code>long double</code> value that combines the two
+arguments.  The <code>__builtin_pack_longdouble</code> function is only
+available if <code>long double</code> uses the IBM extended double
+representation.
+
+ <p>The <code>__builtin_unpack_ibm128</code> function takes a <code>__ibm128</code>
+argument and a compile time constant of 0 or 1.  If the constant is 0,
+the first <code>double</code> within the <code>__ibm128</code> is returned,
+otherwise the second <code>double</code> is returned.
+
+ <p>The <code>__builtin_pack_ibm128</code> function takes two <code>double</code>
+arguments and returns a <code>__ibm128</code> value that combines the two
+arguments.
+
+ <p>Additional built-in functions are available for the 64-bit PowerPC
+family of processors, for efficient use of 128-bit floating point
+(<code>__float128</code>) values.
+
+ </body></html>
+

@@ -1,0 +1,100 @@
+<html lang="en">
+<head>
+<title>Interoperability Options - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Invoking-GNU-Fortran.html#Invoking-GNU-Fortran" title="Invoking GNU Fortran">
+<link rel="prev" href="Code-Gen-Options.html#Code-Gen-Options" title="Code Gen Options">
+<link rel="next" href="Environment-Variables.html#Environment-Variables" title="Environment Variables">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Interoperability-Options"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Environment-Variables.html#Environment-Variables">Environment Variables</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Code-Gen-Options.html#Code-Gen-Options">Code Gen Options</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Invoking-GNU-Fortran.html#Invoking-GNU-Fortran">Invoking GNU Fortran</a>
+<hr>
+</div>
+
+<h3 class="section">2.10 Options for interoperability with other languages</h3>
+
+     <dl>
+<dt>-fc-prototypes<dd><a name="index-g_t_0040code_007bc_002dprototypes_007d-331"></a><a name="index-Generating-C-prototypes-from-Fortran-BIND_0028C_0029-enteties-332"></a>This option will generate C prototypes from <code>BIND(C)</code> variable
+declarations, types and procedure interfaces and writes them to
+standard output.  <code>ENUM</code> is not yet supported.
+
+     <p>The generated prototypes may need inclusion of an appropriate header,
+such as <code>&lt;stdint.h&gt;</code> or <code>&lt;stdlib.h&gt;</code>.  For types which are
+not specified using the appropriate kind from the <code>iso_c_binding</code>
+module, a warning is added as a comment to the code.
+
+     <p>For function pointers, a pointer to a function returning <code>int</code>
+without an explicit argument list is generated.
+
+     <p>Example of use:
+     <pre class="smallexample">          $ gfortran -fc-prototypes -fsyntax-only foo.f90 &gt; foo.h
+</pre>
+     <p>where the C code intended for interoperating with the Fortran code
+then  uses <code>#include "foo.h"</code>.
+
+     <br><dt>-fc-prototypes-external<dd><a name="index-g_t_0040code_007bc_002dprototypes_002dexternal_007d-333"></a><a name="index-Generating-C-prototypes-from-external-procedures-334"></a>This option will generate C prototypes from external functions and
+subroutines and write them to standard output.  This may be useful for
+making sure that C bindings to Fortran code are correct.  This option
+does not generate prototypes for <code>BIND(C)</code> procedures, use
+<samp><span class="option">-fc-prototypes</span></samp> for that.
+
+     <p>The generated prototypes may need inclusion of an appropriate
+header, such as as <code>&lt;stdint.h&gt;</code> or <code>&lt;stdlib.h&gt;</code>.
+
+     <p>This is primarily meant for legacy code to ensure that existing C
+bindings match what <samp><span class="command">gfortran</span></samp> emits.  The generated C
+prototypes should be correct for the current version of the compiler,
+but may not match what other compilers or earlier versions of
+<samp><span class="command">gfortran</span></samp> need.  For new developments, use of the
+<code>BIND(C)</code> features is recommended.
+
+     <p>Example of use:
+     <pre class="smallexample">          $ gfortran -fc-prototypes-external -fsyntax-only foo.f &gt; foo.h
+</pre>
+     <p>where the C code intended for interoperating with the Fortran code
+then  uses <code>#include "foo.h"</code>. 
+</dl>
+
+   </body></html>
+

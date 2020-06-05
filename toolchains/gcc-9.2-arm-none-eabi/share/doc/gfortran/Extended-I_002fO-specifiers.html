@@ -1,0 +1,129 @@
+<html lang="en">
+<head>
+<title>Extended I/O specifiers - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Extensions-implemented-in-GNU-Fortran.html#Extensions-implemented-in-GNU-Fortran" title="Extensions implemented in GNU Fortran">
+<link rel="prev" href="Bitwise-logical-operators.html#Bitwise-logical-operators" title="Bitwise logical operators">
+<link rel="next" href="Legacy-PARAMETER-statements.html#Legacy-PARAMETER-statements" title="Legacy PARAMETER statements">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Extended-I%2fO-specifiers"></a>
+<a name="Extended-I_002fO-specifiers"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Legacy-PARAMETER-statements.html#Legacy-PARAMETER-statements">Legacy PARAMETER statements</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Bitwise-logical-operators.html#Bitwise-logical-operators">Bitwise logical operators</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Extensions-implemented-in-GNU-Fortran.html#Extensions-implemented-in-GNU-Fortran">Extensions implemented in GNU Fortran</a>
+<hr>
+</div>
+
+<h4 class="subsection">6.1.30 Extended I/O specifiers</h4>
+
+<p><a name="index-g_t_0040code_007bCARRIAGECONTROL_007d-417"></a><a name="index-g_t_0040code_007bREADONLY_007d-418"></a><a name="index-g_t_0040code_007bSHARE_007d-419"></a><a name="index-g_t_0040code_007bSHARED_007d-420"></a><a name="index-g_t_0040code_007bNOSHARED_007d-421"></a><a name="index-I_002fO-specifiers-422"></a>
+GNU Fortran supports the additional legacy I/O specifiers
+<code>CARRIAGECONTROL</code>, <code>READONLY</code>, and <code>SHARE</code> with the
+compile flag <samp><span class="option">-fdec</span></samp>, for compatibility.
+
+     <dl>
+<dt><code>CARRIAGECONTROL</code><dd>The <code>CARRIAGECONTROL</code> specifier allows a user to control line
+termination settings between output records for an I/O unit. The specifier has
+no meaning for readonly files. When <code>CARRAIGECONTROL</code> is specified upon
+opening a unit for formatted writing, the exact <code>CARRIAGECONTROL</code> setting
+determines what characters to write between output records. The syntax is:
+
+     <pre class="smallexample">          OPEN(..., CARRIAGECONTROL=cc)
+</pre>
+     <p>Where <em>cc</em> is a character expression that evaluates to one of the
+following values:
+
+     <p><table summary=""><tr align="left"><td valign="top" width="20%"><code>'LIST'</code> </td><td valign="top" width="80%">One line feed between records (default)
+<br></td></tr><tr align="left"><td valign="top" width="20%"><code>'FORTRAN'</code> </td><td valign="top" width="80%">Legacy interpretation of the first character (see below)
+<br></td></tr><tr align="left"><td valign="top" width="20%"><code>'NONE'</code> </td><td valign="top" width="80%">No separator between records
+     <br></td></tr></table>
+
+     <p>With <code>CARRIAGECONTROL='FORTRAN'</code>, when a record is written, the first
+character of the input record is not written, and instead determines the output
+record separator as follows:
+
+     <p><table summary=""><tr align="left"><th valign="top" width="30%">Leading character </th><th valign="top" width="30%">Meaning </th><th valign="top" width="40%">Output separating character(s)
+<br></th></tr><tr align="left"><td valign="top" width="30%"><code>'+'</code> </td><td valign="top" width="30%">Overprinting </td><td valign="top" width="40%">Carriage return only
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>'-'</code> </td><td valign="top" width="30%">New line </td><td valign="top" width="40%">Line feed and carriage return
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>'0'</code> </td><td valign="top" width="30%">Skip line </td><td valign="top" width="40%">Two line feeds and carriage return
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>'1'</code> </td><td valign="top" width="30%">New page </td><td valign="top" width="40%">Form feed and carriage return
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>'$'</code> </td><td valign="top" width="30%">Prompting </td><td valign="top" width="40%">Line feed (no carriage return)
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>CHAR(0)</code> </td><td valign="top" width="30%">Overprinting (no advance) </td><td valign="top" width="40%">None
+     <br></td></tr></table>
+
+     <br><dt><code>READONLY</code><dd>The <code>READONLY</code> specifier may be given upon opening a unit, and is
+equivalent to specifying <code>ACTION='READ'</code>, except that the file may not be
+deleted on close (i.e. <code>CLOSE</code> with <code>STATUS="DELETE"</code>). The syntax
+is:
+
+     <pre class="smallexample">          <code>OPEN(..., READONLY)</code>
+</pre>
+     <br><dt><code>SHARE</code><dd>The <code>SHARE</code> specifier allows system-level locking on a unit upon opening
+it for controlled access from multiple processes/threads. The <code>SHARE</code>
+specifier has several forms:
+
+     <pre class="smallexample">          OPEN(..., SHARE=sh)
+          OPEN(..., SHARED)
+          OPEN(..., NOSHARED)
+</pre>
+     <p>Where <em>sh</em> in the first form is a character expression that evaluates to
+a value as seen in the table below. The latter two forms are aliases
+for particular values of <em>sh</em>:
+
+     <p><table summary=""><tr align="left"><th valign="top" width="30%">Explicit form </th><th valign="top" width="30%">Short form </th><th valign="top" width="40%">Meaning
+<br></th></tr><tr align="left"><td valign="top" width="30%"><code>SHARE='DENYRW'</code> </td><td valign="top" width="30%"><code>NOSHARED</code> </td><td valign="top" width="40%">Exclusive (write) lock
+<br></td></tr><tr align="left"><td valign="top" width="30%"><code>SHARE='DENYNONE'</code> </td><td valign="top" width="30%"><code>SHARED</code> </td><td valign="top" width="40%">Shared (read) lock
+     <br></td></tr></table>
+
+     <p>In general only one process may hold an exclusive (write) lock for a given file
+at a time, whereas many processes may hold shared (read) locks for the same
+file.
+
+     <p>The behavior of locking may vary with your operating system. On POSIX systems,
+locking is implemented with <code>fcntl</code>. Consult your corresponding operating
+system's manual pages for further details. Locking via <code>SHARE=</code> is not
+supported on other systems.
+
+   </dl>
+
+   </body></html>
+

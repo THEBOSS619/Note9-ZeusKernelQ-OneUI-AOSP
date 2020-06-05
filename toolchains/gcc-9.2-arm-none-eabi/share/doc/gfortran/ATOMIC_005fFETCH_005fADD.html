@@ -1,0 +1,98 @@
+<html lang="en">
+<head>
+<title>ATOMIC_FETCH_ADD - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Intrinsic-Procedures.html#Intrinsic-Procedures" title="Intrinsic Procedures">
+<link rel="prev" href="ATOMIC_005fDEFINE.html#ATOMIC_005fDEFINE" title="ATOMIC_DEFINE">
+<link rel="next" href="ATOMIC_005fFETCH_005fAND.html#ATOMIC_005fFETCH_005fAND" title="ATOMIC_FETCH_AND">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="ATOMIC_FETCH_ADD"></a>
+<a name="ATOMIC_005fFETCH_005fADD"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="ATOMIC_005fFETCH_005fAND.html#ATOMIC_005fFETCH_005fAND">ATOMIC_FETCH_AND</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="ATOMIC_005fDEFINE.html#ATOMIC_005fDEFINE">ATOMIC_DEFINE</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Intrinsic-Procedures.html#Intrinsic-Procedures">Intrinsic Procedures</a>
+<hr>
+</div>
+
+<h3 class="section">9.32 <code>ATOMIC_FETCH_ADD</code> &mdash; Atomic ADD operation with prior fetch</h3>
+
+<p><a name="index-ATOMIC_005fFETCH_005fADD-599"></a><a name="index-Atomic-subroutine_002c-ADD-with-fetch-600"></a>
+     <dl>
+<dt><em>Description</em>:<dd><code>ATOMIC_FETCH_ADD(ATOM, VALUE, OLD)</code> atomically stores the value of
+<var>ATOM</var> in <var>OLD</var> and adds the value of <var>VAR</var> to the
+variable <var>ATOM</var>. When <var>STAT</var> is present and the invocation was
+successful, it is assigned the value 0. If it is present and the invocation
+has failed, it is assigned a positive value; in particular, for a coindexed
+<var>ATOM</var>, if the remote image has stopped, it is assigned the value of
+<code>ISO_FORTRAN_ENV</code>'s <code>STAT_STOPPED_IMAGE</code> and if the remote image has
+failed, the value <code>STAT_FAILED_IMAGE</code>.
+
+     <br><dt><em>Standard</em>:<dd>TS 18508 or later
+
+     <br><dt><em>Class</em>:<dd>Atomic subroutine
+
+     <br><dt><em>Syntax</em>:<dd><code>CALL ATOMIC_FETCH_ADD (ATOM, VALUE, old [, STAT])</code>
+
+     <br><dt><em>Arguments</em>:<dd>
+     <p><table summary=""><tr align="left"><td valign="top" width="15%"><var>ATOM</var>   </td><td valign="top" width="70%">Scalar coarray or coindexed variable of integer
+type with <code>ATOMIC_INT_KIND</code> kind. 
+<code>ATOMIC_LOGICAL_KIND</code> kind.
+
+     <p><br></td></tr><tr align="left"><td valign="top" width="15%"><var>VALUE</var>  </td><td valign="top" width="70%">Scalar of the same type as <var>ATOM</var>. If the kind
+is different, the value is converted to the kind of <var>ATOM</var>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>OLD</var>    </td><td valign="top" width="70%">Scalar of the same type and kind as <var>ATOM</var>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>STAT</var>   </td><td valign="top" width="70%">(optional) Scalar default-kind integer variable.
+     <br></td></tr></table>
+
+     <br><dt><em>Example</em>:<dd>
+     <pre class="smallexample">          program atomic
+            use iso_fortran_env
+            integer(atomic_int_kind) :: atom[*], old
+            call atomic_add (atom[1], this_image(), old)
+          end program atomic
+</pre>
+     <br><dt><em>See also</em>:<dd><a href="ATOMIC_005fDEFINE.html#ATOMIC_005fDEFINE">ATOMIC_DEFINE</a>, <a href="ATOMIC_005fADD.html#ATOMIC_005fADD">ATOMIC_ADD</a>, <a href="ISO_005fFORTRAN_005fENV.html#ISO_005fFORTRAN_005fENV">ISO_FORTRAN_ENV</a>,
+<a href="ATOMIC_005fFETCH_005fAND.html#ATOMIC_005fFETCH_005fAND">ATOMIC_FETCH_AND</a>, <a href="ATOMIC_005fFETCH_005fOR.html#ATOMIC_005fFETCH_005fOR">ATOMIC_FETCH_OR</a>, <a href="ATOMIC_005fFETCH_005fXOR.html#ATOMIC_005fFETCH_005fXOR">ATOMIC_FETCH_XOR</a>
+</dl>
+
+   </body></html>
+

@@ -1,0 +1,78 @@
+<html lang="en">
+<head>
+<title>_gfortran_caf_is_present - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Function-ABI-Documentation.html#Function-ABI-Documentation" title="Function ABI Documentation">
+<link rel="prev" href="_005fgfortran_005fcaf_005fderegister.html#g_t_005fgfortran_005fcaf_005fderegister" title="_gfortran_caf_deregister">
+<link rel="next" href="_005fgfortran_005fcaf_005fsend.html#g_t_005fgfortran_005fcaf_005fsend" title="_gfortran_caf_send">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="_gfortran_caf_is_present"></a>
+<a name="g_t_005fgfortran_005fcaf_005fis_005fpresent"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="_005fgfortran_005fcaf_005fsend.html#g_t_005fgfortran_005fcaf_005fsend">_gfortran_caf_send</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="_005fgfortran_005fcaf_005fderegister.html#g_t_005fgfortran_005fcaf_005fderegister">_gfortran_caf_deregister</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Function-ABI-Documentation.html#Function-ABI-Documentation">Function ABI Documentation</a>
+<hr>
+</div>
+
+<h4 class="subsection">8.2.10 <code>_gfortran_caf_is_present</code> &mdash; Query whether an allocatable or pointer component in a derived type coarray is allocated</h4>
+
+<p><a name="index-Coarray_002c-_005fgfortran_005fcaf_005fis_005fpresent-458"></a>
+     <dl>
+<dt><em>Description</em>:<dd>Used to query the coarray library whether an allocatable component in a derived
+type coarray is allocated on a remote image.
+
+     <br><dt><em>Syntax</em>:<dd><code>void _gfortran_caf_is_present (caf_token_t token, int image_index,
+gfc_reference_t *ref)</code>
+
+     <br><dt><em>Arguments</em>:<dd>
+     <p><table summary=""><tr align="left"><td valign="top" width="15%"><var>token</var> </td><td valign="top" width="70%">An opaque pointer identifying the coarray. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>image_index</var> </td><td valign="top" width="70%">The ID of the remote image; must be a positive
+number. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>ref</var> </td><td valign="top" width="70%">A chain of references to address the allocatable or
+pointer component in the derived type coarray.  The object reference needs to be
+a scalar or a full array reference, respectively.
+     <br></td></tr></table>
+
+   </dl>
+
+   </body></html>
+

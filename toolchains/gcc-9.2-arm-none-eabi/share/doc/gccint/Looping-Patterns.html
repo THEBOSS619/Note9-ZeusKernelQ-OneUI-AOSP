@@ -1,0 +1,179 @@
+<html lang="en">
+<head>
+<title>Looping Patterns - GNU Compiler Collection (GCC) Internals</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="GNU Compiler Collection (GCC) Internals">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Machine-Desc.html#Machine-Desc" title="Machine Desc">
+<link rel="prev" href="Jump-Patterns.html#Jump-Patterns" title="Jump Patterns">
+<link rel="next" href="Insn-Canonicalizations.html#Insn-Canonicalizations" title="Insn Canonicalizations">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1988-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Looping-Patterns"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Insn-Canonicalizations.html#Insn-Canonicalizations">Insn Canonicalizations</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Jump-Patterns.html#Jump-Patterns">Jump Patterns</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Machine-Desc.html#Machine-Desc">Machine Desc</a>
+<hr>
+</div>
+
+<h3 class="section">17.13 Defining Looping Instruction Patterns</h3>
+
+<p><a name="index-looping-instruction-patterns-3797"></a><a name="index-defining-looping-instruction-patterns-3798"></a>
+Some machines have special jump instructions that can be utilized to
+make loops more efficient.  A common example is the 68000 &lsquo;<samp><span class="samp">dbra</span></samp>&rsquo;
+instruction which performs a decrement of a register and a branch if the
+result was greater than zero.  Other machines, in particular digital
+signal processors (DSPs), have special block repeat instructions to
+provide low-overhead loop support.  For example, the TI TMS320C3x/C4x
+DSPs have a block repeat instruction that loads special registers to
+mark the top and end of a loop and to count the number of loop
+iterations.  This avoids the need for fetching and executing a
+&lsquo;<samp><span class="samp">dbra</span></samp>&rsquo;-like instruction and avoids pipeline stalls associated with
+the jump.
+
+ <p>GCC has two special named patterns to support low overhead looping. 
+They are &lsquo;<samp><span class="samp">doloop_begin</span></samp>&rsquo; and &lsquo;<samp><span class="samp">doloop_end</span></samp>&rsquo;.  These are emitted
+by the loop optimizer for certain well-behaved loops with a finite
+number of loop iterations using information collected during strength
+reduction.
+
+ <p>The &lsquo;<samp><span class="samp">doloop_end</span></samp>&rsquo; pattern describes the actual looping instruction
+(or the implicit looping operation) and the &lsquo;<samp><span class="samp">doloop_begin</span></samp>&rsquo; pattern
+is an optional companion pattern that can be used for initialization
+needed for some low-overhead looping instructions.
+
+ <p>Note that some machines require the actual looping instruction to be
+emitted at the top of the loop (e.g., the TMS320C3x/C4x DSPs).  Emitting
+the true RTL for a looping instruction at the top of the loop can cause
+problems with flow analysis.  So instead, a dummy <code>doloop</code> insn is
+emitted at the end of the loop.  The machine dependent reorg pass checks
+for the presence of this <code>doloop</code> insn and then searches back to
+the top of the loop, where it inserts the true looping insn (provided
+there are no instructions in the loop which would cause problems).  Any
+additional labels can be emitted at this point.  In addition, if the
+desired special iteration counter register was not allocated, this
+machine dependent reorg pass could emit a traditional compare and jump
+instruction pair.
+
+ <p>For the &lsquo;<samp><span class="samp">doloop_end</span></samp>&rsquo; pattern, the loop optimizer allocates an
+additional pseudo register as an iteration counter.  This pseudo
+register cannot be used within the loop (i.e., general induction
+variables cannot be derived from it), however, in many cases the loop
+induction variable may become redundant and removed by the flow pass.
+
+ <p>The &lsquo;<samp><span class="samp">doloop_end</span></samp>&rsquo; pattern must have a specific structure to be
+handled correctly by GCC.  The example below is taken (slightly
+simplified) from the PDP-11 target:
+
+<pre class="smallexample">     (define_expand "doloop_end"
+       [(parallel [(set (pc)
+                        (if_then_else
+                         (ne (match_operand:HI 0 "nonimmediate_operand" "+r,!m")
+                             (const_int 1))
+                         (label_ref (match_operand 1 "" ""))
+                         (pc)))
+                   (set (match_dup 0)
+                        (plus:HI (match_dup 0)
+                              (const_int -1)))])]
+       ""
+       "{
+         if (GET_MODE (operands[0]) != HImode)
+           FAIL;
+       }")
+     
+     (define_insn "doloop_end_insn"
+       [(set (pc)
+             (if_then_else
+              (ne (match_operand:HI 0 "nonimmediate_operand" "+r,!m")
+                  (const_int 1))
+              (label_ref (match_operand 1 "" ""))
+              (pc)))
+        (set (match_dup 0)
+             (plus:HI (match_dup 0)
+                   (const_int -1)))]
+       ""
+     
+       {
+         if (which_alternative == 0)
+           return "sob %0,%l1";
+     
+         /* emulate sob */
+         output_asm_insn ("dec %0", operands);
+         return "bne %l1";
+       })
+</pre>
+ <p>The first part of the pattern describes the branch condition.  GCC
+supports three cases for the way the target machine handles the loop
+counter:
+     <ul>
+<li>Loop terminates when the loop register decrements to zero.  This
+is represented by a <code>ne</code> comparison of the register (its old value)
+with constant 1 (as in the example above). 
+<li>Loop terminates when the loop register decrements to &minus;1. 
+This is represented by a <code>ne</code> comparison of the register with
+constant zero. 
+<li>Loop terminates when the loop register decrements to a negative
+value.  This is represented by a <code>ge</code> comparison of the register
+with constant zero.  For this case, GCC will attach a <code>REG_NONNEG</code>
+note to the <code>doloop_end</code> insn if it can determine that the register
+will be non-negative. 
+</ul>
+
+ <p>Since the <code>doloop_end</code> insn is a jump insn that also has an output,
+the reload pass does not handle the output operand.  Therefore, the
+constraint must allow for that operand to be in memory rather than a
+register.  In the example shown above, that is handled (in the
+<code>doloop_end_insn</code> pattern) by using a loop instruction sequence
+that can handle memory operands when the memory alternative appears.
+
+ <p>GCC does not check the mode of the loop register operand when generating
+the <code>doloop_end</code> pattern.  If the pattern is only valid for some
+modes but not others, the pattern should be a <code>define_expand</code>
+pattern that checks the operand mode in the preparation code, and issues
+<code>FAIL</code> if an unsupported mode is found.  The example above does
+this, since the machine instruction to be used only exists for
+<code>HImode</code>.
+
+ <p>If the <code>doloop_end</code> pattern is a <code>define_expand</code>, there must
+also be a <code>define_insn</code> or <code>define_insn_and_split</code> matching
+the generated pattern.  Otherwise, the compiler will fail during loop
+optimization.
+
+ </body></html>
+

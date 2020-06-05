@@ -1,0 +1,12 @@
+# Process Authenticator startup
+service proca /vendor/bin/vendor.samsung.hardware.security.proca@2.0-service
+    class early_hal
+    user system
+    group system
+    disabled
+
+on property:sys.mobicoredaemon.enable=true
+    stop proca
+
+on property:vendor.sys.mobicoredaemon.enable=true
+    stop proca

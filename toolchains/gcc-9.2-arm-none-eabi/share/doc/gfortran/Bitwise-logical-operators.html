@@ -1,0 +1,89 @@
+<html lang="en">
+<head>
+<title>Bitwise logical operators - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Extensions-implemented-in-GNU-Fortran.html#Extensions-implemented-in-GNU-Fortran" title="Extensions implemented in GNU Fortran">
+<link rel="prev" href="_002eXOR_002e-operator.html#g_t_002eXOR_002e-operator" title=".XOR. operator">
+<link rel="next" href="Extended-I_002fO-specifiers.html#Extended-I_002fO-specifiers" title="Extended I/O specifiers">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Bitwise-logical-operators"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Extended-I_002fO-specifiers.html#Extended-I_002fO-specifiers">Extended I/O specifiers</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="_002eXOR_002e-operator.html#g_t_002eXOR_002e-operator">.XOR. operator</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Extensions-implemented-in-GNU-Fortran.html#Extensions-implemented-in-GNU-Fortran">Extensions implemented in GNU Fortran</a>
+<hr>
+</div>
+
+<h4 class="subsection">6.1.29 Bitwise logical operators</h4>
+
+<p><a name="index-logical_002c-bitwise-416"></a>
+With <samp><span class="option">-fdec</span></samp>, GNU Fortran relaxes the type constraints on
+logical operators to allow integer operands, and performs the corresponding
+bitwise operation instead.  This flag is for compatibility only, and should be
+avoided in new code.  Consider:
+
+<pre class="smallexample">       INTEGER :: i, j
+       i = z'33'
+       j = z'cc'
+       print *, i .AND. j
+</pre>
+   <p>In this example, compiled with <samp><span class="option">-fdec</span></samp>, GNU Fortran will
+replace the <code>.AND.</code> operation with a call to the intrinsic
+<code><a href="IAND.html#IAND">IAND</a></code> function, yielding the bitwise-and of <code>i</code> and <code>j</code>.
+
+   <p>Note that this conversion will occur if at least one operand is of integral
+type.  As a result, a logical operand will be converted to an integer when the
+other operand is an integer in a logical operation.  In this case,
+<code>.TRUE.</code> is converted to <code>1</code> and <code>.FALSE.</code> to <code>0</code>.
+
+   <p>Here is the mapping of logical operator to bitwise intrinsic used with
+<samp><span class="option">-fdec</span></samp>:
+
+   <p><table summary=""><tr align="left"><th valign="top" width="25%">Operator </th><th valign="top" width="25%">Intrinsic </th><th valign="top" width="50%">Bitwise operation
+<br></th></tr><tr align="left"><td valign="top" width="25%"><code>.NOT.</code> </td><td valign="top" width="25%"><code><a href="NOT.html#NOT">NOT</a></code> </td><td valign="top" width="50%">complement
+<br></td></tr><tr align="left"><td valign="top" width="25%"><code>.AND.</code> </td><td valign="top" width="25%"><code><a href="IAND.html#IAND">IAND</a></code> </td><td valign="top" width="50%">intersection
+<br></td></tr><tr align="left"><td valign="top" width="25%"><code>.OR.</code> </td><td valign="top" width="25%"><code><a href="IOR.html#IOR">IOR</a></code> </td><td valign="top" width="50%">union
+<br></td></tr><tr align="left"><td valign="top" width="25%"><code>.NEQV.</code> </td><td valign="top" width="25%"><code><a href="IEOR.html#IEOR">IEOR</a></code> </td><td valign="top" width="50%">exclusive or
+<br></td></tr><tr align="left"><td valign="top" width="25%"><code>.EQV.</code> </td><td valign="top" width="25%"><code><a href="NOT.html#NOT">NOT</a>(<a href="IEOR.html#IEOR">IEOR</a>)</code> </td><td valign="top" width="50%">complement of exclusive or
+   <br></td></tr></table>
+
+   </body></html>
+

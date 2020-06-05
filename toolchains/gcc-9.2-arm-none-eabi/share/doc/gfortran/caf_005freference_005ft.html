@@ -1,0 +1,161 @@
+<html lang="en">
+<head>
+<title>caf_reference_t - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Type-and-enum-ABI-Documentation.html#Type-and-enum-ABI-Documentation" title="Type and enum ABI Documentation">
+<link rel="prev" href="caf_005fderegister_005ft.html#caf_005fderegister_005ft" title="caf_deregister_t">
+<link rel="next" href="caf_005fteam_005ft.html#caf_005fteam_005ft" title="caf_team_t">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="caf_reference_t"></a>
+<a name="caf_005freference_005ft"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="caf_005fteam_005ft.html#caf_005fteam_005ft">caf_team_t</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="caf_005fderegister_005ft.html#caf_005fderegister_005ft">caf_deregister_t</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Type-and-enum-ABI-Documentation.html#Type-and-enum-ABI-Documentation">Type and enum ABI Documentation</a>
+<hr>
+</div>
+
+<h4 class="subsection">8.1.4 <code>caf_reference_t</code></h4>
+
+<p>The structure used for implementing arbitrary reference chains. 
+A <code>CAF_REFERENCE_T</code> allows to specify a component reference or any kind
+of array reference of any rank supported by gfortran.  For array references all
+kinds as known by the compiler/Fortran standard are supported indicated by
+a <code>MODE</code>.
+
+<pre class="verbatim">typedef enum caf_ref_type_t {
+  /* Reference a component of a derived type, either regular one or an
+     allocatable or pointer type.  For regular ones idx in caf_reference_t is
+     set to -1.  */
+  CAF_REF_COMPONENT,
+  /* Reference an allocatable array.  */
+  CAF_REF_ARRAY,
+  /* Reference a non-allocatable/non-pointer array.  I.e., the coarray object
+     has no array descriptor associated and the addressing is done
+     completely using the ref.  */
+  CAF_REF_STATIC_ARRAY
+} caf_ref_type_t;
+</pre>
+
+<pre class="verbatim">typedef enum caf_array_ref_t {
+  /* No array ref.  This terminates the array ref.  */
+  CAF_ARR_REF_NONE = 0,
+  /* Reference array elements given by a vector.  Only for this mode
+     caf_reference_t.u.a.dim[i].v is valid.  */
+  CAF_ARR_REF_VECTOR,
+  /* A full array ref (:).  */
+  CAF_ARR_REF_FULL,
+  /* Reference a range on elements given by start, end and stride.  */
+  CAF_ARR_REF_RANGE,
+  /* Only a single item is referenced given in the start member.  */
+  CAF_ARR_REF_SINGLE,
+  /* An array ref of the kind (i:), where i is an arbitrary valid index in the
+     array.  The index i is given in the start member.  */
+  CAF_ARR_REF_OPEN_END,
+  /* An array ref of the kind (:i), where the lower bound of the array ref
+     is given by the remote side.  The index i is given in the end member.  */
+  CAF_ARR_REF_OPEN_START
+} caf_array_ref_t;
+</pre>
+
+<pre class="verbatim">/* References to remote components of a derived type.  */
+typedef struct caf_reference_t {
+  /* A pointer to the next ref or NULL.  */
+  struct caf_reference_t *next;
+  /* The type of the reference.  */
+  /* caf_ref_type_t, replaced by int to allow specification in fortran FE.  */
+  int type;
+  /* The size of an item referenced in bytes.  I.e. in an array ref this is
+     the factor to advance the array pointer with to get to the next item.
+     For component refs this gives just the size of the element referenced.  */
+  size_t item_size;
+  union {
+    struct {
+      /* The offset (in bytes) of the component in the derived type.
+         Unused for allocatable or pointer components.  */
+      ptrdiff_t offset;
+      /* The offset (in bytes) to the caf_token associated with this
+         component.  NULL, when not allocatable/pointer ref.  */
+      ptrdiff_t caf_token_offset;
+    } c;
+    struct {
+      /* The mode of the array ref.  See CAF_ARR_REF_*.  */
+      /* caf_array_ref_t, replaced by unsigend char to allow specification in
+         fortran FE.  */
+     unsigned char mode[GFC_MAX_DIMENSIONS];
+      /* The type of a static array.  Unset for array's with descriptors.  */
+      int static_array_type;
+      /* Subscript refs (s) or vector refs (v).  */
+      union {
+        struct {
+          /* The start and end boundary of the ref and the stride.  */
+          index_type start, end, stride;
+        } s;
+        struct {
+          /* nvec entries of kind giving the elements to reference.  */
+          void *vector;
+          /* The number of entries in vector.  */
+          size_t nvec;
+          /* The integer kind used for the elements in vector.  */
+          int kind;
+        } v;
+      } dim[GFC_MAX_DIMENSIONS];
+    } a;
+  } u;
+} caf_reference_t;
+</pre>
+
+   <p>The references make up a single linked list of reference operations.  The
+<code>NEXT</code> member links to the next reference or NULL to indicate the end of
+the chain.  Component and array refs can be arbitrarly mixed as long as they
+comply to the Fortran standard.
+
+   <p><em>NOTES</em>
+The member <code>STATIC_ARRAY_TYPE</code> is used only when the <code>TYPE</code> is
+<code>CAF_REF_STATIC_ARRAY</code>.  The member gives the type of the data referenced. 
+Because no array descriptor is available for a descriptor-less array and
+type conversion still needs to take place the type is transported here.
+
+   <p>At the moment <code>CAF_ARR_REF_VECTOR</code> is not implemented in the front end for
+descriptor-less arrays.  The library caf_single has untested support for it.
+
+   </body></html>
+

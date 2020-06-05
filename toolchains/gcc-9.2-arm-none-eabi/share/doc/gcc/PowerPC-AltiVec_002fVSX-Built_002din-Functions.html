@@ -1,0 +1,150 @@
+<html lang="en">
+<head>
+<title>PowerPC AltiVec/VSX Built-in Functions - Using the GNU Compiler Collection (GCC)</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="Using the GNU Compiler Collection (GCC)">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Target-Builtins.html#Target-Builtins" title="Target Builtins">
+<link rel="prev" href="Basic-PowerPC-Built_002din-Functions.html#Basic-PowerPC-Built_002din-Functions" title="Basic PowerPC Built-in Functions">
+<link rel="next" href="PowerPC-Hardware-Transactional-Memory-Built_002din-Functions.html#PowerPC-Hardware-Transactional-Memory-Built_002din-Functions" title="PowerPC Hardware Transactional Memory Built-in Functions">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1988-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="PowerPC-AltiVec%2fVSX-Built-in-Functions"></a>
+<a name="PowerPC-AltiVec_002fVSX-Built_002din-Functions"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="PowerPC-Hardware-Transactional-Memory-Built_002din-Functions.html#PowerPC-Hardware-Transactional-Memory-Built_002din-Functions">PowerPC Hardware Transactional Memory Built-in Functions</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Basic-PowerPC-Built_002din-Functions.html#Basic-PowerPC-Built_002din-Functions">Basic PowerPC Built-in Functions</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Target-Builtins.html#Target-Builtins">Target Builtins</a>
+<hr>
+</div>
+
+<h4 class="subsection">6.60.22 PowerPC AltiVec/VSX Built-in Functions</h4>
+
+<p>GCC provides an interface for the PowerPC family of processors to access
+the AltiVec operations described in Motorola's AltiVec Programming
+Interface Manual.  The interface is made available by including
+<code>&lt;altivec.h&gt;</code> and using <samp><span class="option">-maltivec</span></samp> and
+<samp><span class="option">-mabi=altivec</span></samp>.  The interface supports the following vector
+types.
+
+<pre class="smallexample">     vector unsigned char
+     vector signed char
+     vector bool char
+     
+     vector unsigned short
+     vector signed short
+     vector bool short
+     vector pixel
+     
+     vector unsigned int
+     vector signed int
+     vector bool int
+     vector float
+</pre>
+ <p>GCC's implementation of the high-level language interface available from
+C and C++ code differs from Motorola's documentation in several ways.
+
+     <ul>
+<li>A vector constant is a list of constant expressions within curly braces.
+
+     <li>A vector initializer requires no cast if the vector constant is of the
+same type as the variable it is initializing.
+
+     <li>If <code>signed</code> or <code>unsigned</code> is omitted, the signedness of the
+vector type is the default signedness of the base type.  The default
+varies depending on the operating system, so a portable program should
+always specify the signedness.
+
+     <li>Compiling with <samp><span class="option">-maltivec</span></samp> adds keywords <code>__vector</code>,
+<code>vector</code>, <code>__pixel</code>, <code>pixel</code>, <code>__bool</code> and
+<code>bool</code>.  When compiling ISO C, the context-sensitive substitution
+of the keywords <code>vector</code>, <code>pixel</code> and <code>bool</code> is
+disabled.  To use them, you must include <code>&lt;altivec.h&gt;</code> instead.
+
+     <li>GCC allows using a <code>typedef</code> name as the type specifier for a
+vector type, but only under the following circumstances:
+
+          <ul>
+<li>When using <code>__vector</code> instead of <code>vector</code>; for example,
+
+          <pre class="smallexample">               typedef signed short int16;
+               __vector int16 data;
+</pre>
+          <li>When using <code>vector</code> in keyword-and-predefine mode; for example,
+
+          <pre class="smallexample">               typedef signed short int16;
+               vector int16 data;
+</pre>
+          <p>Note that keyword-and-predefine mode is enabled by disabling GNU
+extensions (e.g., by using <code>-std=c11</code>) and including
+<code>&lt;altivec.h&gt;</code>. 
+</ul>
+
+     <li>For C, overloaded functions are implemented with macros so the following
+does not work:
+
+     <pre class="smallexample">            vec_add ((vector signed int){1, 2, 3, 4}, foo);
+</pre>
+     <p class="noindent">Since <code>vec_add</code> is a macro, the vector constant in the example
+is treated as four separate arguments.  Wrap the entire argument in
+parentheses for this to work. 
+</ul>
+
+ <p><em>Note:</em> Only the <code>&lt;altivec.h&gt;</code> interface is supported. 
+Internally, GCC uses built-in functions to achieve the functionality in
+the aforementioned header file, but they are not supported and are
+subject to change without notice.
+
+ <p>GCC complies with the OpenPOWER 64-Bit ELF V2 ABI Specification,
+which may be found at
+<a href="http://openpowerfoundation.org/wp-content/uploads/resources/leabi-prd/content/index.html">http://openpowerfoundation.org/wp-content/uploads/resources/leabi-prd/content/index.html</a>. 
+Appendix A of this document lists the vector API interfaces that must be
+provided by compliant compilers.  Programmers should preferentially use
+the interfaces described therein.  However, historically GCC has provided
+additional interfaces for access to vector instructions.  These are
+briefly described below.
+
+<ul class="menu">
+<li><a accesskey="1" href="PowerPC-AltiVec-Built_002din-Functions-on-ISA-2_002e05.html#PowerPC-AltiVec-Built_002din-Functions-on-ISA-2_002e05">PowerPC AltiVec Built-in Functions on ISA 2.05</a>
+<li><a accesskey="2" href="PowerPC-AltiVec-Built_002din-Functions-Available-on-ISA-2_002e06.html#PowerPC-AltiVec-Built_002din-Functions-Available-on-ISA-2_002e06">PowerPC AltiVec Built-in Functions Available on ISA 2.06</a>
+<li><a accesskey="3" href="PowerPC-AltiVec-Built_002din-Functions-Available-on-ISA-2_002e07.html#PowerPC-AltiVec-Built_002din-Functions-Available-on-ISA-2_002e07">PowerPC AltiVec Built-in Functions Available on ISA 2.07</a>
+<li><a accesskey="4" href="PowerPC-AltiVec-Built_002din-Functions-Available-on-ISA-3_002e0.html#PowerPC-AltiVec-Built_002din-Functions-Available-on-ISA-3_002e0">PowerPC AltiVec Built-in Functions Available on ISA 3.0</a>
+</ul>
+
+ </body></html>
+

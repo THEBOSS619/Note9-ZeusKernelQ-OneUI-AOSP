@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+<title>Asynchronous I/O - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Compiler-Characteristics.html#Compiler-Characteristics" title="Compiler Characteristics">
+<link rel="prev" href="File-format-of-unformatted-sequential-files.html#File-format-of-unformatted-sequential-files" title="File format of unformatted sequential files">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Asynchronous-I%2fO"></a>
+<a name="Asynchronous-I_002fO"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="File-format-of-unformatted-sequential-files.html#File-format-of-unformatted-sequential-files">File format of unformatted sequential files</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Compiler-Characteristics.html#Compiler-Characteristics">Compiler Characteristics</a>
+<hr>
+</div>
+
+<h3 class="section">5.10 Asynchronous I/O</h3>
+
+<p><a name="index-input_002foutput_002c-asynchronous-377"></a><a name="index-asynchronous-I_002fO-378"></a>
+Asynchronous I/O is supported if the program is linked against the
+POSIX thread library. If that is not the case, all I/O is performed
+as synchronous. On systems which do not support pthread condition
+variables, such as AIX, I/O is also performed as synchronous.
+
+   <p>On some systems, such as Darwin or Solaris, the POSIX thread library
+is always linked in, so asynchronous I/O is always performed. On other
+sytems, such as Linux, it is necessary to specify <samp><span class="option">-pthread</span></samp>,
+<samp><span class="option">-lpthread</span></samp> or <samp><span class="option">-fopenmp</span></samp> during the linking step.
+
+<!--  -->
+<!-- Extensions -->
+<!--  -->
+<!-- Maybe this chapter should be merged with the 'Standards' section, -->
+<!-- whenever that is written :-) -->
+   </body></html>
+

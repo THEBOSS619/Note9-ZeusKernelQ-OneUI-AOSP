@@ -1,0 +1,71 @@
+<html lang="en">
+<head>
+<title>Files opened without an explicit ACTION= specifier - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Compiler-Characteristics.html#Compiler-Characteristics" title="Compiler Characteristics">
+<link rel="prev" href="Data-consistency-and-durability.html#Data-consistency-and-durability" title="Data consistency and durability">
+<link rel="next" href="File-operations-on-symbolic-links.html#File-operations-on-symbolic-links" title="File operations on symbolic links">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Files-opened-without-an-explicit-ACTION%3d-specifier"></a>
+<a name="Files-opened-without-an-explicit-ACTION_003d-specifier"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="File-operations-on-symbolic-links.html#File-operations-on-symbolic-links">File operations on symbolic links</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Data-consistency-and-durability.html#Data-consistency-and-durability">Data consistency and durability</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Compiler-Characteristics.html#Compiler-Characteristics">Compiler Characteristics</a>
+<hr>
+</div>
+
+<h3 class="section">5.7 Files opened without an explicit ACTION= specifier</h3>
+
+<p><a name="index-open_002c-action-370"></a>
+The Fortran standard says that if an <code>OPEN</code> statement is executed
+without an explicit <code>ACTION=</code> specifier, the default value is
+processor dependent.  GNU Fortran behaves as follows:
+
+     <ol type=1 start=1>
+<li>Attempt to open the file with <code>ACTION='READWRITE'</code>
+<li>If that fails, try to open with <code>ACTION='READ'</code>
+<li>If that fails, try to open with <code>ACTION='WRITE'</code>
+<li>If that fails, generate an error
+        </ol>
+
+   </body></html>
+

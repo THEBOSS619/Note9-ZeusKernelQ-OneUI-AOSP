@@ -1,0 +1,189 @@
+<html lang="en">
+<head>
+<title>Basic PowerPC Built-in Functions Available on ISA 3.0 - Using the GNU Compiler Collection (GCC)</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="Using the GNU Compiler Collection (GCC)">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Basic-PowerPC-Built_002din-Functions.html#Basic-PowerPC-Built_002din-Functions" title="Basic PowerPC Built-in Functions">
+<link rel="prev" href="Basic-PowerPC-Built_002din-Functions-Available-on-ISA-2_002e07.html#Basic-PowerPC-Built_002din-Functions-Available-on-ISA-2_002e07" title="Basic PowerPC Built-in Functions Available on ISA 2.07">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1988-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Basic-PowerPC-Built-in-Functions-Available-on-ISA-3.0"></a>
+<a name="Basic-PowerPC-Built_002din-Functions-Available-on-ISA-3_002e0"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Basic-PowerPC-Built_002din-Functions-Available-on-ISA-2_002e07.html#Basic-PowerPC-Built_002din-Functions-Available-on-ISA-2_002e07">Basic PowerPC Built-in Functions Available on ISA 2.07</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Basic-PowerPC-Built_002din-Functions.html#Basic-PowerPC-Built_002din-Functions">Basic PowerPC Built-in Functions</a>
+<hr>
+</div>
+
+<h5 class="subsubsection">6.60.21.5 Basic PowerPC Built-in Functions Available on ISA 3.0</h5>
+
+<p>The basic built-in functions described in this section are
+available on the PowerPC family of processors starting with ISA 3.0
+or later.  Unless specific options are explicitly disabled on the
+command line, specifying option <samp><span class="option">-mcpu=power9</span></samp> has the effect of
+enabling all the same options as for <samp><span class="option">-mcpu=power8</span></samp> in
+addition to the <samp><span class="option">-misel</span></samp> option.
+
+ <p>The following built-in functions are available on Linux 64-bit systems
+that use the ISA 3.0 instruction set (<samp><span class="option">-mcpu=power9</span></samp>):
+
+     <dl>
+<dt><code>__float128 __builtin_addf128_round_to_odd (__float128, __float128)</code><dd>Perform a 128-bit IEEE floating point add using round to odd as the
+rounding mode. 
+<a name="index-g_t_005f_005fbuiltin_005faddf128_005fround_005fto_005fodd-4757"></a>
+<br><dt><code>__float128 __builtin_subf128_round_to_odd (__float128, __float128)</code><dd>Perform a 128-bit IEEE floating point subtract using round to odd as
+the rounding mode. 
+<a name="index-g_t_005f_005fbuiltin_005fsubf128_005fround_005fto_005fodd-4758"></a>
+<br><dt><code>__float128 __builtin_mulf128_round_to_odd (__float128, __float128)</code><dd>Perform a 128-bit IEEE floating point multiply using round to odd as
+the rounding mode. 
+<a name="index-g_t_005f_005fbuiltin_005fmulf128_005fround_005fto_005fodd-4759"></a>
+<br><dt><code>__float128 __builtin_divf128_round_to_odd (__float128, __float128)</code><dd>Perform a 128-bit IEEE floating point divide using round to odd as
+the rounding mode. 
+<a name="index-g_t_005f_005fbuiltin_005fdivf128_005fround_005fto_005fodd-4760"></a>
+<br><dt><code>__float128 __builtin_sqrtf128_round_to_odd (__float128)</code><dd>Perform a 128-bit IEEE floating point square root using round to odd
+as the rounding mode. 
+<a name="index-g_t_005f_005fbuiltin_005fsqrtf128_005fround_005fto_005fodd-4761"></a>
+<br><dt><code>__float128 __builtin_fmaf128_round_to_odd (__float128, __float128, __float128)</code><dd>Perform a 128-bit IEEE floating point fused multiply and add operation
+using round to odd as the rounding mode. 
+<a name="index-g_t_005f_005fbuiltin_005ffmaf128_005fround_005fto_005fodd-4762"></a>
+<br><dt><code>double __builtin_truncf128_round_to_odd (__float128)</code><dd>Convert a 128-bit IEEE floating point value to <code>double</code> using
+round to odd as the rounding mode. 
+<a name="index-g_t_005f_005fbuiltin_005ftruncf128_005fround_005fto_005fodd-4763"></a></dl>
+
+ <p>The following additional built-in functions are also available for the
+PowerPC family of processors, starting with ISA 3.0 or later:
+<pre class="smallexample">     long long __builtin_darn (void);
+     long long __builtin_darn_raw (void);
+     int __builtin_darn_32 (void);
+</pre>
+ <p>The <code>__builtin_darn</code> and <code>__builtin_darn_raw</code>
+functions require a
+64-bit environment supporting ISA 3.0 or later. 
+The <code>__builtin_darn</code> function provides a 64-bit conditioned
+random number.  The <code>__builtin_darn_raw</code> function provides a
+64-bit raw random number.  The <code>__builtin_darn_32</code> function
+provides a 32-bit conditioned random number.
+
+ <p>The following additional built-in functions are also available for the
+PowerPC family of processors, starting with ISA 3.0 or later:
+
+<pre class="smallexample">     int __builtin_byte_in_set (unsigned char u, unsigned long long set);
+     int __builtin_byte_in_range (unsigned char u, unsigned int range);
+     int __builtin_byte_in_either_range (unsigned char u, unsigned int ranges);
+     
+     int __builtin_dfp_dtstsfi_lt (unsigned int comparison, _Decimal64 value);
+     int __builtin_dfp_dtstsfi_lt (unsigned int comparison, _Decimal128 value);
+     int __builtin_dfp_dtstsfi_lt_dd (unsigned int comparison, _Decimal64 value);
+     int __builtin_dfp_dtstsfi_lt_td (unsigned int comparison, _Decimal128 value);
+     
+     int __builtin_dfp_dtstsfi_gt (unsigned int comparison, _Decimal64 value);
+     int __builtin_dfp_dtstsfi_gt (unsigned int comparison, _Decimal128 value);
+     int __builtin_dfp_dtstsfi_gt_dd (unsigned int comparison, _Decimal64 value);
+     int __builtin_dfp_dtstsfi_gt_td (unsigned int comparison, _Decimal128 value);
+     
+     int __builtin_dfp_dtstsfi_eq (unsigned int comparison, _Decimal64 value);
+     int __builtin_dfp_dtstsfi_eq (unsigned int comparison, _Decimal128 value);
+     int __builtin_dfp_dtstsfi_eq_dd (unsigned int comparison, _Decimal64 value);
+     int __builtin_dfp_dtstsfi_eq_td (unsigned int comparison, _Decimal128 value);
+     
+     int __builtin_dfp_dtstsfi_ov (unsigned int comparison, _Decimal64 value);
+     int __builtin_dfp_dtstsfi_ov (unsigned int comparison, _Decimal128 value);
+     int __builtin_dfp_dtstsfi_ov_dd (unsigned int comparison, _Decimal64 value);
+     int __builtin_dfp_dtstsfi_ov_td (unsigned int comparison, _Decimal128 value);
+     
+     double __builtin_mffsl(void);
+     
+</pre>
+ <p>The <code>__builtin_byte_in_set</code> function requires a
+64-bit environment supporting ISA 3.0 or later.  This function returns
+a non-zero value if and only if its <code>u</code> argument exactly equals one of
+the eight bytes contained within its 64-bit <code>set</code> argument.
+
+ <p>The <code>__builtin_byte_in_range</code> and
+<code>__builtin_byte_in_either_range</code> require an environment
+supporting ISA 3.0 or later.  For these two functions, the
+<code>range</code> argument is encoded as 4 bytes, organized as
+<code>hi_1:lo_1:hi_2:lo_2</code>. 
+The <code>__builtin_byte_in_range</code> function returns a
+non-zero value if and only if its <code>u</code> argument is within the
+range bounded between <code>lo_2</code> and <code>hi_2</code> inclusive. 
+The <code>__builtin_byte_in_either_range</code> function returns non-zero if
+and only if its <code>u</code> argument is within either the range bounded
+between <code>lo_1</code> and <code>hi_1</code> inclusive or the range bounded
+between <code>lo_2</code> and <code>hi_2</code> inclusive.
+
+ <p>The <code>__builtin_dfp_dtstsfi_lt</code> function returns a non-zero value
+if and only if the number of signficant digits of its <code>value</code> argument
+is less than its <code>comparison</code> argument.  The
+<code>__builtin_dfp_dtstsfi_lt_dd</code> and
+<code>__builtin_dfp_dtstsfi_lt_td</code> functions behave similarly, but
+require that the type of the <code>value</code> argument be
+<code>__Decimal64</code> and <code>__Decimal128</code> respectively.
+
+ <p>The <code>__builtin_dfp_dtstsfi_gt</code> function returns a non-zero value
+if and only if the number of signficant digits of its <code>value</code> argument
+is greater than its <code>comparison</code> argument.  The
+<code>__builtin_dfp_dtstsfi_gt_dd</code> and
+<code>__builtin_dfp_dtstsfi_gt_td</code> functions behave similarly, but
+require that the type of the <code>value</code> argument be
+<code>__Decimal64</code> and <code>__Decimal128</code> respectively.
+
+ <p>The <code>__builtin_dfp_dtstsfi_eq</code> function returns a non-zero value
+if and only if the number of signficant digits of its <code>value</code> argument
+equals its <code>comparison</code> argument.  The
+<code>__builtin_dfp_dtstsfi_eq_dd</code> and
+<code>__builtin_dfp_dtstsfi_eq_td</code> functions behave similarly, but
+require that the type of the <code>value</code> argument be
+<code>__Decimal64</code> and <code>__Decimal128</code> respectively.
+
+ <p>The <code>__builtin_dfp_dtstsfi_ov</code> function returns a non-zero value
+if and only if its <code>value</code> argument has an undefined number of
+significant digits, such as when <code>value</code> is an encoding of <code>NaN</code>. 
+The <code>__builtin_dfp_dtstsfi_ov_dd</code> and
+<code>__builtin_dfp_dtstsfi_ov_td</code> functions behave similarly, but
+require that the type of the <code>value</code> argument be
+<code>__Decimal64</code> and <code>__Decimal128</code> respectively.
+
+ <p>The <code>__builtin_mffsl</code> uses the ISA 3.0 <code>mffsl</code> instruction to read
+the FPSCR.  The instruction is a lower latency version of the <code>mffs</code>
+instruction.  If the <code>mffsl</code> instruction is not available, then the
+builtin uses the older <code>mffs</code> instruction to read the FPSCR.
+
+ </body></html>
+

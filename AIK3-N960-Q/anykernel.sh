@@ -10,19 +10,19 @@ do.modules=0
 do.systemless=1
 do.cleanup=1
 do.cleanuponabort=0
-device.name1=
-device.name2=
+device.name1=crownlte
+device.name2=crownltexx
 device.name3=
 device.name4=
-device.name5=crownlte
-device.name6=crownltexx
+device.name5=
+device.name6=
 supported.versions=10
 supported.patchlevels=
 '; } # end properties
 
 # shell variables
 block=/dev/block/platform/11120000.ufs/by-name/BOOT;
-is_slot_device=auto;
+is_slot_device=0;
 ramdisk_compression=auto;
 
 
@@ -74,7 +74,6 @@ ui_print "+          |~Co-OperateBy~|          +"
 ui_print "+      ~Zeus Members Believers~      +"
 ui_print "++++++++++++++++++++++++++++++++++++++"
 ui_print " "
-
 ui_print "Remounting /vendor";
 mount -o remount,rw /vendor;
 
@@ -83,33 +82,16 @@ if [ ! -e /vendor/etc/fstab.samsungexynos9810~ ]; then
 	backup_file /vendor/etc/fstab.samsungexynos9810;
 fi;
 
-if [ ! -e /vendor/etc/init/pa_daemon_kinibi.rc~ ]; then
-	backup_file /vendor/etc/init/pa_daemon_kinibi.rc;
-fi;
+ui_print "Copying patched vendor fstab";
+cp -f $home/vendor/etc/fstab.samsungexynos9810 /vendor/etc/fstab.samsungexynos9810;
 
-if [ ! -e /vendor/etc/init/secure_storage_daemon_kinibi.rc~ ]; then
-	backup_file /vendor/etc/init/secure_storage_daemon_kinibi.rc;
-fi;
-
-ui_print ""
-ui_print "Removing mcRegistry..."
-ui_print ""
-
-rm -f /vendor/app/mcRegistry/ffffffffd0000000000000000000000a.tlbin;
-rm -f /vendor/app/mcRegistry/ffffffffd00000000000000000000062.tlbin;
-
-ui_print "Patching fstab for F2FS Support";
-
-cp -af /tmp/anykernel/ramdisk/fstab.samsungexynos9810 /vendor/etc/;
-chmod 644 /vendor/etc/fstab.samsungexynos9810;
-chcon u:object_r:vendor_configs_file:s0 /vendor/etc/fstab.samsungexynos9810;
-
-ui_print "Copying/Patching vendor script";
+ui_print "Copying vendor script";
 cp -f $home/vendor/etc/init/init.services.rc /vendor/etc/init;
-cp -f $home/vendor/etc/init/pa_daemon_kinibi.rc /vendor/etc/init;
-cp -f $home/vendor/etc/init/secure_storage_daemon_kinibi.rc /vendor/etc/init;
 
-mv -f $home/dtb.img $split_img/extra;
+# Find device image/device tree
+device_name=$(file_getprop /default.prop ro.product.device);
+mv -f $home/$device_name/Image $home/Image;
+mv -f $home/$device_name/dtb.img $split_img/extra;
 
 ui_print " "
 ui_print "Kernel flashing finished..."

@@ -16,7 +16,7 @@ split_img=$home/split_img;
 ui_print() {
   until [ ! "$1" ]; do
     echo -e "ui_print $1
-      ui_print" > /proc/self/fd/$OUTFD;
+      ui_print" >> /proc/self/fd/$OUTFD;
     shift;
   done;
 }
@@ -235,10 +235,6 @@ repack_ramdisk() {
   fi;
 }
 
-is_mounted() {
-  mount | grep -q " $1 ";
-}
-
 # flash_boot (build, sign and write image only)
 flash_boot() {
   local varlist i kernel ramdisk fdt cmdline comp part0 part1 nocompflag signfail pk8 cert avbtype;
@@ -248,7 +244,7 @@ flash_boot() {
     varlist="name arch os type comp addr ep";
   elif [ -f "$bin/mkbootimg" -a -f "$bin/unpackelf" -a -f boot.img-base ]; then
     mv -f cmdline.txt boot.img-cmdline 2>/dev/null;
-    varlist="cmdline base pagesize kerneloff ramdiskoff tagsoff";
+    varlist="cmdline base pagesize kernel_offset ramdisk_offset tags_offset";
   fi;
   for i in $varlist; do
     if [ -f boot.img-$i ]; then
@@ -308,7 +304,7 @@ flash_boot() {
     $bin/rkcrc -k $ramdisk $home/boot-new.img;
   elif [ -f "$bin/mkbootimg" -a -f "$bin/unpackelf" -a -f boot.img-base ]; then
     test "$dt" && dt="--dt $dt";
-    $bin/mkbootimg --kernel $kernel --ramdisk $ramdisk --cmdline "$cmdline" --base $home --pagesize $pagesize --kernel_offset $kerneloff --ramdisk_offset $ramdiskoff --tags_offset "$tagsoff" $dt --output $home/boot-new.img;
+    $bin/mkbootimg --kernel $kernel --ramdisk $ramdisk --cmdline "$cmdline" --base $home --pagesize $pagesize --kernel_offset $kernel_offset --ramdisk_offset $ramdisk_offset --tags_offset "$tags_offset" $dt --output $home/boot-new.img;
   else
     test "$kernel" && cp -f $kernel kernel;
     test "$ramdisk" && cp -f $ramdisk ramdisk.cpio;
@@ -373,16 +369,16 @@ flash_boot() {
     fi;
     test $? != 0 && signfail=1;
   fi;
-  if [ -f "$bin/BootSignature_Android.jar" -a -d "$bin/avb" ]; then
+  if [ -f "$bin/boot_signer-dexed.jar" -a -d "$bin/avb" ]; then
     pk8=$(ls $bin/avb/*.pk8);
     cert=$(ls $bin/avb/*.x509.*);
     case $block in
       *recovery*|*SOS*) avbtype=recovery;;
       *) avbtype=boot;;
     esac;
-    if [ "$(/system/bin/dalvikvm -Xnoimage-dex2oat -cp $bin/BootSignature_Android.jar com.android.verity.BootSignature -verify boot.img 2>&1 | grep VALID)" ]; then
+    if [ "$(/system/bin/dalvikvm -Xnoimage-dex2oat -cp $bin/boot_signer-dexed.jar com.android.verity.BootSignature -verify boot.img 2>&1 | grep VALID)" ]; then
       echo "Signing with AVBv1..." >&2;
-      /system/bin/dalvikvm -Xnoimage-dex2oat -cp $bin/BootSignature_Android.jar com.android.verity.BootSignature /$avbtype boot-new.img $pk8 $cert boot-new-signed.img;
+      /system/bin/dalvikvm -Xnoimage-dex2oat -cp $bin/boot_signer-dexed.jar com.android.verity.BootSignature /$avbtype boot-new.img $pk8 $cert boot-new-signed.img;
     fi;
   fi;
   if [ $? != 0 -o "$signfail" ]; then
@@ -395,20 +391,6 @@ flash_boot() {
   elif [ "$(wc -c < boot-new.img)" -gt "$(wc -c < boot.img)" ]; then
     abort "New image larger than boot partition. Aborting...";
   fi;
-
-  # Security patch fixes (thanks to @corsicanu)
-  if is_mounted /system_root; then
-     system_path=/system_root/system;
-  else
-     system_path=/system;
-  fi;
-  bprop=$system_path/build.prop;
-  android=$(cat $bprop | tr '=' ' ' | grep ro.build.version.release | while read a b; do echo $b; done)
-  spatch=$(cat $bprop | tr '=' ' ' | grep ro.build.version.security_patch | while read a b; do echo $b; done)
-  ui_print "Detected android version as $android"
-  ui_print "Detected security patch as $spatch"
-  $bin/fiximg boot-new.img $android $spatch
-
   if [ -f "$bin/flash_erase" -a -f "$bin/nandwrite" ]; then
     $bin/flash_erase $block 0 0;
     $bin/nandwrite -p $block boot-new.img;
@@ -771,6 +753,9 @@ setup_ak() {
       fi;
     ;;
   esac;
+  if [ ! "$no_block_display" ]; then
+    ui_print "$block";
+  fi;
 }
 ###
 

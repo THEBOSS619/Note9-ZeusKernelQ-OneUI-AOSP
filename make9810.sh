@@ -29,11 +29,11 @@ DEFAULT_DEVICE=crownlte
 DEFAULT_DEVICE_DIRECTORY="$CROWN_KERNEL_DIRECTORY"
 
 # Kernel Source Paths
-CROWN_KERNEL_DIRECTORY=/home/theboss/kernels/Note9-Zeus-Q10.0/
-TOOLCHAINS_DIRECTORY=/home/theboss/kernels/Note9-Zeus-Q10.0/toolchains/
+CROWN_KERNEL_DIRECTORY=/home/theboss/kernels/Note9-ZeusKernel-Q-AOSP/
+TOOLCHAINS_DIRECTORY=/home/theboss/kernels/Note9-ZeusKernel-Q-AOSP/toolchains/
 
 # Android Image Kitchen paths
-AIK_N960=/home/theboss/kernels/Note9-Zeus-Q10.0/AIK3-N960-Q/
+AIK_N960=/home/theboss/kernels/Note9-ZeusKernel-Q-AOSP/AIK3-N960-Q/
 
 # Zip directories
 ZIP_N960=/home/theboss/kernels/
@@ -136,7 +136,7 @@ fi
 git reset --hard
 if [ "$1" == "crownlte" ]; then
 	if [ "$2" == "oreo" ]; then
-		git checkout THEBOSS-ZeusOC-Q
+		git checkout master
 		git reset --hard
 	else
 		git checkout "$2"
@@ -217,13 +217,13 @@ git reset --hard
 
 if [ "$2" == "oreo" ] || [ "$2" == "apgk" ]; then
 	if [ "$1" == "crownlte" ]; then
-		rm "$AIK_N960"dtb.img
-		rm "$AIK_N960"zImage
-		cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_N960"zImage
-		cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_N960"dtb.img
+		rm "$AIK_N960"crownlte/dtb.img
+		rm "$AIK_N960"crownlte/Image
+		cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_N960"crownlte/Image
+		cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_N960"crownlte/dtb.img
 		cd "$AIK_N960" || exit
 		echo "$PASSWORD" | zip -r9 UPDATE-AnyKernel3.zip * -x .git README.md *placeholder
-		cp "$AIK_N960"UPDATE-AnyKernel3.zip  "$ZIP_N960"ZeusKernelQ.zip
+		cp "$AIK_N960"UPDATE-AnyKernel3.zip  "$ZIP_N960"ZeusKernelQ-AOSP.zip
 	fi
 else
 	echo "This is where we depart. You're on your own for AIK!"

@@ -1,0 +1,141 @@
+<html lang="en">
+<head>
+<title>Parameterized Names - GNU Compiler Collection (GCC) Internals</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="GNU Compiler Collection (GCC) Internals">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Iterators.html#Iterators" title="Iterators">
+<link rel="prev" href="Subst-Iterators.html#Subst-Iterators" title="Subst Iterators">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1988-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="Parameterized-Names"></a>
+<p>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Subst-Iterators.html#Subst-Iterators">Subst Iterators</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Iterators.html#Iterators">Iterators</a>
+<hr>
+</div>
+
+<h4 class="subsection">17.23.5 Parameterized Names</h4>
+
+<p><a name="index-g_t_0040samp_007b_0040_0040_007d-in-instruction-pattern-names-3974"></a>Ports sometimes need to apply iterators using C++ code, in order to
+get the code or RTL pattern for a specific instruction.  For example,
+suppose we have the &lsquo;<samp><span class="samp">neon_vq&lt;absneg&gt;&lt;mode&gt;</span></samp>&rsquo; pattern given above:
+
+<pre class="smallexample">     (define_int_iterator QABSNEG [UNSPEC_VQABS UNSPEC_VQNEG])
+     
+     (define_int_attr absneg [(UNSPEC_VQABS "abs") (UNSPEC_VQNEG "neg")])
+     
+     (define_insn "neon_vq&lt;absneg&gt;&lt;mode&gt;"
+       [(set (match_operand:VDQIW 0 "s_register_operand" "=w")
+     	(unspec:VDQIW [(match_operand:VDQIW 1 "s_register_operand" "w")
+     		       (match_operand:SI 2 "immediate_operand" "i")]
+     		      QABSNEG))]
+       ...
+     )
+</pre>
+ <p>A port might need to generate this pattern for a variable
+&lsquo;<samp><span class="samp">QABSNEG</span></samp>&rsquo; value and a variable &lsquo;<samp><span class="samp">VDQIW</span></samp>&rsquo; mode.  There are two
+ways of doing this.  The first is to build the rtx for the pattern
+directly from C++ code; this is a valid technique and avoids any risk
+of combinatorial explosion.  The second is to prefix the instruction
+name with the special character &lsquo;<samp><span class="samp">@</span></samp>&rsquo;, which tells GCC to generate
+the four additional functions below.  In each case, <var>name</var> is the
+name of the instruction without the leading &lsquo;<samp><span class="samp">@</span></samp>&rsquo; character,
+without the &lsquo;<samp><span class="samp">&lt;...&gt;</span></samp>&rsquo; placeholders, and with any underscore
+before a &lsquo;<samp><span class="samp">&lt;...&gt;</span></samp>&rsquo; placeholder removed if keeping it would
+lead to a double or trailing underscore.
+
+     <dl>
+<dt>&lsquo;<samp><span class="samp">insn_code maybe_code_for_</span><var>name</var><span class="samp"> (</span><var>i1</var><span class="samp">, </span><var>i2</var><span class="samp">, ...)</span></samp>&rsquo;<dd>See whether replacing the first &lsquo;<samp><span class="samp">&lt;...&gt;</span></samp>&rsquo; placeholder with
+iterator value <var>i1</var>, the second with iterator value <var>i2</var>, and
+so on, gives a valid instruction.  Return its code if so, otherwise
+return <code>CODE_FOR_nothing</code>.
+
+     <br><dt>&lsquo;<samp><span class="samp">insn_code code_for_</span><var>name</var><span class="samp"> (</span><var>i1</var><span class="samp">, </span><var>i2</var><span class="samp">, ...)</span></samp>&rsquo;<dd>Same, but abort the compiler if the requested instruction does not exist.
+
+     <br><dt>&lsquo;<samp><span class="samp">rtx maybe_gen_</span><var>name</var><span class="samp"> (</span><var>i1</var><span class="samp">, </span><var>i2</var><span class="samp">, ..., </span><var>op0</var><span class="samp">, </span><var>op1</var><span class="samp">, ...)</span></samp>&rsquo;<dd>Check for a valid instruction in the same way as
+<code>maybe_code_for_</code><var>name</var>.  If the instruction exists,
+generate an instance of it using the operand values given by <var>op0</var>,
+<var>op1</var>, and so on, otherwise return null.
+
+     <br><dt>&lsquo;<samp><span class="samp">rtx gen_</span><var>name</var><span class="samp"> (</span><var>i1</var><span class="samp">, </span><var>i2</var><span class="samp">, ..., </span><var>op0</var><span class="samp">, </span><var>op1</var><span class="samp">, ...)</span></samp>&rsquo;<dd>Same, but abort the compiler if the requested instruction does not exist,
+or if the instruction generator invoked the <code>FAIL</code> macro. 
+</dl>
+
+ <p>For example, changing the pattern above to:
+
+<pre class="smallexample">     (define_insn "@neon_vq&lt;absneg&gt;&lt;mode&gt;"
+       [(set (match_operand:VDQIW 0 "s_register_operand" "=w")
+     	(unspec:VDQIW [(match_operand:VDQIW 1 "s_register_operand" "w")
+     		       (match_operand:SI 2 "immediate_operand" "i")]
+     		      QABSNEG))]
+       ...
+     )
+</pre>
+ <p>would define the same patterns as before, but in addition would generate
+the four functions below:
+
+<pre class="smallexample">     insn_code maybe_code_for_neon_vq (int, machine_mode);
+     insn_code code_for_neon_vq (int, machine_mode);
+     rtx maybe_gen_neon_vq (int, machine_mode, rtx, rtx, rtx);
+     rtx gen_neon_vq (int, machine_mode, rtx, rtx, rtx);
+</pre>
+ <p>Calling &lsquo;<samp><span class="samp">code_for_neon_vq (UNSPEC_VQABS, V8QImode)</span></samp>&rsquo;
+would then give <code>CODE_FOR_neon_vqabsv8qi</code>.
+
+ <p>It is possible to have multiple &lsquo;<samp><span class="samp">@</span></samp>&rsquo; patterns with the same
+name and same types of iterator.  For example:
+
+<pre class="smallexample">     (define_insn "@some_arithmetic_op&lt;mode&gt;"
+       [(set (match_operand:INTEGER_MODES 0 "register_operand") ...)]
+       ...
+     )
+     
+     (define_insn "@some_arithmetic_op&lt;mode&gt;"
+       [(set (match_operand:FLOAT_MODES 0 "register_operand") ...)]
+       ...
+     )
+</pre>
+ <p>would produce a single set of functions that handles both
+<code>INTEGER_MODES</code> and <code>FLOAT_MODES</code>.
+
+<!-- Copyright (C) 1988-2019 Free Software Foundation, Inc. -->
+<!-- This is part of the GCC manual. -->
+<!-- For copying conditions, see the file gcc.texi. -->
+ </body></html>
+

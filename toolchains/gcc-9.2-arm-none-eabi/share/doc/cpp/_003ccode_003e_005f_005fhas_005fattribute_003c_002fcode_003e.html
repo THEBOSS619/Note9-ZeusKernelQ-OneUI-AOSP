@@ -1,0 +1,92 @@
+<html lang="en">
+<head>
+<title>@code{__has_attribute} - The C Preprocessor</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The C Preprocessor">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Conditional-Syntax.html#Conditional-Syntax" title="Conditional Syntax">
+<link rel="prev" href="Elif.html#Elif" title="Elif">
+<link rel="next" href="_0040code_007b_005f_005fhas_005fcpp_005fattribute_007d.html#g_t_0040code_007b_005f_005fhas_005fcpp_005fattribute_007d" title="@code{__has_cpp_attribute}">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1987-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation.  A copy of
+the license is included in the
+section entitled ``GNU Free Documentation License''.
+
+This manual contains no Invariant Sections.  The Front-Cover Texts are
+(a) (see below), and the Back-Cover Texts are (b) (see below).
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.
+-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="%3ccode%3e__has_attribute%3c%2fcode%3e"></a>
+<a name="g_t_003ccode_003e_005f_005fhas_005fattribute_003c_002fcode_003e"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="_003ccode_003e_005f_005fhas_005fcpp_005fattribute_003c_002fcode_003e.html#g_t_003ccode_003e_005f_005fhas_005fcpp_005fattribute_003c_002fcode_003e">&lt;code&gt;__has_cpp_attribute&lt;/code&gt;</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="Elif.html#Elif">Elif</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Conditional-Syntax.html#Conditional-Syntax">Conditional Syntax</a>
+<hr>
+</div>
+
+<h4 class="subsection">4.2.6 <code>__has_attribute</code></h4>
+
+<p><a name="index-g_t_0040code_007b_005f_005fhas_005fattribute_007d-92"></a>
+The special operator <code>__has_attribute (</code><var>operand</var><code>)</code> may be used
+in &lsquo;<samp><span class="samp">#if</span></samp>&rsquo; and &lsquo;<samp><span class="samp">#elif</span></samp>&rsquo; expressions to test whether the attribute
+referenced by its <var>operand</var> is recognized by GCC.  Using the operator
+in other contexts is not valid.  In C code, <var>operand</var> must be
+a valid identifier.  In C++ code, <var>operand</var> may be optionally
+introduced by the <var>attribute-scope</var><code>::</code> prefix. 
+The <var>attribute-scope</var> prefix identifies the &ldquo;namespace&rdquo; within
+which the attribute is recognized.  The scope of GCC attributes is
+&lsquo;<samp><span class="samp">gnu</span></samp>&rsquo; or &lsquo;<samp><span class="samp">__gnu__</span></samp>&rsquo;.  The <code>__has_attribute</code> operator by
+itself, without any <var>operand</var> or parentheses, acts as a predefined
+macro so that support for it can be tested in portable code.  Thus,
+the recommended use of the operator is as follows:
+
+<pre class="smallexample">     #if defined __has_attribute
+     #  if __has_attribute (nonnull)
+     #    define ATTR_NONNULL __attribute__ ((nonnull))
+     #  endif
+     #endif
+</pre>
+   <p>The first &lsquo;<samp><span class="samp">#if</span></samp>&rsquo; test succeeds only when the operator is supported
+by the version of GCC (or another compiler) being used.  Only when that
+test succeeds is it valid to use <code>__has_attribute</code> as a preprocessor
+operator.  As a result, combining the two tests into a single expression as
+shown below would only be valid with a compiler that supports the operator
+but not with others that don't.
+
+<pre class="smallexample">     #if defined __has_attribute &amp;&amp; __has_attribute (nonnull)   /* not portable */
+     ...
+     #endif
+</pre>
+   </body></html>
+

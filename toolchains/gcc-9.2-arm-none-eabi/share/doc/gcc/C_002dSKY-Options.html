@@ -1,0 +1,167 @@
+<html lang="en">
+<head>
+<title>C-SKY Options - Using the GNU Compiler Collection (GCC)</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="Using the GNU Compiler Collection (GCC)">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Submodel-Options.html#Submodel-Options" title="Submodel Options">
+<link rel="prev" href="CR16-Options.html#CR16-Options" title="CR16 Options">
+<link rel="next" href="Darwin-Options.html#Darwin-Options" title="Darwin Options">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1988-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="C-SKY-Options"></a>
+<a name="C_002dSKY-Options"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="Darwin-Options.html#Darwin-Options">Darwin Options</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="CR16-Options.html#CR16-Options">CR16 Options</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Submodel-Options.html#Submodel-Options">Submodel Options</a>
+<hr>
+</div>
+
+<h4 class="subsection">3.18.11 C-SKY Options</h4>
+
+<p><a name="index-C_002dSKY-Options-1865"></a>
+GCC supports these options when compiling for C-SKY V2 processors.
+
+     <dl>
+<dt><code>-march=</code><var>arch</var><dd><a name="index-march_003d-1866"></a>Specify the C-SKY target architecture.  Valid values for <var>arch</var> are:
+&lsquo;<samp><span class="samp">ck801</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck802</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck807</span></samp>&rsquo;, and &lsquo;<samp><span class="samp">ck810</span></samp>&rsquo;. 
+The default is &lsquo;<samp><span class="samp">ck810</span></samp>&rsquo;.
+
+     <br><dt><code>-mcpu=</code><var>cpu</var><dd><a name="index-mcpu_003d-1867"></a>Specify the C-SKY target processor.  Valid values for <var>cpu</var> are:
+&lsquo;<samp><span class="samp">ck801</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck801t</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck802</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck802t</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck802j</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck803</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803h</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803t</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803ht</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck803f</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803fh</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803e</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803eh</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck803et</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803eht</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803ef</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803efh</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck803ft</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803eft</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803efht</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803r1</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck803hr1</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803tr1</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803htr1</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803fr1</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck803fhr1</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803er1</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803ehr1</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803etr1</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck803ehtr1</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803efr1</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803efhr1</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803ftr1</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck803eftr1</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803efhtr1</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck803s</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803st</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803se</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803sf</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck803sef</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck803seft</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck807e</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck807ef</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck807</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck807f</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck810e</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck810et</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck810ef</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck810eft</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck810</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck810v</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck810f</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck810t</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck810fv</span></samp>&rsquo;,
+&lsquo;<samp><span class="samp">ck810tv</span></samp>&rsquo;, &lsquo;<samp><span class="samp">ck810ft</span></samp>&rsquo;, and &lsquo;<samp><span class="samp">ck810ftv</span></samp>&rsquo;.
+
+     <br><dt><code>-mbig-endian</code><dd><a name="index-mbig_002dendian-1868"></a><dt><code>-EB</code><dd><a name="index-EB-1869"></a><dt><code>-mlittle-endian</code><dd><a name="index-mlittle_002dendian-1870"></a><dt><code>-EL</code><dd><a name="index-EL-1871"></a>
+Select big- or little-endian code.  The default is little-endian.
+
+     <br><dt><code>-mhard-float</code><dd><a name="index-mhard_002dfloat-1872"></a><dt><code>-msoft-float</code><dd><a name="index-msoft_002dfloat-1873"></a>
+Select hardware or software floating-point implementations. 
+The default is soft float.
+
+     <br><dt><code>-mdouble-float</code><dt><code>-mno-double-float</code><dd><a name="index-mdouble_002dfloat-1874"></a>When <samp><span class="option">-mhard-float</span></samp> is in effect, enable generation of
+double-precision float instructions.  This is the default except
+when compiling for CK803.
+
+     <br><dt><code>-mfdivdu</code><dt><code>-mno-fdivdu</code><dd><a name="index-mfdivdu-1875"></a>When <samp><span class="option">-mhard-float</span></samp> is in effect, enable generation of
+<code>frecipd</code>, <code>fsqrtd</code>, and <code>fdivd</code> instructions. 
+This is the default except when compiling for CK803.
+
+     <br><dt><code>-mfpu=</code><var>fpu</var><dd><a name="index-mfpu_003d-1876"></a>Select the floating-point processor.  This option can only be used with
+<samp><span class="option">-mhard-float</span></samp>. 
+Values for <var>fpu</var> are
+&lsquo;<samp><span class="samp">fpv2_sf</span></samp>&rsquo; (equivalent to &lsquo;<samp><span class="samp">-mno-double-float -mno-fdivdu</span></samp>&rsquo;),
+&lsquo;<samp><span class="samp">fpv2</span></samp>&rsquo; (&lsquo;<samp><span class="samp">-mdouble-float -mno-divdu</span></samp>&rsquo;), and
+&lsquo;<samp><span class="samp">fpv2_divd</span></samp>&rsquo; (&lsquo;<samp><span class="samp">-mdouble-float -mdivdu</span></samp>&rsquo;).
+
+     <br><dt><code>-melrw</code><dt><code>-mno-elrw</code><dd><a name="index-melrw-1877"></a>Enable the extended <code>lrw</code> instruction.  This option defaults to on
+for CK801 and off otherwise.
+
+     <br><dt><code>-mistack</code><dt><code>-mno-istack</code><dd><a name="index-mistack-1878"></a>Enable interrupt stack instructions; the default is off.
+
+     <p>The <samp><span class="option">-mistack</span></samp> option is required to handle the
+<code>interrupt</code> and <code>isr</code> function attributes
+(see <a href="C_002dSKY-Function-Attributes.html#C_002dSKY-Function-Attributes">C-SKY Function Attributes</a>).
+
+     <br><dt><code>-mmp</code><dd><a name="index-mmp-1879"></a>Enable multiprocessor instructions; the default is off.
+
+     <br><dt><code>-mcp</code><dd><a name="index-mcp-1880"></a>Enable coprocessor instructions; the default is off.
+
+     <br><dt><code>-mcache</code><dd><a name="index-mcache-1881"></a>Enable coprocessor instructions; the default is off.
+
+     <br><dt><code>-msecurity</code><dd><a name="index-msecurity-1882"></a>Enable C-SKY security instructions; the default is off.
+
+     <br><dt><code>-mtrust</code><dd><a name="index-mtrust-1883"></a>Enable C-SKY trust instructions; the default is off.
+
+     <br><dt><code>-mdsp</code><dd><a name="index-mdsp-1884"></a><dt><code>-medsp</code><dd><a name="index-medsp-1885"></a><dt><code>-mvdsp</code><dd><a name="index-mvdsp-1886"></a>Enable C-SKY DSP, Enhanced DSP, or Vector DSP instructions, respectively. 
+All of these options default to off.
+
+     <br><dt><code>-mdiv</code><dt><code>-mno-div</code><dd><a name="index-mdiv-1887"></a>Generate divide instructions.  Default is off.
+
+     <br><dt><code>-msmart</code><dt><code>-mno-smart</code><dd><a name="index-msmart-1888"></a>Generate code for Smart Mode, using only registers numbered 0-7 to allow
+use of 16-bit instructions.  This option is ignored for CK801 where this
+is the required behavior, and it defaults to on for CK802. 
+For other targets, the default is off.
+
+     <br><dt><code>-mhigh-registers</code><dt><code>-mno-high-registers</code><dd><a name="index-mhigh_002dregisters-1889"></a>Generate code using the high registers numbered 16-31.  This option
+is not supported on CK801, CK802, or CK803, and is enabled by default
+for other processors.
+
+     <br><dt><code>-manchor</code><dt><code>-mno-anchor</code><dd><a name="index-manchor-1890"></a>Generate code using global anchor symbol addresses.
+
+     <br><dt><code>-mpushpop</code><dt><code>-mno-pushpop</code><dd><a name="index-mpushpop-1891"></a>Generate code using <code>push</code> and <code>pop</code> instructions.  This option
+defaults to on.
+
+     <br><dt><code>-mmultiple-stld</code><dt><code>-mstm</code><dt><code>-mno-multiple-stld</code><dt><code>-mno-stm</code><dd><a name="index-mmultiple_002dstld-1892"></a>Generate code using <code>stm</code> and <code>ldm</code> instructions.  This option
+isn't supported on CK801 but is enabled by default on other processors.
+
+     <br><dt><code>-mconstpool</code><dt><code>-mno-constpool</code><dd><a name="index-mconstpool-1893"></a>Create constant pools in the compiler instead of deferring it to the
+assembler.  This option is the default and required for correct code
+generation on CK801 and CK802, and is optional on other processors.
+
+     <br><dt><code>-mstack-size</code><br><dt><code>-mno-stack-size</code><dd><a name="index-mstack_002dsize-1894"></a>Emit <code>.stack_size</code> directives for each function in the assembly
+output.  This option defaults to off.
+
+     <br><dt><code>-mccrt</code><dt><code>-mno-ccrt</code><dd><a name="index-mccrt-1895"></a>Generate code for the C-SKY compiler runtime instead of libgcc.  This
+option defaults to off.
+
+     <br><dt><code>-mbranch-cost=</code><var>n</var><dd><a name="index-mbranch_002dcost_003d-1896"></a>Set the branch costs to roughly <code>n</code> instructions.  The default is 1.
+
+     <br><dt><code>-msched-prolog</code><dt><code>-mno-sched-prolog</code><dd><a name="index-msched_002dprolog-1897"></a>Permit scheduling of function prologue and epilogue sequences.  Using
+this option can result in code that is not compliant with the C-SKY V2 ABI
+prologue requirements and that cannot be debugged or backtraced. 
+It is disabled by default.
+
+ </dl>
+
+ </body></html>
+

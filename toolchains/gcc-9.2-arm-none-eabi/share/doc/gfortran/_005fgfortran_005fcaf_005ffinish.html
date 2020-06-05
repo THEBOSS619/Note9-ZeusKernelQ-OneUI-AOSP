@@ -1,0 +1,74 @@
+<html lang="en">
+<head>
+<title>_gfortran_caf_finish - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Function-ABI-Documentation.html#Function-ABI-Documentation" title="Function ABI Documentation">
+<link rel="prev" href="_005fgfortran_005fcaf_005finit.html#g_t_005fgfortran_005fcaf_005finit" title="_gfortran_caf_init">
+<link rel="next" href="_005fgfortran_005fcaf_005fthis_005fimage.html#g_t_005fgfortran_005fcaf_005fthis_005fimage" title="_gfortran_caf_this_image">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="_gfortran_caf_finish"></a>
+<a name="g_t_005fgfortran_005fcaf_005ffinish"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="_005fgfortran_005fcaf_005fthis_005fimage.html#g_t_005fgfortran_005fcaf_005fthis_005fimage">_gfortran_caf_this_image</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="_005fgfortran_005fcaf_005finit.html#g_t_005fgfortran_005fcaf_005finit">_gfortran_caf_init</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Function-ABI-Documentation.html#Function-ABI-Documentation">Function ABI Documentation</a>
+<hr>
+</div>
+
+<h4 class="subsection">8.2.2 <code>_gfortran_caf_finish</code> &mdash; Finalization function</h4>
+
+<p><a name="index-Coarray_002c-_005fgfortran_005fcaf_005ffinish-450"></a>
+     <dl>
+<dt><em>Description</em>:<dd>This function is called at the end of the Fortran main program, if it has
+been compiled with the <samp><span class="option">-fcoarray=lib</span></samp> option.
+
+     <br><dt><em>Syntax</em>:<dd><code>void _gfortran_caf_finish (void)</code>
+
+     <br><dt><em>NOTES</em><dd>For non-Fortran programs, it is recommended to call the function at the end
+of the main program.  To ensure that the shutdown is also performed for
+programs where this function is not explicitly invoked, for instance
+non-Fortran programs or calls to the system's exit() function, the library
+can use a destructor function.  Note that programs can also be terminated
+using the STOP and ERROR STOP statements; those use different library calls. 
+</dl>
+
+   </body></html>
+

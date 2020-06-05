@@ -1,0 +1,93 @@
+<html lang="en">
+<head>
+<title>RANDOM_NUMBER - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Intrinsic-Procedures.html#Intrinsic-Procedures" title="Intrinsic Procedures">
+<link rel="prev" href="RANDOM_005fINIT.html#RANDOM_005fINIT" title="RANDOM_INIT">
+<link rel="next" href="RANDOM_005fSEED.html#RANDOM_005fSEED" title="RANDOM_SEED">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="RANDOM_NUMBER"></a>
+<a name="RANDOM_005fNUMBER"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="RANDOM_005fSEED.html#RANDOM_005fSEED">RANDOM_SEED</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="RANDOM_005fINIT.html#RANDOM_005fINIT">RANDOM_INIT</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Intrinsic-Procedures.html#Intrinsic-Procedures">Intrinsic Procedures</a>
+<hr>
+</div>
+
+<h3 class="section">9.225 <code>RANDOM_NUMBER</code> &mdash; Pseudo-random number</h3>
+
+<p><a name="index-RANDOM_005fNUMBER-1198"></a><a name="index-random-number-generation-1199"></a>
+     <dl>
+<dt><em>Description</em>:<dd>Returns a single pseudorandom number or an array of pseudorandom numbers
+from the uniform distribution over the range  0 \leq x &lt; 1.
+
+     <p>The runtime-library implements the xorshift1024* random number
+generator (RNG). This generator has a period of 2^1024 - 1,
+and when using multiple threads up to 2^512 threads can each
+generate 2^512 random numbers before any aliasing occurs.
+
+     <p>Note that in a multi-threaded program (e.g. using OpenMP directives),
+each thread will have its own random number state. For details of the
+seeding procedure, see the documentation for the <code>RANDOM_SEED</code>
+intrinsic.
+
+     <br><dt><em>Standard</em>:<dd>Fortran 95 and later
+
+     <br><dt><em>Class</em>:<dd>Subroutine
+
+     <br><dt><em>Syntax</em>:<dd><code>RANDOM_NUMBER(HARVEST)</code>
+
+     <br><dt><em>Arguments</em>:<dd>
+     <p><table summary=""><tr align="left"><td valign="top" width="15%"><var>HARVEST</var> </td><td valign="top" width="70%">Shall be a scalar or an array of type <code>REAL</code>.
+     <br></td></tr></table>
+
+     <br><dt><em>Example</em>:<dd>
+     <pre class="smallexample">          program test_random_number
+            REAL :: r(5,5)
+            CALL RANDOM_NUMBER(r)
+          end program
+</pre>
+     <br><dt><em>See also</em>:<dd><a href="RANDOM_005fSEED.html#RANDOM_005fSEED">RANDOM_SEED</a>, <a href="RANDOM_005fINIT.html#RANDOM_005fINIT">RANDOM_INIT</a>
+</dl>
+
+   </body></html>
+

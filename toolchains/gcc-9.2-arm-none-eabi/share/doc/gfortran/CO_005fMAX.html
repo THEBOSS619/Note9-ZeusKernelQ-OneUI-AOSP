@@ -1,0 +1,99 @@
+<html lang="en">
+<head>
+<title>CO_MAX - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Intrinsic-Procedures.html#Intrinsic-Procedures" title="Intrinsic Procedures">
+<link rel="prev" href="CO_005fBROADCAST.html#CO_005fBROADCAST" title="CO_BROADCAST">
+<link rel="next" href="CO_005fMIN.html#CO_005fMIN" title="CO_MIN">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="CO_MAX"></a>
+<a name="CO_005fMAX"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="CO_005fMIN.html#CO_005fMIN">CO_MIN</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="CO_005fBROADCAST.html#CO_005fBROADCAST">CO_BROADCAST</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Intrinsic-Procedures.html#Intrinsic-Procedures">Intrinsic Procedures</a>
+<hr>
+</div>
+
+<h3 class="section">9.64 <code>CO_MAX</code> &mdash; Maximal value on the current set of images</h3>
+
+<p><a name="index-CO_005fMAX-684"></a><a name="index-Collectives_002c-maximal-value-685"></a>
+     <dl>
+<dt><em>Description</em>:<dd><code>CO_MAX</code> determines element-wise the maximal value of <var>A</var> on all
+images of the current team.  If <var>RESULT_IMAGE</var> is present, the maximum
+values are returned in <var>A</var> on the specified image only and the value
+of <var>A</var> on the other images become undefined.  If <var>RESULT_IMAGE</var> is
+not present, the value is returned on all images.  If the execution was
+successful and <var>STAT</var> is present, it is assigned the value zero.  If the
+execution failed, <var>STAT</var> gets assigned a nonzero value and, if present,
+<var>ERRMSG</var> gets assigned a value describing the occurred error.
+
+     <br><dt><em>Standard</em>:<dd>Technical Specification (TS) 18508 or later
+
+     <br><dt><em>Class</em>:<dd>Collective subroutine
+
+     <br><dt><em>Syntax</em>:<dd><code>CALL CO_MAX(A [, RESULT_IMAGE, STAT, ERRMSG])</code>
+
+     <br><dt><em>Arguments</em>:<dd>
+     <p><table summary=""><tr align="left"><td valign="top" width="15%"><var>A</var>            </td><td valign="top" width="70%">shall be an integer, real or character variable,
+which has the same type and type parameters on all images of the team. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>RESULT_IMAGE</var> </td><td valign="top" width="70%">(optional) a scalar integer expression; if
+present, it shall have the same the same value on all images and refer to an
+image of the current team. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>STAT</var>         </td><td valign="top" width="70%">(optional) a scalar integer variable
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>ERRMSG</var>       </td><td valign="top" width="70%">(optional) a scalar character variable
+     <br></td></tr></table>
+
+     <br><dt><em>Example</em>:<dd>
+     <pre class="smallexample">          program test
+            integer :: val
+            val = this_image ()
+            call co_max (val, result_image=1)
+            if (this_image() == 1) then
+              write(*,*) "Maximal value", val  ! prints num_images()
+            end if
+          end program test
+</pre>
+     <br><dt><em>See also</em>:<dd><a href="CO_005fMIN.html#CO_005fMIN">CO_MIN</a>, <a href="CO_005fSUM.html#CO_005fSUM">CO_SUM</a>, <a href="CO_005fREDUCE.html#CO_005fREDUCE">CO_REDUCE</a>, <a href="CO_005fBROADCAST.html#CO_005fBROADCAST">CO_BROADCAST</a>
+</dl>
+
+   </body></html>
+

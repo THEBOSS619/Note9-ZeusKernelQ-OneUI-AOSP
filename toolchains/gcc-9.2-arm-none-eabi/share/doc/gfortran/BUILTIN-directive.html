@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+<title>BUILTIN directive - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="GNU-Fortran-Compiler-Directives.html#GNU-Fortran-Compiler-Directives" title="GNU Fortran Compiler Directives">
+<link rel="prev" href="UNROLL-directive.html#UNROLL-directive" title="UNROLL directive">
+<link rel="next" href="IVDEP-directive.html#IVDEP-directive" title="IVDEP directive">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="BUILTIN-directive"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="IVDEP-directive.html#IVDEP-directive">IVDEP directive</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="UNROLL-directive.html#UNROLL-directive">UNROLL directive</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="GNU-Fortran-Compiler-Directives.html#GNU-Fortran-Compiler-Directives">GNU Fortran Compiler Directives</a>
+<hr>
+</div>
+
+<h4 class="subsection">7.2.3 BUILTIN directive</h4>
+
+<p>The syntax of the directive is
+
+   <p><code>!GCC$ BUILTIN (B) attributes simd FLAGS IF('target')</code>
+
+   <p>You can use this directive to define which middle-end built-ins provide vector
+implementations.  <code>B</code> is name of the middle-end built-in.  <code>FLAGS</code>
+are optional and must be either "(inbranch)" or "(notinbranch)". 
+<code>IF</code> statement is optional and is used to filter multilib ABIs
+for the built-in that should be vectorized.  Example usage:
+
+<pre class="smallexample">     !GCC$ builtin (sinf) attributes simd (notinbranch) if('x86_64')
+</pre>
+   <p>The purpose of the directive is to provide an API among the GCC compiler and
+the GNU C Library which would define vector implementations of math routines.
+
+   </body></html>
+

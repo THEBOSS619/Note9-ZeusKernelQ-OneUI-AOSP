@@ -1,0 +1,112 @@
+<html lang="en">
+<head>
+<title>_gfortran_caf_send_by_ref - The GNU Fortran Compiler</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="The GNU Fortran Compiler">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="start" href="index.html#Top">
+<link rel="up" href="Function-ABI-Documentation.html#Function-ABI-Documentation" title="Function ABI Documentation">
+<link rel="prev" href="_005fgfortran_005fcaf_005fsendget.html#g_t_005fgfortran_005fcaf_005fsendget" title="_gfortran_caf_sendget">
+<link rel="next" href="_005fgfortran_005fcaf_005fget_005fby_005fref.html#g_t_005fgfortran_005fcaf_005fget_005fby_005fref" title="_gfortran_caf_get_by_ref">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 1999-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being ``Funding Free Software'', the Front-Cover
+Texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+
+(a) The FSF's Front-Cover Text is:
+
+     A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+     You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<div class="node">
+<a name="_gfortran_caf_send_by_ref"></a>
+<a name="g_t_005fgfortran_005fcaf_005fsend_005fby_005fref"></a>
+<p>
+Next:&nbsp;<a rel="next" accesskey="n" href="_005fgfortran_005fcaf_005fget_005fby_005fref.html#g_t_005fgfortran_005fcaf_005fget_005fby_005fref">_gfortran_caf_get_by_ref</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="_005fgfortran_005fcaf_005fsendget.html#g_t_005fgfortran_005fcaf_005fsendget">_gfortran_caf_sendget</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="Function-ABI-Documentation.html#Function-ABI-Documentation">Function ABI Documentation</a>
+<hr>
+</div>
+
+<h4 class="subsection">8.2.14 <code>_gfortran_caf_send_by_ref</code> &mdash; Sending data from a local image to a remote image with enhanced referencing options</h4>
+
+<p><a name="index-Coarray_002c-_005fgfortran_005fcaf_005fsend_005fby_005fref-462"></a>
+     <dl>
+<dt><em>Description</em>:<dd>Called to send a scalar, an array section or a whole array from a local to a
+remote image identified by the <var>image_index</var>.
+
+     <br><dt><em>Syntax</em>:<dd><code>void _gfortran_caf_send_by_ref (caf_token_t token, int image_index,
+gfc_descriptor_t *src, caf_reference_t *refs, int dst_kind, int src_kind,
+bool may_require_tmp, bool dst_reallocatable, int *stat, int dst_type)</code>
+
+     <br><dt><em>Arguments</em>:<dd>
+     <p><table summary=""><tr align="left"><td valign="top" width="15%"><var>token</var> </td><td valign="top" width="70%">intent(in)  An opaque pointer identifying the coarray. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>image_index</var> </td><td valign="top" width="70%">intent(in)  The ID of the remote image; must be a
+positive number. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>src</var> </td><td valign="top" width="70%">intent(in) Array descriptor of the local array to be
+transferred to the remote image
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>refs</var> </td><td valign="top" width="70%">intent(in) The references on the remote array to store
+the data given by src.  Guaranteed to have at least one entry. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>dst_kind</var> </td><td valign="top" width="70%">intent(in)  Kind of the destination argument
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>src_kind</var> </td><td valign="top" width="70%">intent(in)  Kind of the source argument
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>may_require_tmp</var> </td><td valign="top" width="70%">intent(in)  The variable is <code>false</code> when
+it is known at compile time that the <var>dest</var> and <var>src</var> either cannot
+overlap or overlap (fully or partially) such that walking <var>src</var> and
+<var>dest</var> in element wise element order (honoring the stride value) will not
+lead to wrong results.  Otherwise, the value is <code>true</code>. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>dst_reallocatable</var> </td><td valign="top" width="70%">intent(in)  Set when the destination is of
+allocatable or pointer type and the refs will allow reallocation, i.e., the ref
+is a full array or component ref. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>stat</var> </td><td valign="top" width="70%">intent(out) When non-<code>NULL</code> give the result of the
+operation, i.e., zero on success and non-zero on error.  When <code>NULL</code> and
+an error occurs, then an error message is printed and the program is terminated. 
+<br></td></tr><tr align="left"><td valign="top" width="15%"><var>dst_type</var> </td><td valign="top" width="70%">intent(in)  Give the type of the destination.  When
+the destination is not an array, than the precise type, e.g. of a component in
+a derived type, is not known, but provided here.
+     <br></td></tr></table>
+
+     <br><dt><em>NOTES</em><dd>It is permitted to have <var>image_index</var> equal the current image; the memory of
+the send-to and the send-from might (partially) overlap in that case.  The
+implementation has to take care that it handles this case, e.g. using
+<code>memmove</code> which handles (partially) overlapping memory.  If
+<var>may_require_tmp</var> is true, the library might additionally create a
+temporary variable, unless additional checks show that this is not required
+(e.g. because walking backward is possible or because both arrays are
+contiguous and <code>memmove</code> takes care of overlap issues).
+
+     <p>Note that the assignment of a scalar to an array is permitted.  In addition,
+the library has to handle numeric-type conversion and for strings, padding
+and different character kinds.
+
+     <p>Because of the more complicated references possible some operations may be
+unsupported by certain libraries.  The library is expected to issue a precise
+error message why the operation is not permitted. 
+</dl>
+
+   </body></html>
+

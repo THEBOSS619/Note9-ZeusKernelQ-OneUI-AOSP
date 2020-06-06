@@ -573,7 +573,6 @@ dhd_dbg_verboselog_printf(dhd_pub_t *dhdp, prcd_event_log_hdr_t *plog_hdr,
 {
 	dhd_event_log_t *raw_event = (dhd_event_log_t *)raw_event_ptr;
 	uint16 count;
-	int log_level, id;
 	char fmtstr_loc_buf[ROMSTR_SIZE] = { 0 };
 	char (*str_buf)[SIZE_LOC_STR] = NULL;
 	char *str_tmpptr = NULL;
@@ -584,7 +583,6 @@ dhd_dbg_verboselog_printf(dhd_pub_t *dhdp, prcd_event_log_hdr_t *plog_hdr,
 	} u_arg;
 	u_arg arg[MAX_NO_OF_ARG] = {{0}};
 	char *c_ptr = NULL;
-	struct bcmstrbuf b;
 #ifdef DHD_LOG_PRINT_RATE_LIMIT
 	static int log_print_count = 0;
 	static uint64 ts0 = 0;

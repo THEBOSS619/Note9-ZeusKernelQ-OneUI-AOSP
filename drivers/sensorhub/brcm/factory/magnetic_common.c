@@ -909,7 +909,6 @@ int save_magnetic_cal_param_to_nvm(struct ssp_data *data, char *pchRcvDataFrame,
 	int iRet = 0;
 	struct file *cal_filp = NULL;
 	mm_segment_t old_fs;
-	int i = 0;
 	int length = 0;
 	u8 mag_caldata_akm[MAC_CAL_PARAM_SIZE_AKM] = {0, }; //AKM uses 13 byte.
 	u8 mag_caldata_yas[MAC_CAL_PARAM_SIZE_YAS] = {0, }; // YAMAHA uses 7 byte.

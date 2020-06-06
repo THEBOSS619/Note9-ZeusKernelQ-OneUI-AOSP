@@ -62,7 +62,7 @@ static char *panel_state_names[] = {
 };
 
 static int boot_panel_id = 0;
-int panel_log_level = 6;
+int panel_log_level = 0;
 #ifdef CONFIG_SUPPORT_PANEL_SWAP
 static int connect_panel = PANEL_CONNECT;
 #endif

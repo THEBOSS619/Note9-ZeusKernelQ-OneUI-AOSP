@@ -689,31 +689,6 @@ static struct resinfo s6e3ha8_restbl[] = {
 	[RES_MCD_RESISTANCE] = RESINFO_INIT(mcd_resistance, S6E3HA8_MCD_RESISTANCE, RESUI(mcd_resistance)),
 };
 
-enum {
-	DUMP_RDDPM = 0,
-	DUMP_RDDSM,
-	DUMP_ERR,
-	DUMP_ERR_FG,
-	DUMP_DSI_ERR,
-	DUMP_SELF_DIAG,
-};
-
-static void show_rddpm(struct dumpinfo *info);
-static void show_rddsm(struct dumpinfo *info);
-static void show_err(struct dumpinfo *info);
-static void show_err_fg(struct dumpinfo *info);
-static void show_dsi_err(struct dumpinfo *info);
-static void show_self_diag(struct dumpinfo *info);
-
-static struct dumpinfo s6e3ha8_dmptbl[] = {
-	[DUMP_RDDPM] = DUMPINFO_INIT(rddpm, &s6e3ha8_restbl[RES_RDDPM], show_rddpm),
-	[DUMP_RDDSM] = DUMPINFO_INIT(rddsm, &s6e3ha8_restbl[RES_RDDSM], show_rddsm),
-	[DUMP_ERR] = DUMPINFO_INIT(err, &s6e3ha8_restbl[RES_ERR], show_err),
-	[DUMP_ERR_FG] = DUMPINFO_INIT(err_fg, &s6e3ha8_restbl[RES_ERR_FG], show_err_fg),
-	[DUMP_DSI_ERR] = DUMPINFO_INIT(dsi_err, &s6e3ha8_restbl[RES_DSI_ERR], show_dsi_err),
-	[DUMP_SELF_DIAG] = DUMPINFO_INIT(self_diag, &s6e3ha8_restbl[RES_SELF_DIAG], show_self_diag),
-};
-
 static int init_common_table(struct maptbl *);
 static int getidx_common_maptbl(struct maptbl *);
 static int init_gamma_table(struct maptbl *);

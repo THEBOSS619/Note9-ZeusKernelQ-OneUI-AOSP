@@ -919,8 +919,6 @@ int fimc_is_fwrite(const char *pfname, void *pdata, int size)
 		goto p_err;
 	}
 
-	snprintf(filename, PATH_MAX, "%s/%s", DBG_DMA_DUMP_PATH, pfname);
-
 	bin.data = pdata;
 	bin.size = size;
 

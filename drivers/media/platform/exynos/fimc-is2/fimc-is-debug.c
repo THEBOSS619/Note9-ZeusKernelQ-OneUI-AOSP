@@ -638,7 +638,7 @@ int fimc_is_debug_dma_dump(struct fimc_is_queue *queue, u32 index, u32 vid, u32 
 		return 0;
 #endif
 	/* manipulateed the count for dump */
-	if (((framecount - 1) % DBG_DMA_DUMP_INTEVAL) != 0)
+	if (((framecount - 1)) != 0)
 		return 0;
 
 	switch (type) {
@@ -647,9 +647,6 @@ int fimc_is_debug_dma_dump(struct fimc_is_queue *queue, u32 index, u32 vid, u32 
 
 		if (unlikely(!filename))
 			return -ENOMEM;
-
-		snprintf(filename, PATH_MAX, "%s/V%02d_F%08d_I%02d.raw",
-				DBG_DMA_DUMP_PATH, vid, framecount, index);
 
 		for (i = 0; i < (buf->num_planes - 1); i++) {
 			bin.data = (void *)queue->buf_kva[index][i];
@@ -682,9 +679,6 @@ int fimc_is_debug_dma_dump(struct fimc_is_queue *queue, u32 index, u32 vid, u32 
 
 		if (unlikely(!filename))
 			return -ENOMEM;
-
-		snprintf(filename, PATH_MAX, "%s/V%02d_F%08d_I%02d.meta",
-				DBG_DMA_DUMP_PATH, vid, framecount, index);
 
 		bin.data = (void *)queue->buf_kva[index][buf->num_planes - 1];
 		bin.size = queue->framecfg.size[buf->num_planes - 1];
@@ -720,7 +714,7 @@ static int isfw_debug_open(struct inode *inode, struct file *file)
 	return 0;
 }
 
-#ifdef ENABLE_IS_CORE
+#if 0
 static ssize_t isfw_debug_read(struct file *file, char __user *user_buf,
 	size_t buf_len, loff_t *ppos)
 {

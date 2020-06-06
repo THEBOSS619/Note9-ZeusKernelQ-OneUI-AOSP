@@ -30,12 +30,6 @@ obj-$(CONFIG_CGROUP_DEVICE)		+= device_cgroup.o
 subdir-$(CONFIG_INTEGRITY)		+= integrity
 obj-$(CONFIG_INTEGRITY)			+= integrity/
 
-# Knox SDP
-ifndef CONFIG_NO_SDP_BASE
-obj-y += sdp/
-obj-y += sdp/built-in.o
-endif
-
 # TIMA uevent
 obj-$(CONFIG_TIMA)     += tima_uevent/tima_uevent.o
 
@@ -56,8 +50,4 @@ obj-$(CONFIG_PROCA)		+= proca/
 # Kbuild should always enter proca/gaf because gaf should be always built
 subdir-y += proca/gaf
 obj-y    += proca/gaf/
-
-# Knox SDP
-obj-$(CONFIG_SDP) += sdp/
-obj-$(CONFIG_SDP) += sdp/built-in.o
 

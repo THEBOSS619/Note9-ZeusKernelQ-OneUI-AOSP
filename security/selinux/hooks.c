@@ -5629,22 +5629,15 @@ out:
 
 static int selinux_sk_alloc_security(struct sock *sk, int family, gfp_t priority)
 {
-	struct sk_security_struct *sksec;
-#ifdef CONFIG_RKP_KDP
-	int rc;
+	struct sk_security_struct *sksec = sk->sk_security;
 
-	if ((rc = security_integrity_current()))
-		return rc;
-#endif  /* CONFIG_RKP_KDP */
-	sksec = kzalloc(sizeof(*sksec), priority);
-	if (!sksec)
-		return -ENOMEM;
-
+#ifdef CONFIG_NETLABEL
+	memset(sksec, 0, offsetof(struct sk_security_struct, sid));
+#endif
 	sksec->peer_sid = SECINITSID_UNLABELED;
 	sksec->sid = SECINITSID_UNLABELED;
 	sksec->sclass = SECCLASS_SOCKET;
 	selinux_netlbl_sk_security_reset(sksec);
-	sk->sk_security = sksec;
 
 	return 0;
 }
@@ -5659,14 +5652,12 @@ static void selinux_sk_free_security(struct sock *sk)
 		return;
 #endif  /* CONFIG_RKP_KDP */
 
-	sk->sk_security = NULL;
 	selinux_netlbl_sk_security_free(sksec);
-	kfree(sksec);
 }
 
 static void selinux_sk_clone_security(const struct sock *sk, struct sock *newsk)
 {
-	struct sk_security_struct *sksec = sk->sk_security;
+	const struct sk_security_struct *sksec = sk->sk_security;
 	struct sk_security_struct *newsksec = newsk->sk_security;
 #ifdef CONFIG_RKP_KDP
 	int rc;

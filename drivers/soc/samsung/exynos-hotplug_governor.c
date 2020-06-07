@@ -19,6 +19,7 @@
 #include <linux/exynos-cpufreq.h>
 #include <linux/suspend.h>
 #include <linux/cpuidle.h>
+#include <dt-bindings/clock/exynos9810.h>
 
 #include <soc/samsung/exynos-cpu_hotplug.h>
 #include <soc/samsung/cal-if.h>
@@ -35,7 +36,7 @@
 #define BIG	1
 
 extern unsigned long arg_cpu_max_c2;
-static unsigned long arg_overclock = 0;
+static unsigned long arg_overclock = 1;
 
 static int read_overclock(char *oc)
 {
@@ -1070,6 +1071,22 @@ static int __init exynos_hpgov_parse_dt(void)
 	int i, freq, max_freq;
 	struct device_node *np = of_find_node_by_name(NULL, "hotplug_governor");
 
+	if (arg_overclock == 1) {
+		exynos_hpgov.single_change_ms = 30;
+		exynos_hpgov.dual_change_ms = 20;
+		exynos_hpgov.quad_change_ms = 10;
+		exynos_hpgov.big_heavy_thr = 600;
+		exynos_hpgov.lit_heavy_thr = 180;
+		exynos_hpgov.big_idle_thr = 106;
+		exynos_hpgov.lit_idle_thr = 46;
+		exynos_hpgov.ldsum_heavy_thr = 800;
+		exynos_hpgov.ldsum_enabled = 0;
+		exynos_hpgov.skip_lit_enabled = 0;
+		exynos_hpgov.cl_busy_ratio = 65;
+		exynos_hpgov.cal_id = ACPM_DVFS_CPUCL1;
+
+		} else {
+
 	if (of_property_read_u32(np, "single_change_ms", &exynos_hpgov.single_change_ms))
 		goto exit;
 
@@ -1106,6 +1123,8 @@ static int __init exynos_hpgov_parse_dt(void)
 	if (of_property_read_u32(np, "cal-id", &exynos_hpgov.cal_id))
 		goto exit;
 
+		}
+
 
 	max_freq = arg_cpu_max_c2;
 	if (!max_freq)
@@ -1113,15 +1132,15 @@ static int __init exynos_hpgov_parse_dt(void)
 	exynos_hpgov.maxfreq_table[SINGLE] = max_freq;
 
 	if (arg_overclock == 1) {
-		exynos_hpgov.maxfreq_table[DUAL] = 2314000;
-		exynos_hpgov.maxfreq_table[TRIPLE] = 1924000;
-		exynos_hpgov.maxfreq_table[QUAD] = 1924000;
+		exynos_hpgov.maxfreq_table[DUAL] = 2496000;
+		exynos_hpgov.maxfreq_table[TRIPLE] = 2314000;
+		exynos_hpgov.maxfreq_table[QUAD] = 2314000;
 		exynos_hpgov.maxfreq_table[DISABLE] = 2314000;
 
 	} else if (arg_overclock == 2) {
 		exynos_hpgov.maxfreq_table[DUAL] = 2496000;
-		exynos_hpgov.maxfreq_table[TRIPLE] = 2002000;
-		exynos_hpgov.maxfreq_table[QUAD] = 2002000;
+		exynos_hpgov.maxfreq_table[TRIPLE] = 2314000;
+		exynos_hpgov.maxfreq_table[QUAD] = 2314000;
 		exynos_hpgov.maxfreq_table[DISABLE] = max_freq;
 
 	} else {

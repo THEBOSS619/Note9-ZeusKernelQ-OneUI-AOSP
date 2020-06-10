@@ -2580,8 +2580,8 @@ concate_revision_bcm4361(dhd_bus_t *bus, char *fw_path, char *nv_path)
 		if (is_murata_fem) {
 			strncat(nv_path, NVRAM_FEM_MURATA, strlen(NVRAM_FEM_MURATA));
 		}
-		strncat(nv_path, info->nvram_ext, strlen(info->nvram_ext));
-		strncat(fw_path, info->fw_ext, strlen(info->fw_ext));
+		strlcat(nv_path, info->nvram_ext, sizeof(module_type));
+		strlcat(fw_path, info->fw_ext, sizeof(module_type));
 	} else {
 		DHD_ERROR(("%s:failed to find extension for nvram and firmware\n", __FUNCTION__));
 		ret = BCME_ERROR;
@@ -5583,7 +5583,7 @@ dhdpcie_bus_doiovar(dhd_bus_t *bus, const bcm_iovar_t *vi, uint32 actionid, cons
 	/* Debug related. Returns a string with dongle capabilities */
 	case IOV_GVAL(IOV_DNGL_CAPS):
 	{
-		strncpy(arg, bus->dhd->fw_capabilities,
+		memcpy(arg, bus->dhd->fw_capabilities,
 			MIN(strlen(bus->dhd->fw_capabilities), (size_t)len));
 		((char*)arg)[len - 1] = '\0';
 		break;

@@ -614,7 +614,11 @@ static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
 extern int fb_set_var(struct fb_info *info, struct fb_var_screeninfo *var);
 extern int fb_pan_display(struct fb_info *info, struct fb_var_screeninfo *var);
 extern int fb_blank(struct fb_info *info, int blank);
+#if 0
 extern void cfb_fillrect(struct fb_info *info, const struct fb_fillrect *rect);
+#else
+static inline void cfb_fillrect(struct fb_info *info, const struct fb_fillrect *rect) {}
+#endif
 extern void cfb_copyarea(struct fb_info *info, const struct fb_copyarea *area);
 extern void cfb_imageblit(struct fb_info *info, const struct fb_image *image);
 /*

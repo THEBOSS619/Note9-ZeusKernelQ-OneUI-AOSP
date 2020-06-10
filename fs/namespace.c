@@ -140,10 +140,11 @@ enum {
 	UMOUNT_STATUS_MAX
 };
 
+#if 0
 static const char *umount_exit_str[UMOUNT_STATUS_MAX] = {
 	"ADDED_TASK", "REMAIN_NS", "REMAIN_CNT", "DELAY_TASK"
 };
-
+#endif
 static const char *exception_process[] = {
 	"main", "ch_zygote", "usap32", "usap64", NULL,
 };
@@ -167,20 +168,21 @@ static inline int is_exception(char *comm)
 
 static inline void sys_umount_trace_print(struct mount *mnt, int flags)
 {
-#ifdef CONFIG_RKP_NS_PROT
+#if 0
 	struct super_block *sb = mnt->mnt->mnt_sb;
 	int mnt_flags = mnt->mnt->mnt_flags;
-#else
-	struct super_block *sb = mnt->mnt.mnt_sb;
 	int mnt_flags = mnt->mnt.mnt_flags;
 #endif
+	struct super_block *sb = mnt->mnt.mnt_sb;
+
 	/* We don`t want to see what zygote`s umount */
 	if (((sb->s_magic == SDFAT_SUPER_MAGIC) ||
 		(sb->s_magic == MSDOS_SUPER_MAGIC)) &&
 		((current_uid().val == 0) && !is_exception(current->comm))) {
+#if 0
 		struct block_device *bdev = sb->s_bdev;
 		dev_t bd_dev = bdev ? bdev->bd_dev : 0;
-
+#endif
 		ST_LOG("[SYS](%s[%d:%d]): "
 			"umount(mf:0x%x, f:0x%x, %s)\n",
 			sb->s_id, MAJOR(bd_dev), MINOR(bd_dev), mnt_flags,

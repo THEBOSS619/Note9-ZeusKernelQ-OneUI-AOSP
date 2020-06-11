@@ -951,7 +951,11 @@ static netdev_tx_t eth_start_xmit(struct sk_buff *skb,
 			req->buf = skb->data;
 			req->context = skb;
 		} else { /* rndis case : multipacket not used */
+#ifdef CONFIG_USB_RNDIS_MULTIPACKET_WITH_TIMER
 			req->length = skb->len;
+#else
+			length = skb->len;
+#endif
 			/* copy skb data */
 			memcpy(req->buf, skb->data,
 				skb->len);

@@ -246,7 +246,7 @@ static int displayport_full_link_training(void)
 	}
 
 	displayport_reg_dpcd_read(DPCD_ADD_TRAINING_AUX_RD_INTERVAL, 1, val);
-	training_aux_rd_interval = val[0];
+	training_aux_rd_interval = val[0] & 0x7F;
 
 Reduce_Link_Rate_Retry:
 	displayport_info("Reduce_Link_Rate_Retry(0x%X)\n", link_rate);
@@ -329,9 +329,9 @@ Voltage_Swing_Retry:
 	displayport_reg_dpcd_write_burst(DPCD_ADD_TRANING_LANE0_SET, 4, val);
 
 	if (training_aux_rd_interval != 0)
-		mdelay(training_aux_rd_interval * 4);
+		usleep_range(training_aux_rd_interval * 4000, training_aux_rd_interval * 4000);
 	else
-		udelay(100);
+		usleep_range(100, 101);
 
 	lane_cr_done = 0;
 
@@ -504,9 +504,9 @@ EQ_Training_Retry:
 	interlane_align_done = 0;
 
 	if (training_aux_rd_interval != 0)
-		mdelay(training_aux_rd_interval * 4);
+		usleep_range(training_aux_rd_interval * 4000, training_aux_rd_interval * 4000);
 	else
-		udelay(100);
+		usleep_range(400, 401);
 
 	displayport_reg_dpcd_read_burst(DPCD_ADD_LANE0_1_STATUS, 3, val);
 	lane_cr_done |= ((val[0] & LANE0_CR_DONE) >> 0);

@@ -89,7 +89,6 @@ static void get_timestamp(struct ssp_data *data, char *pchRcvDataFrame,
 {
 	u64 time_delta_ns = 0;
 	u64 update_timestamp = 0;
-	u64 current_timestamp = get_current_timestamp();
 	u32 ts_index = 0;
 	u32 ts_flag = 0;
 
@@ -463,7 +462,6 @@ bool ssp_check_buffer(struct ssp_data *data)
 
 void ssp_batch_resume_check(struct ssp_data *data)
 {
-	u64 acc_offset = 0, uncal_mag_offset = 0, press_offset = 0, grv_offset = 0, proxi_offset = 0;
 	//if suspend -> wakeup case. calc. FIFO last timestamp
 	if (data->bIsResumed) {
 		u8 sensor_type = 0;
@@ -527,7 +525,6 @@ void ssp_batch_report(struct ssp_data *data)
 	struct sensor_value sensor_data;
 	int idx_data = 0;
 	int count = 0;
-	u64 timestamp = get_current_timestamp();
 
 	ssp_dbg("[SSP_BAT] LENGTH = %d, start index = %d ts %lld\n",
 			data->batch_event.batch_length, idx_data, timestamp);

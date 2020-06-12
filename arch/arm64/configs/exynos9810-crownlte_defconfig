@@ -4710,13 +4710,6 @@ CONFIG_SENSORS_FINGERPRINT=y
 CONFIG_SENSORS_ET5XX=y
 
 #
-# MPSD System Intelligence kernel module
-#
-# CONFIG_MPSD is not set
-# CONFIG_MPSD_DEBUG is not set
-# CONFIG_TZIC is not set
-
-#
 # Firmware Drivers
 #
 CONFIG_ARM_PSCI_FW=y

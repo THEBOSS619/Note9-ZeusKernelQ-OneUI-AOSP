@@ -454,7 +454,7 @@ static void __exynos_hpgov_set_enable(void)
 	exynos_hpgov.cur_cpu_min = PM_QOS_CPU_ONLINE_MAX_DEFAULT_VALUE;
 
 	/* create hp task */
-	exynos_hpgov.task = kthread_create(exynos_hpgov_do_update_governor,
+	exynos_hpgov.task = kthread_run_perf_critical(exynos_hpgov_do_update_governor,
 			&exynos_hpgov.data, "exynos_hpgov");
 	if (IS_ERR(exynos_hpgov.task)) {
 		spin_lock(&hpgov_lock);

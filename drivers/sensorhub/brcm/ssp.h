@@ -81,23 +81,14 @@
 /* ssp mcu device ID */
 #define DEVICE_ID			0x55
 
-#define ssp_dbg(format, ...) \
-	pr_info(format, ##__VA_ARGS__)
-#else
 #define ssp_dbg(format, ...)
 #endif
 
 #if SSP_FUNC_DBG
-#define func_dbg() \
-	pr_info("[SSP]: %s\n", __func__)
-#else
 #define func_dbg()
 #endif
 
 #if SSP_DATA_DBG
-#define data_dbg(format, ...) \
-	pr_info(format, ##__VA_ARGS__)
-#else
 #define data_dbg(format, ...)
 #endif
 
@@ -119,11 +110,7 @@
 
 extern bool ssp_debug_time_flag;
 
-#define ssp_debug_time(format, ...) \
-	do { \
-		if (unlikely(ssp_debug_time_flag)) \
-			pr_info(format, ##__VA_ARGS__); \
-	} while (0)
+#define ssp_debug_time(format, ...)
 
 /* SSP Binary Type */
 enum {

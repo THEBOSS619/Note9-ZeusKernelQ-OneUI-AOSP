@@ -3356,7 +3356,7 @@
 
 	jsqz: jsqz@17720000 {
 		compatible = "samsung,exynos-jsqz";
-		//dma-coherent;
+		dma-coherent;
 		reg = <0x0 0x17720000 0x1000>;
 		interrupts = <0 INTREQ__JSQZ 0>;
 		clocks = <&clock GATE_JSQZ>;

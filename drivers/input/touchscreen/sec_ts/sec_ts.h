@@ -988,8 +988,13 @@ extern int get_lcd_attached(char *mode);
 extern int get_lcd_info(char *arg);
 #endif
 
+#if defined(CONFIG_MOTOR_DRV_MAX77705)
+extern int haptic_homekey_press(void);
+extern int haptic_homekey_release(void);
+#else
 #define haptic_homekey_press() {}
 #define haptic_homekey_release() {}
+#endif
 
 extern bool tsp_init_done;
 

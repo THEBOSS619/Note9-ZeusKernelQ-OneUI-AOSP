@@ -323,7 +323,7 @@ int argos_task_affinity_apply(int dev_num, bool enable)
 
 		result = set_cpus_allowed_ptr(this->p, mask);
 
-		pr_info("%s: %s affinity %s to cpu_mask:0x%X\n",
+		pr_debug("%s: %s affinity %s to cpu_mask:0x%X\n",
 			__func__, this->p->comm,
 			(enable ? "enable" : "disable"),
 			(int)*mask->bits);
@@ -369,7 +369,7 @@ int argos_irq_affinity_apply(int dev_num, bool enable)
 
 		result = irq_set_affinity(this->irq, mask);
 
-		pr_info("%s: irq%d affinity %s to cpu_mask:0x%X\n",
+		pr_debug("%s: irq%d affinity %s to cpu_mask:0x%X\n",
 			__func__, this->irq, (enable ? "enable" : "disable"),
 			(int)*mask->bits);
 	}
@@ -487,7 +487,7 @@ static void argos_freq_lock(int type, int level)
 	} else {
 		REMOVE_PM_QOS(&qos->int_qos_req);
 	}
-	pr_info("%s name:%s, CPU_MIN=%d, CPU_MAX=%d , KFC_MIN=%d, KFC_MAX=%d, MIF=%d, INT=%d\n",
+	pr_debug("%s name:%s, CPU_MIN=%d, CPU_MAX=%d , KFC_MIN=%d, KFC_MAX=%d, MIF=%d, INT=%d\n",
 		__func__, cname, cpu_min_freq, cpu_max_freq, kfc_min_freq, kfc_max_freq, mif_freq, int_freq);
 }
 
@@ -594,7 +594,7 @@ static int argos_pm_qos_notify(struct notifier_block *nfb,
 					__func__, cnode->desc, speed, prev_level, level);
 				goto out;
 			}
-			pr_info("%s: name:%s, speed:%ldMbps, prev level:%d, request level:%d\n",
+			pr_debug("%s: name:%s, speed:%ldMbps, prev level:%d, request level:%d\n",
 				__func__, cnode->desc, speed, prev_level, level);
 
 			if (level == -1) {

@@ -3664,7 +3664,7 @@ static int decon_create_update_thread(struct decon_device *decon, char *name)
 		decon_err("failed to run update_regs thread\n");
 		return PTR_ERR(decon->up.thread);
 	}
-	param.sched_priority = 20;
+	param.sched_priority = 4;
 	sched_setscheduler_nocheck(decon->up.thread, SCHED_FIFO, &param);
 	kthread_init_work(&decon->up.work, decon_update_regs_handler);
 

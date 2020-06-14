@@ -209,10 +209,6 @@ else
 fi
 make -j 8
 
-## Cleanup
-
-git reset --hard
-
 ## AIK Preparation
 
 if [ "$2" == "oreo" ] || [ "$2" == "apgk" ]; then
@@ -229,3 +225,7 @@ else
 	echo "This is where we depart. You're on your own for AIK!"
 	exit
 fi
+
+## Cleanup
+
+git reset --hard

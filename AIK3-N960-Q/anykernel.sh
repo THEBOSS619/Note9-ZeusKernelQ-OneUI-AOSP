@@ -77,12 +77,24 @@ ui_print " "
 ui_print "Remounting /vendor";
 mount -o remount,rw /vendor;
 
-if [ ! -e /vendor/etc/fstab.samsungexynos9810~ ]; then
-	ui_print "Backing up vendor fstab";
+ui_print "Remounting /system";
+mount -o remount,rw /system;
+
+
+ui_print "Backup & Copying patched fstab to vendor_overlay";
+if [ -d /system/product/vendor_overlay ]; then
+    if [ ! -e /system/product/vendor_overlay/29/etc/fstab.samsungexynos9810~ ]; then
+	    backup_file /system/product/vendor_overlay/29/etc/fstab.samsungexynos9810;
+    fi;
+    cp -af $home/vendor/etc/fstab.samsungexynos9810 /system/product/vendor_overlay/29/etc/;
+else
+    if [ ! -e /vendor/etc/fstab.samsungexynos9810~ ]; then
 	backup_file /vendor/etc/fstab.samsungexynos9810;
+    fi;
+    cp -af $home/vendor/etc/fstab.samsungexynos9810 /vendor/etc/;
 fi;
 
-ui_print "Copying patched vendor fstab";
+ui_print "Copying patched fstab to vendor";
 cp -f $home/vendor/etc/fstab.samsungexynos9810 /vendor/etc/fstab.samsungexynos9810;
 
 ui_print "Copying vendor script";

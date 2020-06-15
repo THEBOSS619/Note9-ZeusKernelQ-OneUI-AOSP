@@ -2236,13 +2236,14 @@ enum rbin_alloc_policy {
 static void set_rbin_alloc_policy(enum rbin_alloc_policy val)
 {
 	struct zone *zone;
+	gfp_t gfp_mask;
 
 	if (val == RBIN_ALLOW)
 		wake_ion_rbin_heap_shrink();
 	for_each_populated_zone(zone) {
 		atomic_set(&zone->rbin_alloc, val);
 		if (val)
-			wakeup_kswapd(zone, 0, gfp_zone(GFP_KERNEL));
+			wakeup_kswapd(zone, gfp_mask, 0, gfp_zone(GFP_KERNEL));
 	}
 }
 #else

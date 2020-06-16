@@ -74,7 +74,7 @@ static inline void sh_mem_set_iva_clk_rate(struct iva_dev_data *iva, uint32_t cl
 
 extern int	sh_mem_wait_mcu_ready(struct iva_dev_data *iva, uint32_t to_us);
 extern int	sh_mem_wait_stop(struct iva_dev_data *iva, uint32_t to_us);
-extern void	sh_mem_dump_info(struct iva_dev_data *iva);
+static inline void	sh_mem_dump_info(struct iva_dev_data *iva) {}
 extern int	sh_mem_init(struct iva_dev_data *iva);
 extern int	sh_mem_deinit(struct iva_dev_data *iva);
 #endif

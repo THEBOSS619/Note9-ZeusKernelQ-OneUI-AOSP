@@ -87,22 +87,6 @@ int sh_mem_wait_stop(struct iva_dev_data *iva, uint32_t to_us)
 }
 
 
-void sh_mem_dump_info(struct iva_dev_data *iva)
-{
-	struct sh_mem_info	*sh_mem = sh_mem_get_sm_pointer(iva);
-	struct device		*dev = iva->dev;
-
-	dev_info(dev, "===============(sh_mem, %p)=================\n", sh_mem);
-	dev_info(dev, "magic1(0x%08x), size(0x%08x)\n",
-			sh_mem->magic1, sh_mem->shmem_size);
-	dev_info(dev, "build_info(%s)\n", sh_mem->build_info);
-	dev_info(dev, "magic2(0x%08x)\n", sh_mem->magic2);
-	dev_info(dev, "log_pos(%p), log_size(0x%x) head(%d) tail(%d)\n",
-			&sh_mem->log_pos, sh_mem->log_buf_size,
-			sh_mem->log_pos.head, sh_mem->log_pos.tail);
-	dev_info(dev, "---------------------------------------------\n");
-}
-
 int sh_mem_init(struct iva_dev_data *iva)
 {
 	#define WAIT_DELAY_US	(5000)	/* about 5 msec */

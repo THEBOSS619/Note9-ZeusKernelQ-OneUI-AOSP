@@ -4094,7 +4094,6 @@ static struct platform_driver decon_driver __refdata = {
 		.pm	= &decon_pm_ops,
 		.of_match_table = of_match_ptr(decon_of_match),
 		.suppress_bind_attrs = true,
-		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 	}
 };
 

@@ -1061,7 +1061,6 @@ static struct platform_driver exynos_speedy_driver = {
 		.name	= "exynos-speedy",
 		.owner	= THIS_MODULE,
 		.of_match_table = exynos_speedy_match,
-		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 	},
 };
 

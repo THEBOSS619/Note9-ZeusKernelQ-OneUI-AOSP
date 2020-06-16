@@ -1,6 +1,5 @@
 fimc-is-objs	:= fimc-is-core.o \
 		fimc-is-spi.o \
-		fimc-is-debug.o \
 		fimc-is-mem.o \
 		fimc-is-pipe.o \
 		fimc-is-framemgr.o \

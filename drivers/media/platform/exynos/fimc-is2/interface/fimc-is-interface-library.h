@@ -303,7 +303,7 @@ void check_lib_memory_leak(void);
 
 int fimc_is_log_write(const char *str, ...);
 int fimc_is_log_write_console(char *str);
-int fimc_is_lib_logdump(void);
+static inline int fimc_is_lib_logdump(void) { return 0; }
 
 int fimc_is_spin_lock_init(void **slock);
 int fimc_is_spin_lock_finish(void *slock_lib);

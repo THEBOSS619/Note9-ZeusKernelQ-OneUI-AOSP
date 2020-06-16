@@ -3322,74 +3322,7 @@ void fimc_is_interface_reset(struct fimc_is_interface *this)
 
 int fimc_is_hw_logdump(struct fimc_is_interface *this)
 {
-	size_t write_vptr, read_vptr;
-	size_t read_cnt, read_cnt1, read_cnt2;
-	void *read_ptr;
-	struct fimc_is_core *core;
-	struct fimc_is_minfo *minfo;
-
-	FIMC_BUG(!this);
-	FIMC_BUG(!this->core);
-
-	if (!test_bit(IS_IF_STATE_OPEN, &this->state)) {
-		warn("interface is closed");
-		read_cnt = -EINVAL;
-		goto p_err;
-	}
-
-	if (test_and_set_bit(IS_IF_STATE_LOGGING, &this->state)) {
-		warn("already logging");
-		read_cnt = -EINVAL;
-		goto p_err;
-	}
-
-	core = (struct fimc_is_core *)this->core;
-	minfo = &core->resourcemgr.minfo;
-	read_cnt = 0;
-
-	CALL_BUFOP(minfo->pb_fw, sync_for_cpu,
-			minfo->pb_fw, DEBUG_REGION_OFFSET, DEBUG_REGION_SIZE + 4, DMA_FROM_DEVICE);
-
-	write_vptr = *((int *)(minfo->kvaddr + DEBUGCTL_OFFSET)) - DEBUG_REGION_OFFSET;
-	read_vptr = fimc_is_debug.read_vptr;
-
-	if (write_vptr >= read_vptr) {
-		read_cnt1 = write_vptr - read_vptr;
-		read_cnt2 = 0;
-	} else {
-		read_cnt1 = DEBUG_REGION_SIZE - read_vptr;
-		read_cnt2 = write_vptr;
-	}
-
-	read_cnt = read_cnt1 + read_cnt2;
-	info("firmware message start(%zd)\n", read_cnt);
-
-	if (read_cnt1) {
-		read_ptr = (void *)(minfo->kvaddr + DEBUG_REGION_OFFSET + fimc_is_debug.read_vptr);
-
-		fimc_is_print_buffer(read_ptr, read_cnt1);
-		fimc_is_debug.read_vptr += read_cnt1;
-	}
-
-	if (fimc_is_debug.read_vptr >= DEBUG_REGION_SIZE) {
-		if (fimc_is_debug.read_vptr > DEBUG_REGION_SIZE)
-			err("[DBG] read_vptr(%zd) is invalid", fimc_is_debug.read_vptr);
-		fimc_is_debug.read_vptr = 0;
-	}
-
-	if (read_cnt2) {
-		read_ptr = (void *)(minfo->kvaddr + DEBUG_REGION_OFFSET + fimc_is_debug.read_vptr);
-
-		fimc_is_print_buffer(read_ptr, read_cnt2);
-		fimc_is_debug.read_vptr += read_cnt2;
-	}
-
-	info("end\n");
-
-	clear_bit(IS_IF_STATE_LOGGING, &this->state);
-
-p_err:
-	return read_cnt;
+	return 0;
 }
 
 int fimc_is_hw_regdump(struct fimc_is_interface *this)

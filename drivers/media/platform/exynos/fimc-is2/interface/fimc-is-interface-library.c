@@ -697,63 +697,6 @@ void fimc_is_clean_vra(ulong kva, u32 size)
 	return mblk_clean(&lib->mb_vra, kva, size);
 }
 
-/*
- * Assert
- */
-int fimc_is_lib_logdump(void)
-{
-	struct fimc_is_lib_support *lib = &gPtr_lib_support;
-	size_t write_vptr, read_vptr;
-	size_t read_cnt, read_cnt1, read_cnt2;
-	void *read_ptr;
-	ulong debug_kva = lib->minfo->kvaddr_debug;
-	ulong ctrl_kva  = lib->minfo->kvaddr_debug_cnt;
-
-	if (!test_bit(FIMC_IS_DEBUG_OPEN, &fimc_is_debug.state))
-		return 0;
-
-	write_vptr = *((int *)(ctrl_kva));
-	read_vptr = fimc_is_debug.read_vptr;
-
-	if (write_vptr > DEBUG_REGION_SIZE)
-		 write_vptr = (read_vptr + DEBUG_REGION_SIZE) % (DEBUG_REGION_SIZE + 1);
-
-	if (write_vptr >= read_vptr) {
-		read_cnt1 = write_vptr - read_vptr;
-		read_cnt2 = 0;
-	} else {
-		read_cnt1 = DEBUG_REGION_SIZE - read_vptr;
-		read_cnt2 = write_vptr;
-	}
-
-	read_cnt = read_cnt1 + read_cnt2;
-	info_lib("library log start(%zd)\n", read_cnt);
-
-	if (read_cnt1) {
-		read_ptr = (void *)(debug_kva + fimc_is_debug.read_vptr);
-
-		fimc_is_print_buffer(read_ptr, read_cnt1);
-		fimc_is_debug.read_vptr += read_cnt1;
-	}
-
-	if (fimc_is_debug.read_vptr >= DEBUG_REGION_SIZE) {
-		if (fimc_is_debug.read_vptr > DEBUG_REGION_SIZE)
-			err_lib("[DBG] read_vptr(%zd) is invalid", fimc_is_debug.read_vptr);
-		fimc_is_debug.read_vptr = 0;
-	}
-
-	if (read_cnt2) {
-		read_ptr = (void *)(debug_kva + fimc_is_debug.read_vptr);
-
-		fimc_is_print_buffer(read_ptr, read_cnt2);
-		fimc_is_debug.read_vptr += read_cnt2;
-	}
-
-	info_lib("library log end\n");
-
-	return read_cnt;
-}
-
 void fimc_is_assert(void)
 {
 	BUG_ON(1);

@@ -73,21 +73,21 @@ struct fimc_is_debug {
 
 extern struct fimc_is_debug fimc_is_debug;
 
-int fimc_is_debug_probe(void);
-int fimc_is_debug_open(struct fimc_is_minfo *minfo);
-int fimc_is_debug_close(void);
+static inline int fimc_is_debug_probe(void) { return 0; }
+static inline int fimc_is_debug_open(struct fimc_is_minfo *minfo) { return 0; }
+static inline int fimc_is_debug_close(void) { return 0; }
 
-void fimc_is_dmsg_init(void);
-void fimc_is_dmsg_concate(const char *fmt, ...);
-char *fimc_is_dmsg_print(void);
-void fimc_is_print_buffer(char *buffer, size_t len);
-int fimc_is_debug_dma_dump(struct fimc_is_queue *queue, u32 index, u32 vid, u32 type);
+static inline void fimc_is_dmsg_init(void) {}
+static inline void fimc_is_dmsg_concate(const char *fmt, ...) {}
+static inline char *fimc_is_dmsg_print(void) { return 0; }
+static inline void fimc_is_print_buffer(char *buffer, size_t len) {}
+static inline int fimc_is_debug_dma_dump(struct fimc_is_queue *queue, u32 index, u32 vid, u32 type) { return 0; }
 #ifdef DBG_DRAW_DIGIT
-void fimc_is_draw_digit(ulong addr, int width, int height, u32 pixelformat,
-		u32 bitwidth, int row_index, int col_index, u64 digit);
+static inline void fimc_is_draw_digit(ulong addr, int width, int height, u32 pixelformat,
+		u32 bitwidth, int row_index, int col_index, u64 digit) {}
 #endif
 
-int imgdump_request(ulong cookie, ulong kvaddr, size_t size);
+static inline int imgdump_request(ulong cookie, ulong kvaddr, size_t size) { return 0; }
 
 #define FIMC_IS_EVENT_MAX_NUM	SZ_4K
 #define EVENT_STR_MAX		SZ_128
@@ -135,12 +135,12 @@ struct fimc_is_debug_event {
 	atomic_t			overflow_3aa;
 };
 
-#ifdef ENABLE_DBG_EVENT_PRINT
+#if 0
 void fimc_is_debug_event_print(u32 event_type, void (*callfunc)(void *), void *ptrdata, size_t datasize, const char *fmt, ...);
 #else
 #define fimc_is_debug_event_print(...)	do { } while(0)
 #endif
-void fimc_is_debug_event_count(u32 event_type);
-void fimc_is_dbg_print(char *fmt, ...);
-int fimc_is_debug_info_dump(struct seq_file *s, struct fimc_is_debug_event *debug_event);
+static inline void fimc_is_debug_event_count(u32 event_type) {}
+static inline void fimc_is_dbg_print(char *fmt, ...) {}
+static inline int fimc_is_debug_info_dump(struct seq_file *s, struct fimc_is_debug_event *debug_event) { return 0; }
 #endif

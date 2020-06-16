@@ -11,7 +11,6 @@ iva_ctl-objs=\
 	iva_pmu.o\
 	iva_mcu.o\
 	iva_sh_mem.o\
-	iva_ram_dump.o\
 	iva_mbox.o\
 	iva_ipc_queue.o\
 	iva_mem.o\

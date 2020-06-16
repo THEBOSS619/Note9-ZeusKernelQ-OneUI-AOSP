@@ -145,7 +145,6 @@ static LIST_HEAD(drvdata_list);
 #define RXBUSY    (1<<2)
 #define TXBUSY    (1<<3)
 
-#define SPI_DBG_MODE		(0x1 << 0)
 #define SPI_LOOPBACK_MODE	(0x1 << 1)
 
 #define USI_CON				(0xC4)
@@ -177,92 +176,6 @@ struct s3c64xx_spi_port_config {
 	bool	clk_from_cmu;
 };
 
-static ssize_t
-spi_dbg_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	ssize_t ret = 0;
-
-	ret += snprintf(buf + ret, PAGE_SIZE - ret,
-			"SPI Debug Mode Configuration.\n");
-	ret += snprintf(buf + ret, PAGE_SIZE - ret,
-			"0 : Change loopback & DBG mode.\n");
-	ret += snprintf(buf + ret, PAGE_SIZE - ret,
-			"1 : Change DBG mode.\n");
-	ret += snprintf(buf + ret, PAGE_SIZE - ret,
-			"2 : Change Normal mode.\n");
-
-	if (ret < PAGE_SIZE - 1) {
-		ret += snprintf(buf+ret, PAGE_SIZE-ret, "\n");
-	} else {
-		buf[PAGE_SIZE-2] = '\n';
-		buf[PAGE_SIZE-1] = '\0';
-		ret = PAGE_SIZE-1;
-	}
-
-	return ret;
-}
-
-static ssize_t
-spi_dbg_store(struct device *dev, struct device_attribute *attr,
-		const char *buf, size_t count)
-{
-	struct spi_master *master = dev_get_drvdata(dev);
-	struct s3c64xx_spi_driver_data *sdd = spi_master_get_devdata(master);
-	struct s3c64xx_spi_info *sci = sdd->cntrlr_info;
-	struct s3c64xx_spi_info *check_sci;
-	int ret, input_cmd;
-
-	ret = sscanf(buf, "%d", &input_cmd);
-
-	list_for_each_entry(check_sci, &drvdata_list, node) {
-		if (check_sci != sci)
-			continue;
-
-		switch(input_cmd) {
-		case 0:
-			printk(KERN_ERR "Change SPI%d to Loopback(DBG) mode\n",
-						sdd->port_id);
-			sci->dbg_mode = SPI_DBG_MODE | SPI_LOOPBACK_MODE;
-			break;
-		case 1:
-			printk(KERN_ERR "Change SPI%d to DBG mode\n",
-						sdd->port_id);
-			sci->dbg_mode = SPI_DBG_MODE;
-			break;
-		case 2:
-			printk(KERN_ERR "Change SPI%d to normal mode\n",
-						sdd->port_id);
-			sci->dbg_mode = 0;
-			break;
-		default:
-			printk(KERN_ERR "Wrong Command!(0/1/2)\n");
-		}
-	}
-
-	return count;
-}
-
-static DEVICE_ATTR(spi_dbg, 0640, spi_dbg_show, spi_dbg_store);
-
-static void s3c64xx_spi_dump_reg(struct s3c64xx_spi_driver_data *sdd)
-{
-	void __iomem *regs = sdd->regs;
-	struct device *dev = &sdd->pdev->dev;
-
-	dev_err(dev, "Register dump for SPI\n"
-		"	CH_CFG       0x%08x\n"
-		"	MODE_CFG     0x%08x\n"
-		"	CS_REG       0x%08x\n"
-		"	STATUS       0x%08x\n"
-		"	PACKET_CNT   0x%08x\n"
-		, readl(regs + S3C64XX_SPI_CH_CFG)
-		, readl(regs + S3C64XX_SPI_MODE_CFG)
-		, readl(regs + S3C64XX_SPI_SLAVE_SEL)
-		, readl(regs + S3C64XX_SPI_STATUS)
-		, readl(regs + S3C64XX_SPI_PACKET_CNT)
-	);
-
-}
 static void flush_fifo(struct s3c64xx_spi_driver_data *sdd)
 {
 	void __iomem *regs = sdd->regs;
@@ -502,16 +415,6 @@ static void s3c64xx_spi_dma_stop(struct s3c64xx_spi_driver_data *sdd,
 	sdd->ops->stop((unsigned long)dma->ch);
 #else
 	sdd->ops->stop((enum dma_ch)dma->ch);
-#endif
-}
-
-static void s3c64xx_dma_debug(struct s3c64xx_spi_driver_data *sdd,
-				 struct s3c64xx_spi_dma_data *dma)
-{
-#ifdef CONFIG_ARM64
-	sdd->ops->debug((unsigned long)dma->ch);
-#else
-	sdd->ops->debug((enum dma_ch)dma->ch);
 #endif
 }
 
@@ -835,10 +738,6 @@ static void s3c64xx_spi_config(struct s3c64xx_spi_driver_data *sdd)
 		writel(val, regs + S3C64XX_SPI_CLK_CFG);
 	}
 
-	if (sci->dbg_mode & SPI_DBG_MODE) {
-		dev_err(&sdd->pdev->dev, "SPI_MODE_%d", sdd->cur_mode & 0x3);
-		dev_err(&sdd->pdev->dev, "BTS : %d", sdd->cur_bpw);
-	}
 }
 
 #define XFER_DMAADDR_INVALID DMA_BIT_MASK(36)
@@ -1035,17 +934,14 @@ try_transfer:
 			if (use_dma) {
 				if (xfer->tx_buf != NULL
 						&& (sdd->state & TXBUSY)) {
-					s3c64xx_dma_debug(sdd, &sdd->tx_dma);
 					s3c64xx_spi_dma_stop(sdd, &sdd->tx_dma);
 				}
 				if (xfer->rx_buf != NULL
 						&& (sdd->state & RXBUSY)) {
-					s3c64xx_dma_debug(sdd, &sdd->rx_dma);
 					s3c64xx_spi_dma_stop(sdd, &sdd->rx_dma);
 			}
 			}
 
-			s3c64xx_spi_dump_reg(sdd);
 			flush_fifo(sdd);
 
 			goto out;
@@ -1290,13 +1186,6 @@ static int s3c64xx_spi_setup(struct spi_device *spi)
 	pm_runtime_mark_last_busy(&sdd->pdev->dev);
 	pm_runtime_put_autosuspend(&sdd->pdev->dev);
 #endif
-
-	if (sci->dbg_mode & SPI_DBG_MODE) {
-		dev_err(&spi->dev, "SPI feedback-delay : %d\n", cs->fb_delay);
-		dev_err(&spi->dev, "SPI clock : %u(%lu)\n",
-				sdd->cur_speed, clk_get_rate(sdd->src_clk));
-		dev_err(&spi->dev, "SPI %s CS mode", cs->cs_mode ? "AUTO" : "MANUAL");
-	}
 
 	return 0;
 
@@ -1789,9 +1678,6 @@ static int s3c64xx_spi_probe(struct platform_device *pdev)
 					mem_res, (FIFO_LVL_MASK(sdd) >> 1) + 1,
 					sdd->rx_dma.dmach, sdd->tx_dma.dmach);
 
-	ret = device_create_file(&pdev->dev, &dev_attr_spi_dbg);
-	if (ret < 0)
-		dev_err(&pdev->dev, "failed to create sysfs file.\n");
 	sci->dbg_mode = 0;
 
 	return 0;

@@ -137,11 +137,6 @@ static inline int samsung_dmadev_flush(unsigned long ch)
 	return dmaengine_terminate_all((struct dma_chan *)ch);
 }
 
-static inline int samsung_dmadev_debug(unsigned long ch)
-{
-	return pl330_dma_debug((struct dma_chan *)ch);
-}
-
 static struct samsung_dma_ops dmadev_ops = {
 	.request	= samsung_dmadev_request,
 	.release	= samsung_dmadev_release,
@@ -152,7 +147,6 @@ static struct samsung_dma_ops dmadev_ops = {
 	.getposition	= samsung_dmadev_getposition,
 	.flush		= samsung_dmadev_flush,
 	.stop		= samsung_dmadev_flush,
-	.debug		= samsung_dmadev_debug,
 };
 
 void *samsung_dmadev_get_ops(void)

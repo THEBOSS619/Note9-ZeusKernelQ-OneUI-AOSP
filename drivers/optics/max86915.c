@@ -191,14 +191,13 @@
 
 #include "max86915.h"
 
-static int hrm_debug = 0;
-static int hrm_info = 0;
+static int hrm_debug = 1;
+static int hrm_info;
 
-module_param(hrm_debug, int, S_IRUGO | S_IWUSR);
 module_param(hrm_info, int, S_IRUGO | S_IWUSR);
 
 static struct max86915_device_data *max86915_data;
-static u8 agc_debug_enabled = 0;
+static u8 agc_debug_enabled = 1;
 static u8 fifo_full_cnt = DEFAULT_FIFO_CNT;
 
 /* #define DEBUG_HRMSENSOR */
@@ -327,24 +326,6 @@ static int max86915_read_reg(struct max86915_device_data *device,
 		err = 0;
 
 	return err;
-}
-
-static int max86915_print_reg_status(void)
-{
-	int reg, err;
-	u8 recvData;
-
-	for (reg = 0; reg < 0x55; reg++) {
-		err = max86915_read_reg(max86915_data, reg, &recvData, 1);
-		if (err != 0) {
-			HRM_err("%s - error reading 0x%02x err:%d\n",
-				__func__, reg, err);
-		} else {
-			HRM_dbg("%s - 0x%02x = 0x%02x\n",
-				__func__, reg, recvData);
-		}
-	}
-	return 0;
 }
 
 static int max86915_set_sampling_rate(u32 sampling_period_ns)
@@ -4982,51 +4963,6 @@ static ssize_t max86915_write_reg_store(struct device *dev,
 	return size;
 }
 
-static ssize_t max86915_debug_show(struct device *dev,
-	struct device_attribute *attr, char *buf)
-{
-	struct max86915_device_data *data = dev_get_drvdata(dev);
-
-	HRM_info("%s - debug mode = %u\n", __func__, data->debug_mode);
-
-	return snprintf(buf, PAGE_SIZE, "%u\n", data->debug_mode);
-}
-
-static ssize_t max86915_debug_store(struct device *dev,
-	struct device_attribute *attr, const char *buf, size_t size)
-{
-	struct max86915_device_data *data = dev_get_drvdata(dev);
-	int err;
-	s32 mode;
-
-	mutex_lock(&data->activelock);
-	err = kstrtoint(buf, 10, &mode);
-	if (err < 0) {
-		HRM_err("%s - kstrtoint failed.(%d)\n", __func__, err);
-		mutex_unlock(&data->activelock);
-		return err;
-	}
-	data->debug_mode = (u8)mode;
-	HRM_info("%s - mode = %d\n", __func__, mode);
-
-	switch (data->debug_mode) {
-	case DEBUG_REG_STATUS:
-		max86915_print_reg_status();
-		break;
-	case DEBUG_ENABLE_AGC:
-		agc_debug_enabled = 1;
-		break;
-	case DEBUG_DISABLE_AGC:
-		agc_debug_enabled = 0;
-		break;
-	default:
-		break;
-	}
-	mutex_unlock(&data->activelock);
-
-	return size;
-}
-
 static ssize_t max86915_device_id_show(struct device *dev,
 struct device_attribute *attr, char *buf)
 {
@@ -5277,8 +5213,6 @@ static DEVICE_ATTR(pre_eol_test, S_IRUGO | S_IWUSR | S_IWGRP,
 static DEVICE_ATTR(read_reg, S_IRUGO | S_IWUSR | S_IWGRP,
 	max86915_read_reg_show, max86915_read_reg_store);
 static DEVICE_ATTR(write_reg, S_IWUSR | S_IWGRP, NULL, max86915_write_reg_store);
-static DEVICE_ATTR(hrm_debug, S_IRUGO | S_IWUSR | S_IWGRP,
-	max86915_debug_show, max86915_debug_store);
 static DEVICE_ATTR(device_id, S_IRUGO, max86915_device_id_show, NULL);
 static DEVICE_ATTR(part_type, S_IRUGO, max86915_part_type_show, NULL);
 static DEVICE_ATTR(i2c_err_cnt, S_IRUGO | S_IWUSR | S_IWGRP, max86915_i2c_err_show, max86915_i2c_err_store);
@@ -5311,7 +5245,6 @@ static struct device_attribute *max86915_sensor_attrs[] = {
 	&dev_attr_i2c_err_cnt,
 	&dev_attr_curr_adc,
 	&dev_attr_mode_cnt,
-	&dev_attr_hrm_debug,
 	&dev_attr_hrm_factory_cmd,
 	&dev_attr_hrm_version,
 	&dev_attr_sensor_info,

@@ -3582,7 +3582,6 @@ out:
 #if defined(SEC_UFS_ERROR_COUNT)
 		SEC_ufs_operation_check(hba, cmd->command);
 #endif
-		ufshcd_vops_dbg_register_dump(hba);
 	}
 
 	spin_lock_irqsave(hba->host->host_lock, flags);
@@ -5346,9 +5345,6 @@ static void ufshcd_err_handler(struct work_struct *work)
 	pm_runtime_get_sync(hba->dev);
 	ufshcd_hold(hba, false);
 
-	/* Dump debugging information to system memory */
-	ufshcd_vops_dbg_register_dump(hba);
-
 	spin_lock_irqsave(hba->host->host_lock, flags);
 	if (hba->ufshcd_state == UFSHCD_STATE_RESET)
 		goto out;
@@ -5800,9 +5796,6 @@ static int ufshcd_eh_device_reset_handler(struct scsi_cmnd *cmd)
 	/* secure log */
 	exynos_smc(SMC_CMD_UFS_LOG, 1, 0, hba->secure_log.paddr);
 
-	/* Dump debugging information to system memory */
-	ufshcd_vops_dbg_register_dump(hba);
-
 	lrbp = &hba->lrb[tag];
 	err = ufshcd_issue_tm_cmd(hba, lrbp->lun, 0, UFS_LOGICAL_RESET, &resp);
 	if (err || resp != UPIU_TASK_MANAGEMENT_FUNC_COMPL) {
@@ -5890,9 +5883,6 @@ static int ufshcd_abort(struct scsi_cmnd *cmd)
 #endif
 
 	ufshcd_hold(hba, false);
-
-	/* Dump debugging information to system memory */
-	ufshcd_vops_dbg_register_dump(hba);
 
 	/* check smu abort */
 	err = ufshcd_vops_access_control_abort(hba);
@@ -8275,12 +8265,6 @@ EXPORT_SYMBOL(ufshcd_runtime_idle);
  */
 int ufshcd_shutdown(struct ufs_hba *hba)
 {
-	struct SEC_UFS_counting *err_info = &(hba->SEC_err_info);
-	struct SEC_UFS_op_count *op_cnt = &(err_info->op_count);
-	struct SEC_UFS_UIC_err_count *uic_err_cnt = &(err_info->UIC_err_count);
-	struct SEC_UFS_UTP_count *utp_err = &(err_info->UTP_count);
-	struct SEC_UFS_QUERY_count *query_cnt = &(err_info->query_count);
-
 	int ret = 0;
 
 	if (!hba->is_powered)
@@ -8300,12 +8284,6 @@ out:
 	if (ret)
 		dev_err(hba->dev, "%s failed, err %d\n", __func__, ret);
 	/* allow force shutdown even in case of errors */
-
-	dev_err(hba->dev, "Count: %d UIC: %d  UTP:%d QUERY: %d\n",
-		op_cnt->HW_RESET_count,
-		uic_err_cnt->UIC_err,
-		utp_err->UTP_err,
-		query_cnt->Query_err);
 
 	dev_err(hba->dev, "Sense Key: medium: %d, hw: %d\n",
 		hba->host->medium_err_cnt, hba->host->hw_err_cnt);
@@ -8809,63 +8787,6 @@ static struct devfreq_dev_profile ufs_devfreq_profile = {
 #endif
 
 /**
- * ufs_sec_send_errinfo - Send UFS Error Information to AP
- * Format : U0H0L0X0Q0R0W0F0
- * U : UTP cmd ERRor count
- * H : HWRESET count
- * L : Link startup failure count
- * X : Link Lost Error count
- * Q : UTMR QUERY_TASK error count
- * R : READ error count
- * W : WRITE error count
- * F : Device Fatal Error count
- **/
-static void ufs_sec_send_errinfo(void *data)
-{
-	static struct ufs_hba *hba;
-	struct SEC_UFS_counting *err_info;
-	char buf[22];
-
-	if (data) {
-		hba = (struct ufs_hba *)data;
-		return;
-	}
-	if (!hba) {
-		pr_err("%s: hba is not initialized\n", __func__);
-		return;
-	}
-	if (&(hba->SEC_err_info)) {
-		err_info = &(hba->SEC_err_info);
-		sprintf(buf, "U%dH%dL%dX%dQ%dR%dW%dF%dSM%dSH%d",
-				(err_info->UTP_count.UTP_err > 9)	/* UTP Error */
-				? 9 : err_info->UTP_count.UTP_err,
-				(err_info->op_count.HW_RESET_count > 9)	/* HW Reset */
-				? 9 : err_info->op_count.HW_RESET_count,
-				(err_info->op_count.link_startup_count > 9)	/* Link Startup Fail */
-				? 9 : err_info->op_count.link_startup_count,
-				(err_info->Fatal_err_count.LLE > 9)			/* Link Lost */
-				? 9 : err_info->Fatal_err_count.LLE,
-				(err_info->UTP_count.UTMR_query_task_count > 9)	/* Query task */
-				? 9 : err_info->UTP_count.UTMR_query_task_count,
-				(err_info->UTP_count.UTR_read_err > 9)			/* UTRR */
-				? 9 : err_info->UTP_count.UTR_read_err,
-				(err_info->UTP_count.UTR_write_err > 9)		/* UTRW */
-				? 9 : err_info->UTP_count.UTR_write_err,
-				(err_info->Fatal_err_count.DFE > 9)				/* Device Fatal Error */
-				? 9 : err_info->Fatal_err_count.DFE,
-				(hba->host->medium_err_cnt > 9)			/* Device Medium error */
-				? 9 : hba->host->medium_err_cnt,
-				(hba->host->hw_err_cnt > 9)			/* Device HW error */
-				? 9 : hba->host->hw_err_cnt);
-		pr_err("%s: Send UFS information to AP : %s\n", __func__, buf);
-#ifdef CONFIG_SEC_DEBUG_EXTRA_INFO
-		sec_debug_set_extra_info_ufs_error(buf);
-#endif
-	}
-	return;
-}
-
-/**
  * ufshcd_init - Driver initialization routine
  * @hba: per-adapter instance
  * @mmio_base: base register address
@@ -9006,10 +8927,6 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)
 #if defined(CONFIG_SCSI_UFS_TEST_MODE)
 		dev_info(hba->dev, "UFS test mode enabled\n");
 #endif
-
-	/* init ufs_sec_debug function */
-	ufs_sec_send_errinfo(hba);
-	ufs_debug_func = ufs_sec_send_errinfo;
 
 	/* Hold auto suspend until async scan completes */
 	pm_runtime_get_sync(dev);

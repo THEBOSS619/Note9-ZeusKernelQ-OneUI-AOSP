@@ -173,34 +173,6 @@ static struct notifier_block exynos_s3c24xx_panic_block = {
 	.notifier_call = exynos_s3c24xx_panic_handler,
 };
 
-static void uart_sfr_dump(struct s3c24xx_uart_port *ourport)
-{
-	struct uart_port *port = &ourport->port;
-
-	dev_err(ourport->port.dev, " Register dump\n"
-		"ULCON	0x%08x	"
-		"UCON	0x%08x	"
-		"UFCON	0x%08x	\n"
-		"UMCON	0x%08x	"
-		"UTRSTAT	0x%08x	"
-		"UERSTAT	0x%08x	"
-		"UMSTAT	0x%08x	\n"
-		"UBRDIV	0x%08x	"
-		"UINTP	0x%08x	"
-		"UINTM	0x%08x	\n"
-		, readl(port->membase + S3C2410_ULCON)
-		, readl(port->membase + S3C2410_UCON)
-		, readl(port->membase + S3C2410_UFCON)
-		, readl(port->membase + S3C2410_UMCON)
-		, readl(port->membase + S3C2410_UTRSTAT)
-		, readl(port->membase + S3C2410_UERSTAT)
-		, readl(port->membase + S3C2410_UMSTAT)
-		, readl(port->membase + S3C2410_UBRDIV)
-		, readl(port->membase + S3C64XX_UINTP)
-		, readl(port->membase + S3C64XX_UINTM)
-	);
-}
-
 static void change_uart_gpio(int value, struct s3c24xx_uart_port *ourport)
 {
 	int status = 0;
@@ -261,70 +233,6 @@ static void print_uart_mode(struct uart_port *port,
 
 	printk(KERN_ERR " - Baudrate : %u\n", baud);
 }
-
-static ssize_t
-uart_dbg_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	ssize_t ret = 0;
-
-	ret += snprintf(buf + ret, PAGE_SIZE - ret,
-			"UART Debug Mode Configuration.\n");
-	ret += snprintf(buf + ret, PAGE_SIZE - ret,
-			"0 : Change loopback & DBG mode.\n");
-	ret += snprintf(buf + ret, PAGE_SIZE - ret,
-			"1 : Change DBG mode.\n");
-	ret += snprintf(buf + ret, PAGE_SIZE - ret,
-			"2 : Change Normal mode.\n");
-
-	if (ret < PAGE_SIZE - 1) {
-		ret += snprintf(buf+ret, PAGE_SIZE-ret, "\n");
-	} else {
-		buf[PAGE_SIZE-2] = '\n';
-		buf[PAGE_SIZE-1] = '\0';
-		ret = PAGE_SIZE-1;
-	}
-
-	return ret;
-}
-
-static ssize_t
-uart_dbg_store(struct device *dev, struct device_attribute *attr,
-		const char *buf, size_t count)
-{
-	int input_cmd = 0, ret;
-	struct s3c24xx_uart_port *ourport;
-
-	ret = sscanf(buf, "%d", &input_cmd);
-
-	list_for_each_entry(ourport, &drvdata_list, node) {
-		if (&ourport->pdev->dev != dev)
-			continue;
-
-		switch (input_cmd) {
-		case 0:
-			printk(KERN_ERR "Change UART%d to Loopback(DBG) mode\n",
-						ourport->port.line);
-			ourport->dbg_mode = UART_DBG_MODE | UART_LOOPBACK_MODE;
-			break;
-		case 1:
-			printk(KERN_ERR "Change UART%d to DBG mode\n",
-						ourport->port.line);
-			ourport->dbg_mode = UART_DBG_MODE;
-			break;
-		case 2:
-			printk(KERN_ERR "Change UART%d to normal mode\n",
-						ourport->port.line);
-			ourport->dbg_mode = 0;
-			break;
-		default:
-			printk(KERN_ERR "Wrong Command!(0/1/2)\n");
-		}
-	}
-
-	return count;
-}
-
-static DEVICE_ATTR(uart_dbg, 0640, uart_dbg_show, uart_dbg_store);
 
 static ssize_t
 uart_error_cnt_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -643,8 +551,6 @@ s3c24xx_serial_rx_chars(int irq, void *dev_id)
 		if (unlikely(uerstat & S3C2410_UERSTAT_ANY)) {
 			dbg("rxerr: port ch=0x%02x, rxs=0x%08x\n",
 			    ch, uerstat);
-
-			uart_sfr_dump(ourport);
 
 			/* check for break */
 			if (uerstat & S3C2410_UERSTAT_BREAK) {
@@ -2284,10 +2190,6 @@ static int s3c24xx_serial_probe(struct platform_device *pdev)
 #endif
 
 	list_add_tail(&ourport->node, &drvdata_list);
-
-	ret = device_create_file(&pdev->dev, &dev_attr_uart_dbg);
-	if (ret < 0)
-		dev_err(&pdev->dev, "failed to create sysfs file.\n");
 
 	ret = device_create_file(&pdev->dev, &dev_attr_error_cnt);
 	if (ret < 0)

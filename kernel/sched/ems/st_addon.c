@@ -77,11 +77,10 @@ static int select_idle_cpu(struct task_struct *p)
 	char state[30] = "prev_cpu";
 
 	for_each_cpu(cpu, cpu_active_mask) {
-		int iter_cpu = schedtune_task_boost(p) ? NR_CPUS - 1 - cpu : cpu;
-		if (iter_cpu != cpumask_first(cpu_coregroup_mask(iter_cpu)))
+		if (cpu != cpumask_first(cpu_coregroup_mask(cpu)))
 			continue;
 
-		for_each_cpu_and(i, &p->cpus_allowed, cpu_coregroup_mask(iter_cpu)) {
+		for_each_cpu_and(i, &p->cpus_allowed, cpu_coregroup_mask(cpu)) {
 			unsigned long capacity_orig = capacity_orig_of(i);
 			unsigned long new_util;
 

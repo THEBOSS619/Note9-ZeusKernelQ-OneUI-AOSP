@@ -10,7 +10,6 @@
 
 #include "../sched.h"
 #include "ems.h"
-#include "../tune.h"
 
 /*
  * The compute capacity, power consumption at this compute capacity and
@@ -248,13 +247,12 @@ static int select_eco_cpu(struct eco_env *eenv)
 
 	for_each_cpu(cpu, cpu_active_mask) {
 		struct cpumask mask;
-		int energy_cpu, iter_cpu;
+		int energy_cpu;
 
-		iter_cpu = schedtune_task_boost(eenv->p) ? NR_CPUS - 1 - cpu : cpu;
-		if (iter_cpu != cpumask_first(cpu_coregroup_mask(iter_cpu)))
+		if (cpu != cpumask_first(cpu_coregroup_mask(cpu)))
 			continue;
 
-		cpumask_and(&mask, cpu_coregroup_mask(iter_cpu), &eenv->p->cpus_allowed);
+		cpumask_and(&mask, cpu_coregroup_mask(cpu), &eenv->p->cpus_allowed);
 		/*
 		 * Checking prev cpu is meaningless, because the energy of prev cpu
 		 * will be compared to best cpu at last

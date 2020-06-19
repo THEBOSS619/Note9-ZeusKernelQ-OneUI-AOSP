@@ -640,9 +640,10 @@ int ontime_can_migration(struct task_struct *p, int dst_cpu)
 
 	/*
 	 * At this point, load balancer is trying to migrate task to smaller CPU.
+	 * Only do that when the CPU's runqueue is overloaded
 	 */
 	runnable = ml_task_runnable(p);
-	if (runnable < get_lower_boundary(src_cpu, p)) {
+	if (cpu_rq(src_cpu)->nr_running > 1 && runnable < get_lower_boundary(src_cpu, p)) {
 		trace_ems_ontime_check_migrate(p, dst_cpu, true, "light task");
 		return true;
 	}

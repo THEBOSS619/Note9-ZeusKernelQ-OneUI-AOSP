@@ -936,7 +936,7 @@ static void __tick_nohz_idle_enter(struct tick_sched *ts)
 		ts->idle_calls++;
 
 		expires = tick_nohz_stop_sched_tick(ts, now, cpu);
-		if (expires.tv64 > 0LL) {
+		if (expires > 0LL) {
 			ts->idle_sleeps++;
 			ts->idle_expires = expires;
 		}

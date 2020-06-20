@@ -1834,11 +1834,11 @@ static int shmem_enable_rx_int(struct link_device *ld)
 {
 	struct mem_link_device *mld = to_mem_link_device(ld);
 	mld->rx_int_enable = 1;
-	if (rx_int_disable_time.tv64) {
+	if (rx_int_disable_time) {
 		rx_int_enable_time = ktime_get();
 		mld->rx_int_disabled_time += ktime_to_us(ktime_sub(rx_int_enable_time, rx_int_disable_time));
-		rx_int_enable_time.tv64 = 0;
-		rx_int_disable_time.tv64 = 0;
+		rx_int_enable_time = 0;
+		rx_int_disable_time = 0;
 	}
 	return mbox_enable_irq(MCU_CP, mld->irq_cp2ap_msg);
 }

@@ -34,7 +34,7 @@ static int cpu_pm_notify(enum cpu_pm_event event, int nr_to_call, int *nr_calls)
 	 * RCU know this.
 	 */
 	rcu_irq_enter_irqson();
-	ret = __atomic_notifier_call_chain(&cpu_pm_notifier_chain, event, data,
+	ret = __atomic_notifier_call_chain(&cpu_pm_notifier_chain, event, NULL,
 		nr_to_call, nr_calls);
 	rcu_irq_exit_irqson();
 
@@ -106,13 +106,7 @@ EXPORT_SYMBOL_GPL(cpu_pm_enter);
 
 int cpu_pm_enter_pre(void)
 {
-	int ret = 0;
-
-	read_lock(&cpu_pm_notifier_lock);
-	ret = cpu_pm_notify(CPU_PM_ENTER_PREPARE, -1, NULL);
-	read_unlock(&cpu_pm_notifier_lock);
-
-	return ret;
+	return cpu_pm_notify(CPU_PM_ENTER_PREPARE, -1, NULL);
 }
 EXPORT_SYMBOL_GPL(cpu_pm_enter_pre);
 
@@ -136,13 +130,7 @@ EXPORT_SYMBOL_GPL(cpu_pm_exit);
 
 int cpu_pm_exit_post(void)
 {
-	int ret;
-
-	read_lock(&cpu_pm_notifier_lock);
-	ret = cpu_pm_notify(CPU_PM_EXIT_POST, -1, NULL);
-	read_unlock(&cpu_pm_notifier_lock);
-
-	return ret;
+	return cpu_pm_notify(CPU_PM_EXIT_POST, -1, NULL);
 }
 EXPORT_SYMBOL_GPL(cpu_pm_exit_post);
 

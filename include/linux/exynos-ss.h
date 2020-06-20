@@ -263,8 +263,8 @@ static inline unsigned long exynos_ss_get_spare_paddr(unsigned int offset)
 }
 #endif /* CONFIG_EXYNOS_SNAPSHOT */
 
-static inline void exynos_ss_bug_func(void) {BUG();}
-static inline void exynos_ss_spin_func(void) {do {wfi();} while(1);}
+static inline void exynos_ss_bug_func(void) {}
+static inline void exynos_ss_spin_func(void) {}
 #define exynos_ss_uart(a,b,c)		do { } while(0)
 
 /**

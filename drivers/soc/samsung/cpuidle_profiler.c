@@ -338,7 +338,7 @@ static void show_result(void)
  ************************************************************************/
 static void clear_time(ktime_t *time)
 {
-	time->tv64 = 0;
+	time = 0;
 }
 
 static void clear_profile_info(struct cpuidle_profile_info *info)

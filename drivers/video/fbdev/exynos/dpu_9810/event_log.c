@@ -31,7 +31,7 @@ static inline void dpu_event_log_decon
 
 	log = &decon->d.event_log[idx];
 
-	if (time.tv64)
+	if (time)
 		log->time = time;
 	else
 		log->time = ktime_get();
@@ -84,7 +84,7 @@ static inline void dpu_event_log_dsim
 
 	log = &decon->d.event_log[idx];
 
-	if (time.tv64)
+	if (time)
 		log->time = time;
 	else
 		log->time = ktime_get();
@@ -139,7 +139,7 @@ static inline void dpu_event_log_dpp
 
 	log = &decon->d.event_log[idx];
 
-	if (time.tv64)
+	if (time)
 		log->time = time;
 	else
 		log->time = ktime_get();

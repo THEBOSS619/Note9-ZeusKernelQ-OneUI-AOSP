@@ -332,6 +332,7 @@ struct exynos_eint_gpio_save {
 	u32 eint_con;
 	u32 eint_fltcon0;
 	u32 eint_fltcon1;
+	u32 eint_mask;
 };
 
 static void exynos_eint_flt_config(int en, int sel, int width,
@@ -709,12 +710,15 @@ static void exynos_pinctrl_suspend_bank(
 
 	save->eint_fltcon0 = readl(regs + EXYNOS_GPIO_EFLTCON_OFFSET
 						+ bank->fltcon_offset);
+	save->eint_mask = readl(regs + bank->irq_chip->eint_mask
+						+ bank->eint_offset);
 	if (bank->nr_pins > 4)
 		save->eint_fltcon1 = readl(regs + EXYNOS_GPIO_EFLTCON_OFFSET
 							+ bank->fltcon_offset + 4);
 
 	pr_debug("%s: save     con %#010x\n", bank->name, save->eint_con);
 	pr_debug("%s: save fltcon0 %#010x\n", bank->name, save->eint_fltcon0);
+	pr_debug("%s: save    mask %#010x\n", bank->name, save->eint_mask);
 	if (bank->nr_pins > 4)
 		pr_debug("%s: save fltcon1 %#010x\n", bank->name, save->eint_fltcon1);
 }
@@ -749,6 +753,9 @@ static void exynos_pinctrl_resume_bank(
 	pr_debug("%s: fltcon0 %#010x => %#010x\n", bank->name,
 			readl(regs + EXYNOS_GPIO_EFLTCON_OFFSET
 			+ bank->fltcon_offset), save->eint_fltcon0);
+	pr_debug("%s:    mask %#010x => %#010x\n", bank->name,
+			readl(regs + bank->irq_chip->eint_mask
+			+ bank->eint_offset), save->eint_mask);
 	if (bank->nr_pins > 4) {
 		pr_debug("%s: fltcon1 %#010x => %#010x\n", bank->name,
 				readl(regs + EXYNOS_GPIO_EFLTCON_OFFSET
@@ -759,6 +766,8 @@ static void exynos_pinctrl_resume_bank(
 						+ bank->eint_offset);
 	writel(save->eint_fltcon0, regs + EXYNOS_GPIO_EFLTCON_OFFSET
 							+ bank->fltcon_offset);
+	writel(save->eint_mask, regs + bank->irq_chip->eint_mask
+						+ bank->eint_offset);
 	if (bank->nr_pins > 4) {
 		writel(save->eint_fltcon1, regs + EXYNOS_GPIO_EFLTCON_OFFSET
 							+ bank->fltcon_offset + 4);

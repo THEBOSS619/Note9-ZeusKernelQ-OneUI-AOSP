@@ -3815,7 +3815,7 @@ static inline int rt_effective_prio(struct task_struct *p, int prio)
 void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task)
 {
 	int prio, oldprio, queued, running, queue_flag =
-		DEQUEUE_SAVE | DEQUEUE_MOVE | DEQUEUE_NOCLOCK;
+		DEQUEUE_SAVE | DEQUEUE_MOVE;
 	const struct sched_class *prev_class;
 	struct rq_flags rf;
 	struct rq *rq;
@@ -7896,7 +7896,6 @@ void __init sched_init_smp(void)
 	if (set_cpus_allowed_ptr(current, non_isolated_cpus) < 0)
 		BUG();
 	sched_init_granularity();
-	sched_clock_init_late();
 	free_cpumask_var(non_isolated_cpus);
 
 	init_sched_rt_class();
@@ -7915,7 +7914,6 @@ early_initcall(migration_init);
 void __init sched_init_smp(void)
 {
 	sched_init_granularity();
-	sched_clock_init_late();
 }
 #endif /* CONFIG_SMP */
 

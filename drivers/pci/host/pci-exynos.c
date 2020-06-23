@@ -263,70 +263,6 @@ static int sec_argos_l1ss_notifier(struct notifier_block *notifier,
 
 	return NOTIFY_OK;
 }
-void exynos_pcie_register_dump(int ch_num)
-{
-	struct pcie_port *pp = &g_pcie[ch_num].pp;
-	struct exynos_pcie *exynos_pcie = to_exynos_pcie(pp);
-	u32 i, j, val;
-
-	/* Link Reg : 0x0 ~ 0x2C4 */
-	pr_err("Print ELBI region...\n");
-	for (i = 0; i < 45; i++) {
-		for (j = 0; j < 4; j++) {
-			if (((i * 0x10) + (j * 4)) < 0x2C4) {
-				pr_err("ELBI 0x%04x : 0x%08x\n",
-					(i * 0x10) + (j * 4),
-					readl(exynos_pcie->elbi_base
-						+ (i * 0x10) + (j * 4)));
-			}
-		}
-	}
-	pr_err("\n");
-
-	/* PHY Reg : 0x0 ~ 0x180 */
-	pr_err("Print PHY region...\n");
-	for (i = 0; i < 0x200; i += 4) {
-		pr_err("PHY PMA 0x%04x : 0x%08x\n",
-				i, readl(exynos_pcie->phy_base + i));
-
-	}
-	pr_err("\n");
-
-	/* PHY PCS : 0x0 ~ 0x200 */
-	pr_err("Print PHY PCS region...\n");
-	for (i = 0; i < 0x200; i += 4) {
-		pr_err("PHY PCS 0x%04x : 0x%08x\n",
-				i, readl(exynos_pcie->phy_pcs_base + i));
-
-	}
-	pr_err("\n");
-
-	/* RC Conf : 0x0 ~ 0x40 */
-	pr_err("Print DBI region...\n");
-	for (i = 0; i < 4; i++) {
-		for (j = 0; j < 4; j++) {
-			if (((i * 0x10) + (j * 4)) < 0x40) {
-				exynos_pcie_rd_own_conf(pp,
-						(i * 0x10) + (j * 4), 4, &val);
-				pr_err("DBI 0x%04x : 0x%08x\n",
-						(i * 0x10) + (j * 4), val);
-			}
-		}
-	}
-	pr_err("\n");
-
-	exynos_pcie_rd_own_conf(pp, 0x78, 4, &val);
-	pr_err("RC Conf 0x0078(Device Status Register): 0x%08x\n", val);
-	exynos_pcie_rd_own_conf(pp, 0x80, 4, &val);
-	pr_err("RC Conf 0x0080(Link Status Register): 0x%08x\n", val);
-	exynos_pcie_rd_own_conf(pp, 0x104, 4, &val);
-	pr_err("RC Conf 0x0104(AER Registers): 0x%08x\n", val);
-	exynos_pcie_rd_own_conf(pp, 0x110, 4, &val);
-	pr_err("RC Conf 0x0110(AER Registers): 0x%08x\n", val);
-	exynos_pcie_rd_own_conf(pp, 0x130, 4, &val);
-	pr_err("RC Conf 0x0130(AER Registers): 0x%08x\n", val);
-}
-EXPORT_SYMBOL(exynos_pcie_register_dump);
 
 static int l1ss_test_thread(void *arg)
 {
@@ -821,30 +757,6 @@ static void __maybe_unused exynos_pcie_notify_callback(struct pcie_port *pp,
 	}
 }
 
-int exynos_pcie_dump_link_down_status(int ch_num)
-{
-	struct pcie_port *pp = &g_pcie[ch_num].pp;
-	struct exynos_pcie *exynos_pcie = to_exynos_pcie(pp);
-
-	if (exynos_pcie->state == STATE_LINK_UP) {
-		dev_info(pp->dev, "LTSSM: 0x%08x\n",
-			readl(exynos_pcie->elbi_base + PCIE_ELBI_RDLH_LINKUP));
-		dev_info(pp->dev, "LTSSM_H: 0x%08x\n",
-			readl(exynos_pcie->elbi_base + PCIE_CXPL_DEBUG_INFO_H));
-		dev_info(pp->dev, "DMA_MONITOR1: 0x%08x\n",
-			readl(exynos_pcie->elbi_base + PCIE_DMA_MONITOR1));
-		dev_info(pp->dev, "DMA_MONITOR2: 0x%08x\n",
-			readl(exynos_pcie->elbi_base + PCIE_DMA_MONITOR2));
-		dev_info(pp->dev, "DMA_MONITOR3: 0x%08x\n",
-			readl(exynos_pcie->elbi_base + PCIE_DMA_MONITOR3));
-	} else
-		dev_info(pp->dev, "PCIE link state is %d\n",
-				exynos_pcie->state);
-
-	return 0;
-}
-EXPORT_SYMBOL(exynos_pcie_dump_link_down_status);
-
 #ifdef USE_PANIC_NOTIFIER
 static int exynos_pcie_dma_mon_event(struct notifier_block *nb,
 				unsigned long event, void *data)
@@ -936,22 +848,6 @@ static int exynos_pcie_phy_clock_enable(struct pcie_port *pp, int enable)
 	}
 
 	return ret;
-}
-void exynos_pcie_print_link_history(struct pcie_port *pp)
-{
-	struct device *dev = pp->dev;
-	struct exynos_pcie *exynos_pcie = to_exynos_pcie(pp);
-	u32 history_buffer[32];
-	int i;
-
-	for (i = 31; i >= 0; i--)
-		history_buffer[i] = exynos_elb_readl(exynos_pcie,
-				PCIE_HISTORY_REG(i));
-	for (i = 31; i >= 0; i--)
-		dev_info(dev, "LTSSM: 0x%02x, L1sub: 0x%x, D state: 0x%x\n",
-				LTSSM_STATE(history_buffer[i]),
-				L1SUB_STATE(history_buffer[i]),
-				PM_DSTATE(history_buffer[i]));
 }
 
 static void exynos_pcie_setup_rc(struct pcie_port *pp)
@@ -1190,7 +1086,6 @@ retry:
 			exynos_pcie_phy_clock_enable(pp, PCIE_DISABLE_CLOCK);
 			goto retry;
 		} else {
-			exynos_pcie_print_link_history(pp);
 #ifdef CONFIG_SEC_PANIC_PCIE_ERR
 			panic("[PCIe PANIC Case#1] PCIe Link up fail!\n");
 #endif			
@@ -1234,10 +1129,6 @@ void exynos_pcie_dislink_work(struct work_struct *work)
 
 	if (exynos_pcie->state == STATE_LINK_DOWN)
 		return;
-
-	exynos_pcie_print_link_history(pp);
-	exynos_pcie_dump_link_down_status(exynos_pcie->ch_num);
-	exynos_pcie_register_dump(exynos_pcie->ch_num);
 
 	exynos_pcie->linkdown_cnt++;
 	dev_info(dev, "link down and recovery cnt: %d\n",

@@ -1006,7 +1006,7 @@ static void posix_cpu_timer_rearm(struct k_itimer *timer)
 	if (CPUCLOCK_PERTHREAD(timer->it_clock)) {
 		if (unlikely(cpu_clock_sample(timer->it_clock, p, &now))) {
 			timer->it.cpu.expires = 0;
-			goto out;
+			return;
 		}
 		bump_cpu_timer(timer, now);
 		if (unlikely(p->exit_state))

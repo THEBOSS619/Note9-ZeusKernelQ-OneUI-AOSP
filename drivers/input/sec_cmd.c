@@ -60,8 +60,6 @@ void sec_cmd_set_default_result(struct sec_cmd_data *data)
 
 void sec_cmd_set_cmd_result_all(struct sec_cmd_data *data, char *buff, int len, char *item)
 {
-	char delim1 = ' ';
-	char delim2 = ':';
 	int cmd_result_len;
 
 	cmd_result_len = (int)strlen(data->cmd_result_all) + len + 2 + (int)strlen(item);
@@ -72,9 +70,9 @@ void sec_cmd_set_cmd_result_all(struct sec_cmd_data *data, char *buff, int len, 
 	}
 
 	data->item_count++;
-	strncat(data->cmd_result_all, &delim1, 1);
+	strcat(data->cmd_result_all, " ");
 	strncat(data->cmd_result_all, item, strlen(item));
-	strncat(data->cmd_result_all, &delim2, 1);
+	strcat(data->cmd_result_all, ":");
 	strncat(data->cmd_result_all, buff, len);
 }
 

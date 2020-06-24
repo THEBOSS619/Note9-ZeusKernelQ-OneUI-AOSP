@@ -1272,11 +1272,11 @@ int freq_qos_apply(struct freq_qos_request *req,
 	switch(req->type) {
 	case FREQ_QOS_MIN:
 		ret = pm_qos_update_target(&req->qos->min_freq, &req->pnode,
-					   action, value);
+					   action, value, NULL);
 		break;
 	case FREQ_QOS_MAX:
 		ret = pm_qos_update_target(&req->qos->max_freq, &req->pnode,
-					   action, value);
+					   action, value, NULL);
 		break;
 	default:
 		ret = -EINVAL;

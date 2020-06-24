@@ -27,11 +27,9 @@
 #include "dw_mmc-pltfm.h"
 #include "dw_mmc-exynos.h"
 
-#include "dw_mmc-exynos-smu.h"
-#include "dw_mmc-exynos-fmp.h"
-
 extern int cal_pll_mmc_set_ssc(unsigned int mfr, unsigned int mrr, unsigned int ssc_on);
 extern int cal_pll_mmc_check(void);
+
 
 /* Variations in Exynos specific dw-mshc controller */
 enum dw_mci_exynos_type {
@@ -243,7 +241,7 @@ static void dw_mci_exynos_adjust_clock(struct dw_mci *host, unsigned int wanted)
 	if (wanted == priv->cur_speed) {
 		clock = clk_get_rate(host->ciu_clk);
 		if (clock == priv->cur_speed * div)
-		return;
+			return;
 	}
 
 	ret = clk_set_rate(host->ciu_clk, wanted * div);
@@ -256,8 +254,6 @@ static void dw_mci_exynos_adjust_clock(struct dw_mci *host, unsigned int wanted)
 	priv->cur_speed = wanted;
 	host->current_speed = 0;
 }
-
-#define KHZ (1000)
 
 static void dw_mci_exynos_set_ios(struct dw_mci *host, struct mmc_ios *ios)
 {
@@ -323,9 +319,6 @@ static void dw_mci_exynos_set_ios(struct dw_mci *host, struct mmc_ios *ios)
 	default:
 		clksel = priv->sdr_timing;
 	}
-
-	if ((ios->clock > 0) && (ios->clock <= 400 * KHZ))
-		sample_path_sel_dis(host, AXI_BURST_LEN);
 
 	host->cclk_in = wanted;
 
@@ -625,7 +618,7 @@ static u8 dw_mci_tuning_sampling(struct dw_mci *host)
 
 	if (phase6_en & (0x1 << sample) || phase7_en & (0x1 << sample))
 		sample_path_sel_en(host, AXI_BURST_LEN);
-		else
+	else
 		sample_path_sel_dis(host, AXI_BURST_LEN);
 
 	if (priv->ctrl_flag & DW_MMC_EXYNOS_ENABLE_SHIFT)
@@ -737,7 +730,7 @@ static void exynos_dwmci_tuning_drv_st(struct dw_mci *host)
 	struct dw_mci_exynos_priv_data *priv = host->priv;
 
 	dev_info(host->dev, "Clock GPIO Drive Strength Value: x%d\n",
-			priv->clk_drive_tuning);
+			(priv->clk_drive_tuning));
 
 	if (priv->pinctrl && priv->clk_drive_str[priv->clk_drive_tuning - 1])
 		pinctrl_select_state(priv->pinctrl, priv->clk_drive_str[priv->clk_drive_tuning - 1]);
@@ -962,11 +955,11 @@ static int dw_mci_exynos_execute_tuning(struct dw_mci_slot *slot, u32 opcode,
 		if (host->pdata->only_once_tune)
 			host->pdata->tuned = true;
 
-			if (best_sample_ori % 2)
+		if (best_sample_ori % 2)
 			best_sample += 1;
 
 		dw_mci_exynos_set_sample(host, best_sample, false);
-				dw_mci_set_fine_tuning_bit(host, false);
+		dw_mci_set_fine_tuning_bit(host, false);
 	} else {
 		/* Failed. Just restore and return error */
 		dev_err(host->dev, "tuning err\n");
@@ -1483,47 +1476,6 @@ static int dw_mci_exynos_misc_control(struct dw_mci *host,
 	return ret;
 }
 
-static int dw_mci_exynos_crypto_engine_cfg(struct dw_mci *host,
-					void *desc,
-					struct mmc_data *data,
-					struct page *page,
-					int sector_offset,
-					bool cmdq_enabled)
-{
-	return exynos_mmc_fmp_cfg(host, desc, data, page, sector_offset, cmdq_enabled);
-}
-
-static int dw_mci_exynos_crypto_engine_clear(struct dw_mci *host, void *desc,
-					bool cmdq_enabled)
-{
-	return exynos_mmc_fmp_clear(host, desc, cmdq_enabled);
-}
-
-static int dw_mci_exynos_access_control_get_dev(struct dw_mci *host)
-{
-	return exynos_mmc_smu_get_dev(host);
-}
-
-static int dw_mci_exynos_access_control_sec_cfg(struct dw_mci *host)
-{
-	return exynos_mmc_smu_sec_cfg(host);
-}
-
-static int dw_mci_exynos_access_control_init(struct dw_mci *host)
-{
-	return exynos_mmc_smu_init(host);
-}
-
-static int dw_mci_exynos_access_control_abort(struct dw_mci *host)
-{
-	return exynos_mmc_smu_abort(host);
-}
-
-static int dw_mci_exynos_access_control_resume(struct dw_mci *host)
-{
-	return exynos_mmc_smu_resume(host);
-}
-
 static const struct dw_mci_drv_data exynos_drv_data = {
 	.caps			= exynos_dwmmc_caps,
 	.init			= dw_mci_exynos_priv_init,
@@ -1535,13 +1487,6 @@ static const struct dw_mci_drv_data exynos_drv_data = {
 	.prepare_hs400_tuning	= dw_mci_exynos_prepare_hs400_tuning,
 #endif
 	.misc_control           = dw_mci_exynos_misc_control,
-	.crypto_engine_cfg	= dw_mci_exynos_crypto_engine_cfg,
-	.crypto_engine_clear	= dw_mci_exynos_crypto_engine_clear,
-	.access_control_get_dev	= dw_mci_exynos_access_control_get_dev,
-	.access_control_sec_cfg	= dw_mci_exynos_access_control_sec_cfg,
-	.access_control_init	= dw_mci_exynos_access_control_init,
-	.access_control_abort	= dw_mci_exynos_access_control_abort,
-	.access_control_resume	= dw_mci_exynos_access_control_resume,
 	.ssclk_control		= dw_mci_ssclk_control,
 };
 

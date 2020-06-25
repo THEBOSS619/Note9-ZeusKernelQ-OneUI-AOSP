@@ -45,7 +45,7 @@ static void __init rcu_bootup_announce_oddness(void)
 		pr_info("\tBoot-time adjustment of leaf fanout to %d.\n",
 			rcu_fanout_leaf);
 	if (nr_cpu_ids != NR_CPUS)
-		pr_info("\tRCU restricting CPUs from NR_CPUS=%d to nr_cpu_ids=%d.\n", NR_CPUS, nr_cpu_ids);
+		pr_info("\tRCU restricting CPUs from NR_CPUS=%d to nr_cpu_ids=%u.\n", NR_CPUS, nr_cpu_ids);
 #ifdef CONFIG_RCU_BOOST
 	pr_info("\tRCU priority boosting: priority %d delay %d ms.\n",
 		kthread_prio, CONFIG_RCU_BOOST_DELAY);
@@ -523,19 +523,9 @@ rcu_preempt_deferred_qs_irqrestore(struct task_struct *t, unsigned long flags)
 			raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
 		}
 
-		/*
-		 * Unboost if we were boosted.
-		 * Disable preemption to make sure completion is signalled
-		 * without having the task de-scheduled with its priority
-		 * lowered (in which case we're left with no boosted thread
-		 * and possible RCU starvation).
-		 */
-		if (IS_ENABLED(CONFIG_RCU_BOOST) && drop_boost_mutex) {
-			preempt_disable();
+		/* Unboost if we were boosted. */
+		if (IS_ENABLED(CONFIG_RCU_BOOST) && drop_boost_mutex)
 			rt_mutex_unlock(&rnp->boost_mtx);
-			complete(&rnp->boost_completion);
-			preempt_enable();
-		}
 
 		/*
 		 * If this was the last task on the expedited lists,
@@ -1020,14 +1010,10 @@ static int rcu_boost(struct rcu_node *rnp)
 	 */
 	t = container_of(tb, struct task_struct, rcu_node_entry);
 	rt_mutex_init_proxy_locked(&rnp->boost_mtx, t);
-	init_completion(&rnp->boost_completion);
 	raw_spin_unlock_irqrestore_rcu_node(rnp, flags);
 	/* Lock only for side effect: boosts task t's priority. */
 	rt_mutex_lock(&rnp->boost_mtx);
 	rt_mutex_unlock(&rnp->boost_mtx);  /* Then keep lockdep happy. */
-
-	/* Wait until boostee is done accessing mtx before reinitializing. */
-	wait_for_completion(&rnp->boost_completion);
 
 	return READ_ONCE(rnp->exp_tasks) != NULL ||
 	       READ_ONCE(rnp->boost_tasks) != NULL;

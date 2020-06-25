@@ -139,8 +139,7 @@ bool rcu_gp_is_normal(void)
 }
 EXPORT_SYMBOL_GPL(rcu_gp_is_normal);
 
-static atomic_t rcu_expedited_nesting =
-	ATOMIC_INIT(IS_ENABLED(CONFIG_RCU_EXPEDITE_BOOT) ? 1 : 0);
+static atomic_t rcu_expedited_nesting = ATOMIC_INIT(1);
 
 /*
  * Should normal grace-period primitives be expedited?  Intended for
@@ -188,8 +187,7 @@ EXPORT_SYMBOL_GPL(rcu_unexpedite_gp);
  */
 void rcu_end_inkernel_boot(void)
 {
-	if (IS_ENABLED(CONFIG_RCU_EXPEDITE_BOOT))
-		rcu_unexpedite_gp();
+	rcu_unexpedite_gp();
 	if (rcu_normal_after_boot)
 		WRITE_ONCE(rcu_normal, 1);
 }
@@ -712,12 +710,6 @@ static int __noreturn rcu_tasks_kthread(void *arg)
 		synchronize_srcu(&tasks_rcu_exit_srcu);
 
 		/*
-		 * Wait a little bit incase held tasks are released
-		 * during their next timer ticks.
-		 */
-		schedule_timeout_interruptible(HZ/10);
-
-		/*
 		 * Each pass through the following loop scans the list
 		 * of holdout tasks, removing any that are no longer
 		 * holdouts.  When the list is empty, we are done.
@@ -755,10 +747,6 @@ static int __noreturn rcu_tasks_kthread(void *arg)
 				cond_resched();
 			}
 
-			if (list_empty(&rcu_tasks_holdouts))
-				break;
-
-			schedule_timeout_interruptible(HZ);
 		}
 
 		/*

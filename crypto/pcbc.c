@@ -14,7 +14,6 @@
  *
  */
 
-#include <crypto/algapi.h>
 #include <crypto/internal/skcipher.h>
 #include <linux/err.h>
 #include <linux/init.h>

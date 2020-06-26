@@ -666,7 +666,7 @@ static struct attribute * g[] = {
 	NULL,
 };
 
-static const struct attribute_group attr_group = {
+static struct attribute_group attr_group = {
 	.attrs = g,
 };
 

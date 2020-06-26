@@ -722,16 +722,16 @@ static bool exynos_hpgov_change_quad(void)
 
 static bool exynos_hpgov_change_triple(void)
 {
-	int big_heavy_cnt, lit_heavy_cnt;
+	int heavy_cnt;
 
-	/* If system is busy, doesn't change boost mode */
+	/* If system is busy, change triple mode */
 	if (exynos_hpgov_system_busy())
-		return false;
+		return true;
 
-	lit_heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT);
-	big_heavy_cnt = exynos_hpgov_get_imbal_cpus(BIG);
-	if ((big_heavy_cnt == TRIPLE && !lit_heavy_cnt) ||
-		(big_heavy_cnt == DUAL && lit_heavy_cnt == DUAL))
+	heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT) +
+			exynos_hpgov_get_imbal_cpus(BIG);
+
+	if ((heavy_cnt > DUAL) || !heavy_cnt)
 		return true;
 
 	return false;

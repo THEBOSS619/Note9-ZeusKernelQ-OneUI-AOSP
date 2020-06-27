@@ -58,7 +58,7 @@ static void membarrier_private_expedited(void)
 		fallback = true;
 	}
 
-	cpus_read_lock();
+	get_online_cpus();
 	for_each_online_cpu(cpu) {
 		struct task_struct *p;
 
@@ -86,7 +86,7 @@ static void membarrier_private_expedited(void)
 		smp_call_function_many(tmpmask, ipi_mb, NULL, 1);
 		free_cpumask_var(tmpmask);
 	}
-	cpus_read_unlock();
+	put_online_cpus();
 
 	/*
 	 * Memory barrier on the caller thread _after_ we finished

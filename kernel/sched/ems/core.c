@@ -90,11 +90,11 @@ exynos_fit_idlest_group(struct sched_domain *sd, struct task_struct *p)
 		int i;
 
 		/* Skip over this group if it has no CPUs allowed */
-		if (!cpumask_intersects(sched_group_cpus(group),
+		if (!cpumask_intersects(sched_group_span(group),
 					&p->cpus_allowed))
 			continue;
 
-		for_each_cpu(i, sched_group_cpus(group)) {
+		for_each_cpu(i, sched_group_span(group)) {
 			if (capacity_of(i) < fit_capacity && task_fits(p, capacity_of(i))) {
 				fit_capacity = capacity_of(i);
 				fit_group = group;

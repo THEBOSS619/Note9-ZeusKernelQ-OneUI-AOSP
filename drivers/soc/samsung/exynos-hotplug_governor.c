@@ -539,12 +539,12 @@ static void exynos_hpgov_update_avg_cl_load(struct sched_group *sg,
 	hpgov_load->max_load_sum = 0;;
 	hpgov_load->load_sum = 0;
 
-	cpumask_and(&mask, cpu_online_mask, sched_group_cpus(sg));
+	cpumask_and(&mask, cpu_online_mask, sched_group_span(sg));
 	num = cpumask_weight(&mask);
 	if (!num)
 		return;
 
-	for_each_cpu_and(cpu, sched_group_cpus(sg), cpu_online_mask) {
+	for_each_cpu_and(cpu, sched_group_span(sg), cpu_online_mask) {
 		struct rq *rq = cpu_rq(cpu);
 		struct sched_avg *sa = &rq->cfs.avg;
 		unsigned long load_sum;
@@ -643,7 +643,7 @@ static int exynos_hpgov_get_imbal_cpus(unsigned int cluster)
 			cluster == LIT && !exynos_hpgov.big_busy)
 		return 0;
 
-	if (!sg || !cpumask_weight(sched_group_cpus(sg)))
+	if (!sg || !cpumask_weight(sched_group_span(sg)))
 		return 0;
 
 	/* get the min capaicity of cpu */
@@ -656,7 +656,7 @@ static int exynos_hpgov_get_imbal_cpus(unsigned int cluster)
 		ldsum_heavy_thr = clamp_thr(exynos_hpgov.ldsum_heavy_thr, 0);
 	}
 
-	for_each_cpu(cpu, cpu_coregroup_mask(cpumask_first(sched_group_cpus(sg)))) {
+	for_each_cpu(cpu, cpu_coregroup_mask(cpumask_first(sched_group_span(sg)))) {
 		struct rq *rq = cpu_rq(cpu);
 		struct sched_avg *sa = &rq->cfs.avg;
 

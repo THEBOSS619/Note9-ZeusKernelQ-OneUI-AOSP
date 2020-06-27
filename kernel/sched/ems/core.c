@@ -229,7 +229,7 @@ static ssize_t show_sched_topology(struct kobject *kobj,
 				"[lv%d] cpu%d: sd->span=%#x sg->span=%#x\n",
 				sched_domain_level, cpu,
 				*(unsigned int *)cpumask_bits(sched_domain_span(sd)),
-				*(unsigned int *)cpumask_bits(sched_group_cpus(sd->groups)));
+				*(unsigned int *)cpumask_bits(sched_group_span(sd->groups)));
 			sched_domain_level--;
 		}
 		ret += snprintf(buf + ret,

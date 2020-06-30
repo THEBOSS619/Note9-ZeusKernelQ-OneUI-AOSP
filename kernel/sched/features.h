@@ -100,6 +100,17 @@ SCHED_FEAT(ENERGY_AWARE, false)
 #endif
 
 /*
+ * EAS_CRUCIAL
+ *   Direct tasks in a schedtune.crucial=1 group to the idle CPU
+ *   with the greatest original capacity. Unlike prefer_idle,
+ *   the crucial path iterates through all available CPUs. If a
+ *   crucial CPU is found, it takes precedence over a prefer_idle
+ *   selection.
+ */
+
+SCHED_FEAT(EAS_CRUCIAL, true)
+
+/*
  * Minimum capacity capping. Keep track of minimum capacity factor when
  * minimum frequency available to a policy is modified.
  * If enabled, this can be used to inform the scheduler about capacity

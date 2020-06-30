@@ -7590,13 +7590,14 @@ int start_cpu(bool boosted)
 }
 
 int find_best_target(struct task_struct *p, int *backup_cpu,
-				   bool boosted, bool prefer_idle)
+				   bool boosted, bool prefer_idle, bool crucial)
 {
 	unsigned long best_idle_min_cap_orig = ULONG_MAX;
 	unsigned long min_util = boosted_task_util(p);
 	unsigned long target_capacity = ULONG_MAX;
 	unsigned long min_wake_util = ULONG_MAX;
 	unsigned long target_max_spare_cap = 0;
+	unsigned long crucial_max_cap = 0;
 	unsigned long target_util = ULONG_MAX;
 	unsigned long best_active_util = ULONG_MAX;
 	unsigned long best_idle_util = ULONG_MAX;
@@ -7606,6 +7607,7 @@ int find_best_target(struct task_struct *p, int *backup_cpu,
 	int best_active_cpu = -1;
 	int best_idle_cpu = -1;
 	int target_cpu = -1;
+	int crucial_cpu = -1;
 	int cpu, i;
 
 	*backup_cpu = -1;
@@ -7663,6 +7665,13 @@ int find_best_target(struct task_struct *p, int *backup_cpu,
 			 */
 			wake_util = cpu_util_without(i, p);
 			new_util = wake_util + task_util_est(p);
+
+			/* Track the idle CPU with the largest capacity */
+			if (crucial && idle_cpu(i) &&
+					capacity_orig > crucial_max_cap) {
+				crucial_max_cap = capacity_orig;
+				crucial_cpu = i;
+			}
 
 			/*
 			 * Ensure minimum capacity to grant the required boost.
@@ -7884,6 +7893,10 @@ int find_best_target(struct task_struct *p, int *backup_cpu,
 
 	} while (sg = sg->next, sg != sd->groups);
 
+	/* If a compatible crucial CPU was found, use it and skip the backup path */
+	if (crucial && (crucial_cpu != -1))
+		return crucial_cpu;
+
 	/*
 	 * For non latency sensitive tasks, cases B and C in the previous loop,
 	 * we pick the best IDLE CPU only if we was not able to find a target
@@ -7989,6 +8002,7 @@ static int select_energy_cpu_brute(struct task_struct *p, int prev_cpu,
 	int target_cpu;
 	int backup_cpu;
 	int next_cpu;
+	int crucial;
 
 	schedstat_inc(p->se.statistics.nr_wakeups_secb_attempts);
 	schedstat_inc(this_rq()->eas_stats.secb_attempts);
@@ -8001,6 +8015,9 @@ static int select_energy_cpu_brute(struct task_struct *p, int prev_cpu,
 	prefer_idle = 0;
 #endif
 
+	crucial = sched_feat(EAS_CRUCIAL) ?
+				(schedtune_crucial(p) > 0) : 0;
+
 	sd = rcu_dereference(per_cpu(sd_ea, prev_cpu));
 	if (!sd) {
 		target_cpu = prev_cpu;
@@ -8011,7 +8028,7 @@ static int select_energy_cpu_brute(struct task_struct *p, int prev_cpu,
 
 	/* Find a cpu with sufficient capacity */
 	next_cpu = find_best_target(p, &backup_cpu, boosted || sync_boost,
-				    prefer_idle);
+				    prefer_idle, crucial);
 	if (next_cpu == -1) {
 		target_cpu = prev_cpu;
 		goto unlock;

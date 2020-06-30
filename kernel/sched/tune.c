@@ -205,6 +205,9 @@ struct schedtune {
 	 * towards idle CPUs */
 	int prefer_idle;
 
+	/* Task will be scheduled on the CPU with the highest spare capacity */
+	int crucial;
+
 	/* Hint to bias scheduling of tasks on that SchedTune CGroup
 	 * towards high performance CPUs */
 	int prefer_perf;
@@ -270,6 +273,7 @@ root_schedtune = {
 	.perf_constrain_idx = 0,
 	.prefer_idle = 0,
 	.prefer_perf = 0,
+	.crucial = 0,
 	.band = 0,
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
 	.boost_default = 0,
@@ -853,6 +857,23 @@ band_write(struct cgroup_subsys_state *css, struct cftype *cft,
 	return 0;
 }
 
+int schedtune_crucial(struct task_struct *p)
+{
+	struct schedtune *st;
+	int crucial;
+
+	if (unlikely(!schedtune_initialized))
+		return 0;
+
+	/* Get crucial value */
+	rcu_read_lock();
+	st = task_schedtune(p);
+	crucial = st->crucial;
+	rcu_read_unlock();
+
+	return crucial;
+}
+
 static u64
 prefer_idle_read(struct cgroup_subsys_state *css, struct cftype *cft)
 {
@@ -885,6 +906,24 @@ prefer_perf_write(struct cgroup_subsys_state *css, struct cftype *cft,
 {
 	struct schedtune *st = css_st(css);
 	st->prefer_perf = prefer_perf;
+
+	return 0;
+}
+
+static u64
+crucial_read(struct cgroup_subsys_state *css, struct cftype *cft)
+{
+	struct schedtune *st = css_st(css);
+
+	return st->crucial;
+}
+
+static int
+crucial_write(struct cgroup_subsys_state *css, struct cftype *cft,
+	    u64 crucial)
+{
+	struct schedtune *st = css_st(css);
+	st->crucial = !!crucial;
 
 	return 0;
 }
@@ -1050,6 +1089,11 @@ static struct cftype files[] = {
 		.write_s64 = sched_boost_write,
 	},
 #endif // CONFIG_DYNAMIC_STUNE_BOOST
+	{
+		.name = "crucial",
+		.read_u64 = crucial_read,
+		.write_u64 = crucial_write,
+	},
 	{ }	/* terminate */
 };
 

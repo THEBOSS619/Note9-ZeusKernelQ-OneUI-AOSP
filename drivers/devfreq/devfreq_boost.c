@@ -160,15 +160,16 @@ static void devfreq_max_unboost(struct work_struct *work)
 static void devfreq_update_boosts(struct boost_dev *b, unsigned long state)
 {
 	struct devfreq *df = b->df;
+	int first_freq_idx = df->profile->max_state - 1;
 
 	mutex_lock(&df->lock);
 	if (test_bit(SCREEN_OFF, &state)) {
-		df->min_freq = df->profile->freq_table[0];
+		df->min_freq = df->profile->freq_table[first_freq_idx];
 		df->max_boost = false;
 	} else {
 		df->min_freq = test_bit(INPUT_BOOST, &state) ?
 			       min(devfreq_boost_freq , df->max_freq) :
-			       df->profile->freq_table[0];
+			       df->profile->freq_table[first_freq_idx];
 		df->max_boost = test_bit(MAX_BOOST, &state);
 	}
 	update_devfreq(df);

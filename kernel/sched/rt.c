@@ -34,6 +34,7 @@ struct frt_dom {
 	struct kobject		kobj;
 };
 struct cpumask activated_mask;
+unsigned int frt_disable_cpufreq;
 
 LIST_HEAD(frt_list);
 DEFINE_RAW_SPINLOCK(frt_lock);
@@ -115,6 +116,26 @@ static ssize_t store(struct kobject *kobj, struct attribute *at,
 	return frtattr->store(kobj, buf, count);
 }
 
+static ssize_t store_disable_cpufreq(struct kobject *kobj,
+		struct kobj_attribute *attr, const char *buf,
+		size_t count)
+{
+	unsigned int val;
+	if (!sscanf(buf, "%u", &val))
+		return -EINVAL;
+	frt_disable_cpufreq = val;
+	return count;
+}
+
+static ssize_t show_disable_cpufreq(struct kobject *kobj,
+		struct kobj_attribute *attr, char *buf)
+{
+	return sprintf(buf, "%u\n", frt_disable_cpufreq);
+}
+
+static struct kobj_attribute disable_cpufreq_attr =
+__ATTR(disable_cpufreq, 0644, show_disable_cpufreq, store_disable_cpufreq);
+
 static const struct sysfs_ops frt_sysfs_ops = {
 	.show	= show,
 	.store	= store,
@@ -123,12 +144,17 @@ static const struct sysfs_ops frt_sysfs_ops = {
 static struct attribute *frt_attrs[] = {
 	&coverage_ratio_attr.attr,
 	&active_ratio_attr.attr,
-	NULL
+	&disable_cpufreq_attr.attr,
+	NULL,
 };
 
 static struct kobj_type ktype_frt = {
 	.sysfs_ops	= &frt_sysfs_ops,
 	.default_attrs	= frt_attrs,
+};
+
+static const struct attribute_group frt_group = {
+	.attrs = frt_attrs,
 };
 
 static int frt_find_prefer_cpu(struct task_struct *task)
@@ -156,7 +182,7 @@ static int frt_set_active_ratio(int cpu)
 	if (!dom || !cpu_active(cpu))
 		return -1;
 
-	capacity = get_cpu_max_capacity(cpu) *
+	capacity = get_cpu_max_capacity(cpu, 0) *
 			cpumask_weight(cpu_coregroup_mask(cpu));
 	dom->active_thr = ratio_scale(capacity, dom->active_ratio);
 
@@ -171,7 +197,7 @@ static int frt_set_coverage_ratio(int cpu)
 	if (!dom || !cpu_active(cpu))
 		return -1;
 
-	capacity = get_cpu_max_capacity(cpu);
+	capacity = get_cpu_max_capacity(cpu, 0);
 	dom->coverage_thr = ratio_scale(capacity, dom->coverage_ratio);
 
 	return 0;
@@ -213,7 +239,7 @@ static void update_activated_cpus(void)
 			dom_util_sum += cpu_util(rq);
 		}
 
-		capacity = get_cpu_max_capacity(first_cpu) * cpumask_weight(&active_cpus);
+		capacity = get_cpu_max_capacity(first_cpu, 0) * cpumask_weight(&active_cpus);
 		dom_active_thr = ratio_scale(capacity, dom->active_ratio);
 
 		/* domain is idle */

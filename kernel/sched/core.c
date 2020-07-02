@@ -826,6 +826,8 @@ static inline void enqueue_task(struct rq *rq, struct task_struct *p, int flags)
 		psi_enqueue(p, flags & ENQUEUE_WAKEUP);
 	}
 
+	update_cpu_active_ratio(rq, p, EMS_PART_ENQUEUE);
+
 	p->sched_class->enqueue_task(rq, p, flags);
 }
 
@@ -838,6 +840,8 @@ static inline void dequeue_task(struct rq *rq, struct task_struct *p, int flags)
 		sched_info_dequeued(rq, p);
 		psi_dequeue(p, flags & DEQUEUE_SLEEP);
 	}
+
+	update_cpu_active_ratio(rq, p, EMS_PART_DEQUEUE);
 
 	p->sched_class->dequeue_task(rq, p, flags);
 }
@@ -2718,6 +2722,8 @@ void wake_up_new_task(struct task_struct *p)
 	update_rq_clock(rq);
 	post_init_entity_util_avg(&p->se);
 
+	update_cpu_active_ratio(rq, p, EMS_PART_WAKEUP_NEW);
+
 	walt_mark_task_starting(p);
 
 	activate_task(rq, p, ENQUEUE_WAKEUP_NEW | ENQUEUE_NOCLOCK);
@@ -3304,6 +3310,9 @@ void scheduler_tick(void)
 	sched_clock_tick();
 
 	rq_lock(rq, &rf);
+
+	set_part_period_start(rq);
+
 	walt_set_window_start(rq);
 	walt_update_task_ravg(rq->curr, rq, TASK_UPDATE,
 			walt_ktime_clock(), 0);
@@ -8549,6 +8558,11 @@ void __init sched_init(void)
 
 		INIT_LIST_HEAD(&rq->cfs_tasks);
 
+#ifdef CONFIG_SCHED_EMS
+		INIT_LIST_HEAD(&rq->sse_cfs_tasks);
+		INIT_LIST_HEAD(&rq->uss_cfs_tasks);
+#endif
+
 		rq_attach_root(rq, &def_root_domain);
 #ifdef CONFIG_NO_HZ_COMMON
 		rq->last_load_update_tick = jiffies;
@@ -8564,8 +8578,6 @@ void __init sched_init(void)
 	}
 
 	set_load_weight(&init_task, false);
-
-	alloc_bands();
 
 	/*
 	 * The boot idle thread does lazy MMU switching as well:
@@ -8595,6 +8607,8 @@ void __init sched_init(void)
 	init_schedstats();
 
 	psi_init();
+
+	init_ems();
 
 	scheduler_running = 1;
 }

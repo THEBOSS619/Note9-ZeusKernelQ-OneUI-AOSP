@@ -8,7 +8,6 @@
 #include <linux/sched.h>
 #include <linux/cpuidle.h>
 #include <linux/pm_qos.h>
-#include <linux/sched/energy.h>
 #include <linux/ems.h>
 
 #include <trace/events/ems.h>
@@ -137,9 +136,12 @@ static inline int get_topology_depth(void)
 
 static inline int get_last_level(struct lbt_overutil *ou)
 {
-	int level;
+	int level, depth = get_topology_depth();
 
-	for (level = 0; &ou[level] != NULL; level++) {
+	for (level = 0; level <= depth ; level++) {
+		if (&ou[level] == NULL)
+			return -1;
+
 		if (ou[level].top == true)
 			return level;
 	}
@@ -170,7 +172,12 @@ bool lbt_overutilized(int cpu, int level)
 void update_lbt_overutil(int cpu, unsigned long capacity)
 {
 	struct lbt_overutil *ou = per_cpu(lbt_overutil, cpu);
-	int level, last = get_last_level(ou);
+	int level, last;
+
+	if (!ou)
+		return;
+
+	last = get_last_level(ou);
 
 	for (level = 0; level <= last; level++) {
 		if (ou[level].ratio == DISABLE_OU)

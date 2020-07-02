@@ -337,32 +337,6 @@ static struct schedtune *allocated_group[BOOSTGROUPS_COUNT] = {
 	NULL,
 };
 
-/* SchedTune boost groups
- * Keep track of all the boost groups which impact on CPU, for example when a
- * CPU has two RUNNABLE tasks belonging to two different boost groups and thus
- * likely with different boost values.
- * Since on each system we expect only a limited number of boost groups, here
- * we use a simple array to keep track of the metrics required to compute the
- * maximum per-CPU boosting value.
- */
-struct boost_groups {
-	/* Maximum boost value for all RUNNABLE tasks on a CPU */
-	int boost_max;
-	u64 boost_ts;
-	struct {
-		/* True when this boost group maps an actual cgroup */
-		bool valid;
-		/* The boost for tasks on that boost group */
-		int boost;
-		/* Count of RUNNABLE tasks on that boost group */
-		unsigned tasks;
-		/* Timestamp of boost activation */
-		u64 ts;
-	} group[BOOSTGROUPS_COUNT];
-	/* CPU's boost group locking */
-	raw_spinlock_t lock;
-};
-
 /* Boost groups affecting each CPU in the system */
 DEFINE_PER_CPU(struct boost_groups, cpu_boost_groups);
 
@@ -645,6 +619,17 @@ static void schedtune_attach(struct cgroup_taskset *tset)
 		sync_band(task, css_st(css)->band);
 }
 
+static void band_switch(struct schedtune *st)
+{
+	struct css_task_iter it;
+	struct task_struct *p;
+
+	css_task_iter_start(&st->css, &it);
+	while ((p = css_task_iter_next(&it)))
+		sync_band(p, st->band);
+	css_task_iter_end(&it);
+}
+
 /*
  * NOTE: This function must be called while holding the lock on the CPU RQ
  */
@@ -858,7 +843,12 @@ band_write(struct cgroup_subsys_state *css, struct cftype *cft,
 	    u64 band)
 {
 	struct schedtune *st = css_st(css);
+
+	if (st->band == band)
+		return 0;
+
 	st->band = band;
+	band_switch(st);
 
 	return 0;
 }

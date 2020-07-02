@@ -525,6 +525,8 @@ struct cfs_rq {
 	} removed;
 
 #ifdef CONFIG_FAIR_GROUP_SCHED
+	struct multi_load_cfs_rq ml_q;
+
 	/*
 	 *   h_load = weight * f(tg)
 	 *
@@ -871,6 +873,11 @@ struct rq {
 	u64 irqload_ts;
 	u64 cum_window_demand;
 #endif /* CONFIG_SCHED_WALT */
+
+	struct part pa;
+
+	struct list_head uss_cfs_tasks;
+	struct list_head sse_cfs_tasks;
 
 #ifdef CONFIG_SCHED_EMS
 	bool ontime_migrating;

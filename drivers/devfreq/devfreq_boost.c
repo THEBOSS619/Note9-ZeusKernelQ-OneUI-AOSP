@@ -168,7 +168,7 @@ static void devfreq_update_boosts(struct boost_dev *b, unsigned long state)
 		df->max_boost = false;
 	} else {
 		df->min_freq = test_bit(INPUT_BOOST, &state) ?
-			       min(devfreq_boost_freq , df->max_freq) :
+			       min(devfreq_boost_freq, df->max_freq) :
 			       df->profile->freq_table[first_freq_idx];
 		df->max_boost = test_bit(MAX_BOOST, &state);
 	}
@@ -204,8 +204,8 @@ static int devfreq_boost_thread(void *data)
 	return 0;
 }
 
-static int fb_notifier_cb(struct notifier_block *nb, unsigned long action, 
-			       void *data)
+static int fb_notifier_cb(struct notifier_block *nb, unsigned long action,
+			  void *data)
 {
 	struct df_boost_drv *d = container_of(nb, typeof(*d), fb_notif);
 	int i, *blank = ((struct fb_event *)data)->data;

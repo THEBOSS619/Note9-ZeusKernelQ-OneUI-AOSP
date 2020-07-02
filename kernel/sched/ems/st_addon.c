@@ -80,7 +80,7 @@ static int select_idle_cpu(struct task_struct *p)
 		if (cpu != cpumask_first(cpu_coregroup_mask(cpu)))
 			continue;
 
-		for_each_cpu_and(i, tsk_cpus_allowed(p), cpu_coregroup_mask(cpu)) {
+		for_each_cpu_and(i, &p->cpus_allowed, cpu_coregroup_mask(cpu)) {
 			unsigned long capacity_orig = capacity_orig_of(i);
 			unsigned long new_util;
 

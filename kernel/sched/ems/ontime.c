@@ -194,7 +194,7 @@ ontime_select_target_cpu(struct task_struct *p, struct cpumask *fit_cpus)
 		coverage_util = capacity_orig_of(cpu) * get_coverage_ratio(cpu);
 
 		for_each_cpu_and(i, cpu_coregroup_mask(cpu), cpu_active_mask) {
-			if (!cpumask_test_cpu(i, tsk_cpus_allowed(p)))
+			if (!cpumask_test_cpu(i, &p->cpus_allowed))
 				continue;
 
 			if (cpu_rq(i)->ontime_migrating)
@@ -352,7 +352,7 @@ static bool can_migrate(struct task_struct *p, struct ontime_env *env)
 	if (src_rq->nr_running <= 1)
 		return false;
 
-	if (!cpumask_test_cpu(env->dst_cpu, tsk_cpus_allowed(p)))
+	if (!cpumask_test_cpu(env->dst_cpu, &p->cpus_allowed))
 		return false;
 
 	if (task_running(env->src_rq, p))

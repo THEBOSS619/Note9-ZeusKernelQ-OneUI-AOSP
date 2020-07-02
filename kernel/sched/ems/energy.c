@@ -252,7 +252,7 @@ static int select_eco_cpu(struct eco_env *eenv)
 		if (cpu != cpumask_first(cpu_coregroup_mask(cpu)))
 			continue;
 
-		cpumask_and(&mask, cpu_coregroup_mask(cpu), tsk_cpus_allowed(eenv->p));
+		cpumask_and(&mask, cpu_coregroup_mask(cpu), &eenv->p->cpus_allowed);
 		/*
 		 * Checking prev cpu is meaningless, because the energy of prev cpu
 		 * will be compared to best cpu at last
@@ -458,7 +458,7 @@ static int select_eff_cpu(struct eco_env *eenv)
 	for_each_cpu(cpu, cpu_active_mask) {
 		unsigned int energy;
 
-		if (!cpumask_test_cpu(cpu, tsk_cpus_allowed(eenv->p)))
+		if (!cpumask_test_cpu(cpu, &eenv->p->cpus_allowed))
 			continue;
 
 		energy = calculate_efficiency(eenv->p, cpu);

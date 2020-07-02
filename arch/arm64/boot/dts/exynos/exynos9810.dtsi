@@ -341,10 +341,20 @@
 			ANANKE_ENERGY: ananke-energy {
 				capacity-mips = <272>;
 				power-coefficient = <160>;
+				capacity-mips-s = <215>;
+				power-coefficient-s = <130>;
+
+				capacity-weight = <1>;
+				energy-weight = <1>;
 			};
 			MEERKAT_ENERGY: meerkat-energy {
 				capacity-mips = <785>;
 				power-coefficient = <800>;
+				capacity-mips-s = <365>;
+				power-coefficient-s = <506>;
+
+				capacity-weight = <1>;
+				energy-weight = <3>;
 			};
 		};
 
@@ -355,13 +365,17 @@
 				coregroup0 {
 					lower-boundary = <0>;
 					upper-boundary = <42>;
+					lower-boundary-s = <0>;
+					upper-boundary-s = <30>;
 					coverage-ratio = <100>;
 				};
 				/* big cores */
 				coregroup1 {
 					lower-boundary = <7>;
 					upper-boundary = <100>;
-					coverage-ratio = <75>;
+					lower-boundary-s = <65>;
+					upper-boundary-s = <100>;
+					coverage-ratio = <80>;
 				};
 			};
 
@@ -394,10 +408,50 @@
 				};
 			};
 
+			part {
+				/* little cores */
+				coregroup0 {
+					active-ratio-limit = <43>;
+					active-ratio-boost = <42>;
+				};
+				/* big cores */
+				coregroup1 {
+					active-ratio-limit = <30>;
+					active-ratio-boost = <0>;
+				};
+			};
+
+			band {
+				#define BAND_SCHEDULE_ONE_STAGE	1
+				#define BAND_SCHEDULE_ALL_STAGE	2
+				schedule0 {
+					stage = "0-3";
+					crowd = <36>;
+					type = <BAND_SCHEDULE_ONE_STAGE>;
+				};
+				schedule1 {
+					stage = "4-7";
+					crowd = <60>;
+					type = <BAND_SCHEDULE_ALL_STAGE>;
+				};
+			};
+
 			prefer-perf-service {
 				prefer-perf0 {
 					boost = <1>;
 					light-task-threshold = <10>;
+					light-task-threshold-s = <6>;
+					light-prefer-cpus = "4-7";
+					prefer-cpus = "4-7", "0-3";
+				};
+				prefer-perf1 {
+					boost = <1>;
+					light-task-threshold = <10>;
+					light-task-threshold-s = <6>;
+					light-prefer-cpus = "4-7";
+					heavy-task-threshold = <384>;
+					heavy-task-threshold-s = <250>;
+					heavy-prefer-cpus = "4-7";
 					prefer-cpus = "4-7", "0-3";
 				};
 			};
@@ -4938,9 +4992,10 @@
 			shared-cpus = "0-3";
 
 			boost_table = < 0 >;
-			up_rate_limit_table = < 5000 >;
-			down_rate_limit_table = < 5000 >;
+			up_rate_limit_table = < 4 >;
+			down_rate_limit_table = < 4 >;
 			upscale_ratio_table = < 80 >;
+			st_table = < 5 >;
 		};
 
 		domain@1 {
@@ -4948,9 +5003,10 @@
 			shared-cpus = "4-7";
 
 			boost_table = < 0 >;
-			up_rate_limit_table = < 5000 >;
-			down_rate_limit_table = < 5000 >;
+			up_rate_limit_table = < 4 >;
+			down_rate_limit_table = < 4 >;
 			upscale_ratio_table = < 50 962000 65 1469000 80 >;
+			st_table = < 5 >;
 		};
 	};
 

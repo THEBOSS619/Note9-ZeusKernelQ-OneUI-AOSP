@@ -126,7 +126,7 @@ int prefer_perf_on_big(struct task_struct *p)
 	if (!pp)
 		return 0;
 
-	return task_util_est(p) > pp->threshold;
+	return task_util_est(p) > pp->heavy_threshold;
 }
 
 static int

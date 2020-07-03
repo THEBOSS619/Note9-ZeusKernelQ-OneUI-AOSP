@@ -445,12 +445,12 @@
 					prefer-cpus = "4-7", "0-3";
 				};
 				prefer-perf1 {
-					boost = <1>;
+					boost = <3>;
 					light-task-threshold = <10>;
 					light-task-threshold-s = <6>;
 					light-prefer-cpus = "4-7";
-					heavy-task-threshold = <384>;
-					heavy-task-threshold-s = <250>;
+					heavy-task-threshold = <350>;
+					heavy-task-threshold-s = <225>;
 					heavy-prefer-cpus = "4-7";
 					prefer-cpus = "4-7", "0-3";
 				};

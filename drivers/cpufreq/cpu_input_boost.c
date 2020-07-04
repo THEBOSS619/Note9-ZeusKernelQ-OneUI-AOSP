@@ -29,6 +29,8 @@ static unsigned int max_boost_freq_hp __read_mostly =
 	CONFIG_MAX_BOOST_FREQ_PERF;
 static unsigned int idle_min_freq_lp __read_mostly =
 	CONFIG_IDLE_MIN_FREQ_LP;
+static unsigned int idle_min_freq_hp __read_mostly =
+	CONFIG_IDLE_MIN_FREQ_HP;
 static unsigned int remove_input_boost_freq_lp __read_mostly =
 	CONFIG_REMOVE_INPUT_BOOST_FREQ_LP;
 static unsigned int remove_input_boost_freq_perf __read_mostly =
@@ -44,6 +46,7 @@ module_param(input_boost_freq_hp, uint, 0644);
 module_param(max_boost_freq_lp, uint, 0644);
 module_param(max_boost_freq_hp, uint, 0644);
 module_param(idle_min_freq_lp, uint, 0644);
+module_param(idle_min_freq_hp, uint, 0644);
 module_param(remove_input_boost_freq_lp, uint, 0644);
 module_param(remove_input_boost_freq_perf, uint, 0644);
 
@@ -119,6 +122,9 @@ static unsigned int get_min_freq(struct cpufreq_policy *policy)
 	if (cpumask_test_cpu(policy->cpu, cpu_lp_mask) &&
 			test_bit(SCREEN_OFF, &b->state))
 		freq = idle_min_freq_lp;
+	else if (cpumask_test_cpu(policy->cpu, cpu_perf_mask) &&
+			test_bit(SCREEN_OFF, &b->state))
+		freq = idle_min_freq_hp;
 	else if (cpumask_test_cpu(policy->cpu, cpu_lp_mask))
 		freq = remove_input_boost_freq_lp;
 	else

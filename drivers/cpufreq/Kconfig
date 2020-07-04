@@ -361,6 +361,14 @@ config IDLE_MIN_FREQ_LP
 	  Minimum frequency for the low-power CPU cluster during idle.
 	  The cluster will revert to this frequency when the display is
 	  turned off.
+
+config IDLE_MIN_FREQ_HP
+	int "Performance-power cluster idle frequency"
+	default "0"
+	help
+	  Minimum frequency for the performance-power CPU cluster during idle.
+	  The cluster will revert to this frequency when the display is
+	  turned off.
 endif
 
 comment "CPU frequency scaling drivers"

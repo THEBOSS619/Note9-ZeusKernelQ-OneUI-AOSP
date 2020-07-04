@@ -923,6 +923,22 @@ struct signal_struct {
 					 * (notably. ptrace) */
 };
 
+/*
+ * Integer metrics need fixed point arithmetic, e.g., sched/fair
+ * has a few: load, load_avg, util_avg, freq, and capacity.
+ *
+ * We define a basic fixed point arithmetic range, and then formalize
+ * all these metrics based on that basic range.
+ */
+# define SCHED_FIXEDPOINT_SHIFT	10
+# define SCHED_FIXEDPOINT_SCALE	(1L << SCHED_FIXEDPOINT_SHIFT)
+
+/*
+ * Increase resolution of cpu_capacity calculations
+ */
+#define SCHED_CAPACITY_SHIFT	SCHED_FIXEDPOINT_SHIFT
+#define SCHED_CAPACITY_SCALE	(1L << SCHED_CAPACITY_SHIFT)
+
 #ifdef CONFIG_UCLAMP_TASK
 /* Number of utilization clamp buckets (shorter alias) */
 #define UCLAMP_BUCKETS CONFIG_UCLAMP_BUCKETS_COUNT
@@ -1072,22 +1088,6 @@ enum cpu_idle_type {
 	CPU_NEWLY_IDLE,
 	CPU_MAX_IDLE_TYPES
 };
-
-/*
- * Integer metrics need fixed point arithmetic, e.g., sched/fair
- * has a few: load, load_avg, util_avg, freq, and capacity.
- *
- * We define a basic fixed point arithmetic range, and then formalize
- * all these metrics based on that basic range.
- */
-# define SCHED_FIXEDPOINT_SHIFT	10
-# define SCHED_FIXEDPOINT_SCALE	(1L << SCHED_FIXEDPOINT_SHIFT)
-
-/*
- * Increase resolution of cpu_capacity calculations
- */
-#define SCHED_CAPACITY_SHIFT	SCHED_FIXEDPOINT_SHIFT
-#define SCHED_CAPACITY_SCALE	(1L << SCHED_CAPACITY_SHIFT)
 
 struct sched_capacity_reqs {
 	unsigned long cfs;

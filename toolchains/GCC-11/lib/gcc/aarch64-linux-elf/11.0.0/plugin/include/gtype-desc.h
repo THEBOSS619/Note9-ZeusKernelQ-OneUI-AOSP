@@ -1121,10 +1121,10 @@ extern void gt_ggc_mx_vec_cp_class_binding_va_gc_ (void *);
   if (X != NULL) gt_ggc_mx_cp_token_cache (X);\
   } while (0)
 extern void gt_ggc_mx_cp_token_cache (void *);
-#define gt_ggc_m_36vec_qualified_typedef_usage_t_va_gc_(X) do { \
-  if (X != NULL) gt_ggc_mx_vec_qualified_typedef_usage_t_va_gc_ (X);\
+#define gt_ggc_m_32vec_deferred_access_check_va_gc_(X) do { \
+  if (X != NULL) gt_ggc_mx_vec_deferred_access_check_va_gc_ (X);\
   } while (0)
-extern void gt_ggc_mx_vec_qualified_typedef_usage_t_va_gc_ (void *);
+extern void gt_ggc_mx_vec_deferred_access_check_va_gc_ (void *);
 #define gt_ggc_m_28vec_cxx_saved_binding_va_gc_(X) do { \
   if (X != NULL) gt_ggc_mx_vec_cxx_saved_binding_va_gc_ (X);\
   } while (0)
@@ -1165,10 +1165,6 @@ extern void gt_ggc_mx_hash_table_named_decl_hash_ (void *);
   if (X != NULL) gt_ggc_mx_tinst_level (X);\
   } while (0)
 extern void gt_ggc_mx_tinst_level (void *);
-#define gt_ggc_m_32vec_deferred_access_check_va_gc_(X) do { \
-  if (X != NULL) gt_ggc_mx_vec_deferred_access_check_va_gc_ (X);\
-  } while (0)
-extern void gt_ggc_mx_vec_deferred_access_check_va_gc_ (void *);
 #define gt_ggc_m_10tree_check(X) do { \
   if (X != NULL) gt_ggc_mx_tree_check (X);\
   } while (0)
@@ -2490,10 +2486,10 @@ extern void gt_pch_nx_vec_cp_class_binding_va_gc_ (void *);
   if (X != NULL) gt_pch_nx_cp_token_cache (X);\
   } while (0)
 extern void gt_pch_nx_cp_token_cache (void *);
-#define gt_pch_n_36vec_qualified_typedef_usage_t_va_gc_(X) do { \
-  if (X != NULL) gt_pch_nx_vec_qualified_typedef_usage_t_va_gc_ (X);\
+#define gt_pch_n_32vec_deferred_access_check_va_gc_(X) do { \
+  if (X != NULL) gt_pch_nx_vec_deferred_access_check_va_gc_ (X);\
   } while (0)
-extern void gt_pch_nx_vec_qualified_typedef_usage_t_va_gc_ (void *);
+extern void gt_pch_nx_vec_deferred_access_check_va_gc_ (void *);
 #define gt_pch_n_28vec_cxx_saved_binding_va_gc_(X) do { \
   if (X != NULL) gt_pch_nx_vec_cxx_saved_binding_va_gc_ (X);\
   } while (0)
@@ -2534,10 +2530,6 @@ extern void gt_pch_nx_hash_table_named_decl_hash_ (void *);
   if (X != NULL) gt_pch_nx_tinst_level (X);\
   } while (0)
 extern void gt_pch_nx_tinst_level (void *);
-#define gt_pch_n_32vec_deferred_access_check_va_gc_(X) do { \
-  if (X != NULL) gt_pch_nx_vec_deferred_access_check_va_gc_ (X);\
-  } while (0)
-extern void gt_pch_nx_vec_deferred_access_check_va_gc_ (void *);
 #define gt_pch_n_10tree_check(X) do { \
   if (X != NULL) gt_pch_nx_tree_check (X);\
   } while (0)
@@ -3427,7 +3419,7 @@ extern void gt_pch_p_27vec_cp_class_binding_va_gc_
     (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_14cp_token_cache
     (void *, void *, gt_pointer_operator, void *);
-extern void gt_pch_p_36vec_qualified_typedef_usage_t_va_gc_
+extern void gt_pch_p_32vec_deferred_access_check_va_gc_
     (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_28vec_cxx_saved_binding_va_gc_
     (void *, void *, gt_pointer_operator, void *);
@@ -3448,8 +3440,6 @@ extern void gt_pch_p_22vec_tree_pair_s_va_gc_
 extern void gt_pch_p_27hash_table_named_decl_hash_
     (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_11tinst_level
-    (void *, void *, gt_pointer_operator, void *);
-extern void gt_pch_p_32vec_deferred_access_check_va_gc_
     (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_10tree_check
     (void *, void *, gt_pointer_operator, void *);

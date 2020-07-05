@@ -125,7 +125,8 @@ static unsigned int get_min_freq(struct cpufreq_policy *policy)
 	else if (cpumask_test_cpu(policy->cpu, cpu_perf_mask) &&
 			test_bit(SCREEN_OFF, &b->state))
 		freq = idle_min_freq_hp;
-	else if (cpumask_test_cpu(policy->cpu, cpu_lp_mask))
+	else if (cpumask_test_cpu(policy->cpu, cpu_lp_mask) &&
+			(!test_bit(SCREEN_OFF, &b->state)))
 		freq = remove_input_boost_freq_lp;
 	else
 		freq = remove_input_boost_freq_perf;

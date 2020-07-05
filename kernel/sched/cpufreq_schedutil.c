@@ -1343,7 +1343,9 @@ static void sugov_stop_slack(int cpu)
 
 static s64 get_next_event_time_ms(int cpu)
 {
-	return ktime_to_us(tick_nohz_get_sleep_length());
+	ktime_t delta_next;
+
+	return ktime_to_us(tick_nohz_get_sleep_length(&delta_next));
 }
 
 static int sugov_need_slack_timer(unsigned int cpu)

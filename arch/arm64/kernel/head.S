@@ -252,8 +252,8 @@ preserve_boot_args:
 	dmb	sy				// needed before dc ivac with
 						// MMU off
 
-	mov	x1, #0x20			// 4 x 8 bytes
-	b	__inval_dcache_area		// tail call
+	add	x1, x0, #0x20			// 4 x 8 bytes
+	b	__inval_cache_range		// tail call
 ENDPROC(preserve_boot_args)
 
 /*
@@ -330,20 +330,20 @@ __create_page_tables:
 	 * dirty cache lines being evicted.
 	 */
 	adrp	x0, idmap_pg_dir
-	ldr	x1, =(IDMAP_DIR_SIZE + SWAPPER_DIR_SIZE + RESERVED_TTBR0_SIZE)
-	bl	__inval_dcache_area
+	adrp	x1, swapper_pg_dir + SWAPPER_DIR_SIZE + RESERVED_TTBR0_SIZE
+	bl	__inval_cache_range
 
 	/*
 	 * Clear the idmap and swapper page tables.
 	 */
 	adrp	x0, idmap_pg_dir
-	ldr	x1, =(IDMAP_DIR_SIZE + SWAPPER_DIR_SIZE + RESERVED_TTBR0_SIZE)
+	adrp	x6, swapper_pg_dir + SWAPPER_DIR_SIZE + RESERVED_TTBR0_SIZE
 1:	stp	xzr, xzr, [x0], #16
 	stp	xzr, xzr, [x0], #16
 	stp	xzr, xzr, [x0], #16
 	stp	xzr, xzr, [x0], #16
-	subs	x1, x1, #64
-	b.ne	1b
+	cmp	x0, x6
+	b.lo	1b
 
 	mov	x7, SWAPPER_MM_MMUFLAGS
 
@@ -416,9 +416,9 @@ __create_page_tables:
 	 * tables again to remove any speculatively loaded cache lines.
 	 */
 	adrp	x0, idmap_pg_dir
-	ldr	x1, =(IDMAP_DIR_SIZE + SWAPPER_DIR_SIZE + RESERVED_TTBR0_SIZE)
+	adrp	x1, swapper_pg_dir + SWAPPER_DIR_SIZE + RESERVED_TTBR0_SIZE
 	dmb	sy
-	bl	__inval_dcache_area
+	bl	__inval_cache_range
 
 	ret	x28
 ENDPROC(__create_page_tables)

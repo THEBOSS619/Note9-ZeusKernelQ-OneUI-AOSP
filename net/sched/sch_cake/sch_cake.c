@@ -2639,9 +2639,7 @@ static int cake_change(struct Qdisc *sch, struct nlattr *opt,
 	if (!opt)
 		return -EINVAL;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)
-	err = nla_parse_nested(tb, TCA_CAKE_MAX, opt, cake_policy);
-#elif LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)
 	err = nla_parse_nested(tb, TCA_CAKE_MAX, opt, cake_policy, NULL);
 #else
 	err = nla_parse_nested(tb, TCA_CAKE_MAX, opt, cake_policy, extack);

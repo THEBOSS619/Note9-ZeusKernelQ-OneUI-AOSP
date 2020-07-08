@@ -1581,10 +1581,6 @@ static struct dentry *ext4_lookup(struct inode *dir, struct dentry *dentry, unsi
 	if (bh) {
 		__u32 ino = le32_to_cpu(de->inode);
 		if (!ext4_valid_inum(dir->i_sb, ino)) {
-			/* for debugging, sangwoo2.lee */
-			printk(KERN_ERR "Name of directory entry has bad");
-			print_bh(dir->i_sb, bh, 0, EXT4_BLOCK_SIZE(dir->i_sb));
-			/* for debugging */
 			brelse(bh);
 			EXT4_ERROR_INODE(dir, "bad inode number: %u", ino);
 			return ERR_PTR(-EFSCORRUPTED);

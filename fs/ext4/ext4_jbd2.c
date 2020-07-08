@@ -319,7 +319,6 @@ int __ext4_handle_dirty_super(const char *where, unsigned int line,
 
 	if (unlikely(le16_to_cpu(EXT4_SB(sb)->s_es->s_magic) !=
 			EXT4_SUPER_MAGIC)) {
-		print_bh(sb, bh, 0, EXT4_BLOCK_SIZE(sb));
 		if (test_opt(sb, ERRORS_PANIC))
 			panic("EXT4(Can not find EXT4_SUPER_MAGIC");
 		return -EIO;

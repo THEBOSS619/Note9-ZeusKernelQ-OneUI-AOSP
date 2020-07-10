@@ -722,16 +722,16 @@ static bool exynos_hpgov_change_quad(void)
 
 static bool exynos_hpgov_change_triple(void)
 {
-	int heavy_cnt;
+	int big_heavy_cnt, lit_heavy_cnt;
 
-	/* If system is busy, change triple mode */
+	/* If system is busy, doesn't change boost mode */
 	if (exynos_hpgov_system_busy())
 		return false;
 
-	heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT) +
-			exynos_hpgov_get_imbal_cpus(BIG);
-
-	if ((heavy_cnt > DUAL) || !heavy_cnt)
+	lit_heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT);
+	big_heavy_cnt = exynos_hpgov_get_imbal_cpus(BIG);
+	if ((big_heavy_cnt == TRIPLE && !lit_heavy_cnt) ||
+		(big_heavy_cnt == DUAL && lit_heavy_cnt == DUAL))
 		return true;
 
 	return false;
@@ -739,16 +739,16 @@ static bool exynos_hpgov_change_triple(void)
 
 static bool exynos_hpgov_change_dual(void)
 {
-	int heavy_cnt;
+	int big_heavy_cnt, lit_heavy_cnt;
 
 	/* If system is busy, doesn't change boost mode */
 	if (exynos_hpgov_system_busy())
 		return false;
 
-	heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT) +
-			exynos_hpgov_get_imbal_cpus(BIG);
-
-	if ((heavy_cnt > SINGLE) || !heavy_cnt)
+	lit_heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT);
+	big_heavy_cnt = exynos_hpgov_get_imbal_cpus(BIG);
+	if ((big_heavy_cnt == DUAL && !lit_heavy_cnt) ||
+		(big_heavy_cnt == SINGLE && lit_heavy_cnt == SINGLE))
 		return true;
 
 	return false;
@@ -1149,10 +1149,10 @@ static int __init exynos_hpgov_parse_dt(void)
 	struct device_node *np = of_find_node_by_name(NULL, "hotplug_governor");
 
 	if (arg_overclock == 1) {
-		exynos_hpgov.single_change_ms = 25;
-		exynos_hpgov.dual_change_ms = 20;
-		exynos_hpgov.triple_change_ms = 15;
-		exynos_hpgov.quad_change_ms = 10;
+		exynos_hpgov.single_change_ms = 20;
+		exynos_hpgov.dual_change_ms = 15;
+		exynos_hpgov.triple_change_ms = 10;
+		exynos_hpgov.quad_change_ms = 5;
 		exynos_hpgov.big_heavy_thr = 750;
 		exynos_hpgov.lit_heavy_thr = 250;
 		exynos_hpgov.big_idle_thr = 200;

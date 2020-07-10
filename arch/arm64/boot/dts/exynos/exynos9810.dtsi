@@ -5013,7 +5013,7 @@
 	cpu_hotplug {
 		compatible = "exynos, cpu_hotplug";
 		boot_lock_time = <40>;
-		fast_hp_cpus = "5-7";
+		fast_hp_cpus = "4-7";
 	};
 
 	hotplug_governor {

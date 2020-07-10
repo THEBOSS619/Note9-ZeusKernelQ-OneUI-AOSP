@@ -714,7 +714,7 @@ static bool exynos_hpgov_change_quad(void)
 	heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT) +
 			exynos_hpgov_get_imbal_cpus(BIG);
 
-	if ((heavy_cnt > DUAL) || !heavy_cnt)
+	if ((heavy_cnt > TRIPLE) || !heavy_cnt)
 		return true;
 
 	return false;
@@ -726,7 +726,7 @@ static bool exynos_hpgov_change_triple(void)
 
 	/* If system is busy, change triple mode */
 	if (exynos_hpgov_system_busy())
-		return true;
+		return false;
 
 	heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT) +
 			exynos_hpgov_get_imbal_cpus(BIG);
@@ -739,16 +739,16 @@ static bool exynos_hpgov_change_triple(void)
 
 static bool exynos_hpgov_change_dual(void)
 {
-	int big_heavy_cnt, lit_heavy_cnt;
+	int heavy_cnt;
 
 	/* If system is busy, doesn't change boost mode */
 	if (exynos_hpgov_system_busy())
 		return false;
 
-	lit_heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT);
-	big_heavy_cnt = exynos_hpgov_get_imbal_cpus(BIG);
-	if ((big_heavy_cnt == DUAL && !lit_heavy_cnt) ||
-		(big_heavy_cnt == SINGLE && lit_heavy_cnt == SINGLE))
+	heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT) +
+			exynos_hpgov_get_imbal_cpus(BIG);
+
+	if ((heavy_cnt > SINGLE) || !heavy_cnt)
 		return true;
 
 	return false;
@@ -1153,14 +1153,14 @@ static int __init exynos_hpgov_parse_dt(void)
 		exynos_hpgov.dual_change_ms = 20;
 		exynos_hpgov.triple_change_ms = 15;
 		exynos_hpgov.quad_change_ms = 10;
-		exynos_hpgov.big_heavy_thr = 500;
-		exynos_hpgov.lit_heavy_thr = 125;
-		exynos_hpgov.big_idle_thr = 125;
-		exynos_hpgov.lit_idle_thr = 100;
+		exynos_hpgov.big_heavy_thr = 750;
+		exynos_hpgov.lit_heavy_thr = 250;
+		exynos_hpgov.big_idle_thr = 200;
+		exynos_hpgov.lit_idle_thr = 150;
 		exynos_hpgov.ldsum_heavy_thr = 800;
 		exynos_hpgov.ldsum_enabled = 0;
 		exynos_hpgov.skip_lit_enabled = 0;
-		exynos_hpgov.cl_busy_ratio = 65;
+		exynos_hpgov.cl_busy_ratio = 75;
 		exynos_hpgov.cal_id = ACPM_DVFS_CPUCL1;
 
 		} else {

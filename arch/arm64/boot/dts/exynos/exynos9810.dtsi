@@ -5600,23 +5600,6 @@
 		};
 	};
 
-	smc_info: mcinfo@1B8300000 {
-		compatible = "samsung,exynos-mcinfo";
-		reg =	<0x0 0x1B83004C 0x4>,
-			<0x0 0x1B93004C 0x4>,
-			<0x0 0x1BA3004C 0x4>,
-			<0x0 0x1BB3004C 0x4>;
-		bit_field = <20 4>;
-		/* start bit, width */
-		basecnt = <4>;
-		irqcnt = <4>;
-
-		interrupts = <0 INTREQ__DMC_TEMPERR_MIF0 0>,
-			     <0 INTREQ__DMC_TEMPERR_MIF1 0>,
-			     <0 INTREQ__DMC_TEMPERR_MIF2 0>,
-			     <0 INTREQ__DMC_TEMPERR_MIF3 0>;
-	};
-
 	fimc_is: fimc_is@16290000 {
 		compatible = "samsung,exynos5-fimc-is";
 		#pb-id-cells = <6>;

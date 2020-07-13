@@ -314,8 +314,12 @@ CONFIG_BLOCK=y
 # CONFIG_BLK_DEV_BSG is not set
 # CONFIG_BLK_DEV_BSGLIB is not set
 # CONFIG_BLK_DEV_INTEGRITY is not set
+# CONFIG_BLK_DEV_ZONED is not set
 # CONFIG_BLK_CMDLINE_PARSER is not set
 # CONFIG_JOURNAL_DATA_TAG is not set
+CONFIG_BLK_WBT=y
+CONFIG_BLK_WBT_SQ=y
+# CONFIG_BLK_WBT_MQ is not set
 
 #
 # Partition Types

@@ -9,11 +9,7 @@ obj-$(CONFIG_BLOCK) := bio.o elevator.o blk-core.o blk-tag.o blk-sysfs.o \
 			genhd.o scsi_ioctl.o partition-generic.o ioprio.o \
 			badblocks.o partitions/
 
-ifeq ($(CONFIG_EXYNOS_HOTPLUG_GOVERNOR), y)
-obj-$(CONFIG_BLOCK) += blk-exynos-mq.o blk-exynos-mq-sysfs.o
-else
 obj-$(CONFIG_BLOCK) += blk-mq.o blk-mq-sysfs.o
-endif
 
 obj-$(CONFIG_BOUNCE)	+= bounce.o
 obj-$(CONFIG_BLK_DEV_BSG)	+= bsg.o

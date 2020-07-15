@@ -136,7 +136,7 @@ fi
 git reset --hard
 if [ "$1" == "crownlte" ]; then
 	if [ "$2" == "oreo" ]; then
-		git checkout OneUI2.0
+		git checkout OneUI2.1
 		git reset --hard
 	else
 		git checkout "$2"
@@ -219,7 +219,7 @@ if [ "$2" == "oreo" ] || [ "$2" == "apgk" ]; then
 		cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_N960"crownlte/dtb.img
 		cd "$AIK_N960" || exit
 		echo "$PASSWORD" | zip -r9 UPDATE-AnyKernel3.zip * -x .git README.md *placeholder
-		cp "$AIK_N960"UPDATE-AnyKernel3.zip  "$ZIP_N960"ZeusKernelQ.zip
+		cp "$AIK_N960"UPDATE-AnyKernel3.zip  "$ZIP_N960"ZeusKernelQ-OneUI.zip
 	fi
 else
 	echo "This is where we depart. You're on your own for AIK!"

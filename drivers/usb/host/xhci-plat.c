@@ -549,9 +549,18 @@ static int xhci_plat_suspend(struct device *dev)
 
 static int xhci_plat_resume(struct device *dev)
 {
-	pr_info("[%s] \n",__func__);
+	struct usb_hcd	*hcd = dev_get_drvdata(dev);
+	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
+	int ret;
 
-	/* return xhci_resume(xhci, 0); */
+	ret = xhci_resume(xhci, 0);
+	if (ret)
+		return ret;
+
+	pm_runtime_disable(dev);
+	pm_runtime_set_active(dev);
+	pm_runtime_enable(dev);
+
 	return 0;
 }
 

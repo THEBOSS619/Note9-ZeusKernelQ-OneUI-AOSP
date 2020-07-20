@@ -840,6 +840,9 @@ config VMPRESSURE_LEVEL_MED
 	help
 	  This supports to adjust vmpressure_level_med threshold value
 
+config ARCH_SUPPORTS_SPECULATIVE_PAGE_FAULT
+	def_bool y
+
 config SPECULATIVE_PAGE_FAULT
 	bool "Speculative page faults"
 	default y

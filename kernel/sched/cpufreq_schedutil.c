@@ -19,6 +19,7 @@
 #include <linux/of.h>
 #include <linux/ems.h>
 #include <trace/events/power.h>
+#include <linux/display_state.h>
 
 #include "sched.h"
 #include "tune.h"
@@ -213,10 +214,14 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
 	unsigned int freq = arch_scale_freq_invariant() ?
 				policy->cpuinfo.max_freq : policy->cur;
 
+	if (is_display_on())
+		freq = (freq + (freq >> 1)) * util / max;
+	
+	if (!is_display_on())
+		freq = (freq + (freq >> 5)) * util / max;
+
 	if (sg_policy->tunables->exp_util)
 		freq = (freq + (freq >> 2)) * int_sqrt(util * 100 / max) / 10;
-	else
-		freq = (freq + (freq >> 2)) * util / max;
 
 	if (freq == sg_policy->cached_raw_freq && !sg_policy->need_freq_update)
 		return sg_policy->next_freq;
@@ -881,7 +886,7 @@ static int sugov_init(struct cpufreq_policy *policy)
 	}
 
 	tunables->iowait_boost_enable = policy->iowait_boost_enable;
-	tunables->exp_util = true;
+	tunables->exp_util = false;
 
 	policy->governor_data = sg_policy;
 	sg_policy->tunables = tunables;

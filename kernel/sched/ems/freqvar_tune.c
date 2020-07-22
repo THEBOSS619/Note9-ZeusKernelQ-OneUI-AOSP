@@ -218,18 +218,39 @@ struct freqvar_boost {
 	struct freqvar_table *table;
 	unsigned int ratio;
 	unsigned long step_max_util;
+#ifdef CONFIG_NO_HZ_COMMON
+	unsigned long saved_idle_calls;
+#endif
 };
 DEFINE_PER_CPU(struct freqvar_boost *, freqvar_boost);
 
 attr_freqvar(boost, boost, table);
 static struct governor_attr freqvar_boost_attr = __ATTR_RW(freqvar_boost);
 
+#ifdef CONFIG_NO_HZ_COMMON
+static bool cpu_is_busy(struct freqvar_boost *boost)
+{
+	unsigned long idle_calls = tick_nohz_get_idle_calls();
+	bool ret = idle_calls == boost->saved_idle_calls;
+ 	boost->saved_idle_calls = idle_calls;
+	return ret;
+}
+#else
+static inline bool cpu_is_busy(struct freqvar_boost *boost) { return false; }
+#endif /* CONFIG_NO_HZ_COMMON */
+
 unsigned long freqvar_boost_vector(int cpu, unsigned long util)
 {
 	struct freqvar_boost *boost = per_cpu(freqvar_boost, cpu);
 	unsigned long boosted_util = 0;
+	bool busy;
 
 	if (!boost || !boost->ratio)
+		return util;
+
+	busy = cpu_is_busy(boost);
+
+	if (!busy)
 		return util;
 
 	if (util > boost->step_max_util) {

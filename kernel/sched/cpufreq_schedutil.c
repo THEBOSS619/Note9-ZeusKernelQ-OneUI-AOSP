@@ -349,7 +349,7 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
 {
 	struct cpufreq_policy *policy = sg_policy->policy;
 	unsigned int freq = arch_scale_freq_invariant() ?
-				policy->cpuinfo.max_freq : policy->cur;
+				policy->max : policy->cur;
 #ifdef CONFIG_SCHED_KAIR_GLUE
 	struct sugov_cpu *sg_cpu;
 	struct kair_class *vessel;
@@ -369,7 +369,7 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
 	if (sg_policy->tunables->exp_util)
 		freq = (freq + (freq >> 2)) * int_sqrt(util * 100 / max) / 10;
 	else
-		freq = (freq + (freq >> 2)) * util / max;
+		freq = (freq + (freq >> 1)) * util / max;
 
 #ifdef CONFIG_SCHED_KAIR_GLUE
 	legacy_freq = freq;

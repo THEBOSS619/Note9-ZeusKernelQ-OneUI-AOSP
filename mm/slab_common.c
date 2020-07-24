@@ -248,6 +248,14 @@ int slab_unmergeable(struct kmem_cache *s)
 	if (s->refcount < 0)
 		return 1;
 
+#ifdef CONFIG_MEMCG_KMEM
+	/*
+	 * Skip the dying kmem_cache.
+	 */
+	if (s->memcg_params.dying)
+		return 1;
+#endif
+
 	return 0;
 }
 
@@ -718,12 +726,15 @@ static int shutdown_memcg_caches(struct kmem_cache *s,
 	return 0;
 }
 
-static void flush_memcg_workqueue(struct kmem_cache *s)
+static void memcg_set_kmem_cache_dying(struct kmem_cache *s)
 {
 	mutex_lock(&slab_mutex);
 	s->memcg_params.dying = true;
 	mutex_unlock(&slab_mutex);
+}
 
+static void flush_memcg_workqueue(struct kmem_cache *s)
+{
 	/*
 	 * SLUB deactivates the kmem_caches through call_rcu_sched. Make
 	 * sure all registered rcu callbacks have been invoked.
@@ -746,10 +757,6 @@ static inline int shutdown_memcg_caches(struct kmem_cache *s,
 {
 	return 0;
 }
-
-static inline void flush_memcg_workqueue(struct kmem_cache *s)
-{
-}
 #endif /* CONFIG_MEMCG && !CONFIG_SLOB */
 
 void slab_kmem_cache_release(struct kmem_cache *s)
@@ -769,8 +776,6 @@ void kmem_cache_destroy(struct kmem_cache *s)
 	if (unlikely(!s))
 		return;
 
-	flush_memcg_workqueue(s);
-
 	get_online_cpus();
 	get_online_mems();
 
@@ -779,6 +784,22 @@ void kmem_cache_destroy(struct kmem_cache *s)
 	s->refcount--;
 	if (s->refcount)
 		goto out_unlock;
+
+#ifdef CONFIG_MEMCG_KMEM
+	memcg_set_kmem_cache_dying(s);
+
+	mutex_unlock(&slab_mutex);
+
+	put_online_mems();
+	put_online_cpus();
+
+	flush_memcg_workqueue(s);
+
+	get_online_cpus();
+	get_online_mems();
+
+	mutex_lock(&slab_mutex);
+#endif
 
 	err = shutdown_memcg_caches(s, &release, &need_rcu_barrier);
 	if (!err)

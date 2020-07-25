@@ -764,7 +764,7 @@ void init_entity_runnable_average(struct sched_entity *se)
 	 */
 	if (entity_is_task(se))
 		sa->load_avg = scale_load_down(se->load.weight);
-	sa->load_sum = LOAD_AVG_MAX;
+	sa->load_sum = sa->load_avg * LOAD_AVG_MAX;
 	/* when this task enqueue'ed, it will contribute to its cfs_rq's load_avg */
 
 	init_multi_load(se);
@@ -2114,7 +2114,7 @@ static u64 numa_get_avg_runtime(struct task_struct *p, u64 *period)
 		if (unlikely((s64)*period < 0))
 			*period = 0;
 	} else {
-		delta = p->se.avg.load_sum;
+		delta = p->se.avg.load_sum / p->se.load.weight;
 		*period = LOAD_AVG_MAX;
 	}
 
@@ -3521,7 +3521,7 @@ update_tg_cfs_load(struct cfs_rq *cfs_rq, struct sched_entity *se)
 
 	/* Set new sched_entity's load */
 	se->avg.load_avg = load;
-	se->avg.load_sum = LOAD_AVG_MAX;
+	se->avg.load_sum = se->avg.load_avg * LOAD_AVG_MAX;
 
 	/* Update parent cfs_rq load */
 	add_positive(&cfs_rq->avg.load_avg, delta);
@@ -3734,6 +3734,8 @@ static void attach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
 {
 	se->avg.last_update_time = cfs_rq->avg.last_update_time;
 	enqueue_load_avg(cfs_rq, se);
+	cfs_rq->avg.load_avg += se->avg.load_avg;
+	cfs_rq->avg.load_sum += se->avg.load_sum;
 	cfs_rq->avg.util_avg += se->avg.util_avg;
 	cfs_rq->avg.util_sum += se->avg.util_sum;
 	set_tg_cfs_propagate(cfs_rq);
@@ -3754,6 +3756,9 @@ static void attach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
 static void detach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *se)
 {
 	dequeue_load_avg(cfs_rq, se);
+
+	sub_positive(&cfs_rq->avg.load_avg, se->avg.load_avg);
+	sub_positive(&cfs_rq->avg.load_sum, se->avg.load_sum);
 	sub_positive(&cfs_rq->avg.util_avg, se->avg.util_avg);
 	sub_positive(&cfs_rq->avg.util_sum, se->avg.util_sum);
 	set_tg_cfs_propagate(cfs_rq);

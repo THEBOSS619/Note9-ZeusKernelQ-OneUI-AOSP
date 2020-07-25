@@ -125,8 +125,14 @@ void disable_debug_monitors(enum dbg_active_el el);
 
 void user_rewind_single_step(struct task_struct *task);
 void user_fastforward_single_step(struct task_struct *task);
+
+#ifdef CONFIG_DEBUG_MONITORS
 void user_regs_reset_single_step(struct user_pt_regs *regs,
 				 struct task_struct *task);
+#else
+static inline void user_regs_reset_single_step(struct user_pt_regs *regs,
+				 struct task_struct *task) {}
+#endif
 
 void kernel_enable_single_step(struct pt_regs *regs);
 void kernel_disable_single_step(void);

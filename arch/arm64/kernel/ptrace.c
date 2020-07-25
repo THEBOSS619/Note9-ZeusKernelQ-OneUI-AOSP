@@ -1113,7 +1113,11 @@ static int compat_ptrace_hbp_num_to_idx(compat_long_t num)
 
 static int compat_ptrace_hbp_get_resource_info(u32 *kdata)
 {
+#ifdef CONFIG_DEBUG_MONITORS
+	u8 num_brps, num_wrps, debug_arch, wp_len;
+#else
 	u8 num_brps, num_wrps, wp_len;
+#endif
 	u32 reg = 0;
 
 	num_brps	= hw_breakpoint_slots(TYPE_INST);

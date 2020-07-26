@@ -20,13 +20,13 @@
 
 #include "s5p_mfc_queue.h"
 
-unsigned int debug_level;
-unsigned int debug_ts;
-unsigned int dbg_enable;
-unsigned int nal_q_dump;
-unsigned int nal_q_disable;
-unsigned int nal_q_parallel_disable;
-unsigned int otf_dump;
+unsigned int debug_level = 0;
+unsigned int debug_ts = 0;
+unsigned int dbg_enable = 0;
+unsigned int nal_q_dump = 0;
+unsigned int nal_q_disable = 0;
+unsigned int nal_q_parallel_disable = 0;
+unsigned int otf_dump = 0;
 
 static int mfc_info_show(struct seq_file *s, void *unused)
 {

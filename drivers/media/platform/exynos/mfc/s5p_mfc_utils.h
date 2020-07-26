@@ -33,7 +33,6 @@ static inline void s5p_mfc_clean_ctx_int_flags(struct s5p_mfc_ctx *ctx)
 
 static inline void s5p_mfc_change_state(struct s5p_mfc_ctx *ctx, enum s5p_mfc_inst_state state)
 {
-	struct s5p_mfc_dev *dev = ctx->dev;
 
 	MFC_TRACE_CTX("** state : %d\n", state);
 	ctx->state = state;

@@ -161,7 +161,6 @@ void s5p_mfc_mem_ion_free(struct s5p_mfc_dev *dev,
 int s5p_mfc_mem_ion_alloc(struct s5p_mfc_dev *dev,
 		struct s5p_mfc_special_buf *special_buf)
 {
-	struct s5p_mfc_ctx *ctx = dev->ctx[dev->curr_ctx];
 	int ion_mask, flag;
 
 	switch (special_buf->buftype) {
@@ -333,7 +332,6 @@ void s5p_mfc_move_iovmm_to_spare(struct s5p_mfc_ctx *ctx, int num_planes, int in
 
 void s5p_mfc_cleanup_assigned_iovmm(struct s5p_mfc_ctx *ctx)
 {
-	struct s5p_mfc_dev *dev = ctx->dev;
 	struct s5p_mfc_dec *dec = ctx->dec_priv;
 	int i;
 

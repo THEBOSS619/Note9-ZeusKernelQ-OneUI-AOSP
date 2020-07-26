@@ -138,8 +138,6 @@ static void mfc_qos_operate(struct s5p_mfc_ctx *ctx, int opr_type, int idx)
 static void mfc_qos_set(struct s5p_mfc_ctx *ctx, struct bts_bw *mfc_bw, int i)
 {
 	struct s5p_mfc_dev *dev = ctx->dev;
-	struct s5p_mfc_platdata *pdata = dev->pdata;
-	struct s5p_mfc_qos *qos_table = pdata->qos_table;
 
 	mfc_debug(2, "QoS table[%d] covered mb %d ~ %d (int:%d, mif:%d)\n",
 			i, qos_table[i].threshold_mb,

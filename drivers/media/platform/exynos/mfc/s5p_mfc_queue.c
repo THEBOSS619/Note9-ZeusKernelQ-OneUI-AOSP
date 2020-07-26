@@ -880,7 +880,6 @@ struct s5p_mfc_buf *s5p_mfc_search_move_dpb_nal_q(struct s5p_mfc_ctx *ctx, unsig
 /* Add dst buffer in dst_buf_queue */
 void s5p_mfc_store_dpb(struct s5p_mfc_ctx *ctx, struct vb2_buffer *vb)
 {
-	struct s5p_mfc_dev *dev = ctx->dev;
 	unsigned long flags;
 	struct s5p_mfc_dec *dec;
 	struct s5p_mfc_buf *mfc_buf;

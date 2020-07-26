@@ -1011,7 +1011,6 @@ static void mfc_nal_q_handle_frame_output_move(struct s5p_mfc_ctx *ctx,
 			dma_addr_t dspl_y_addr, unsigned int released_flag)
 {
 	struct s5p_mfc_dec *dec = ctx->dec_priv;
-	struct s5p_mfc_dev *dev = ctx->dev;
 	struct s5p_mfc_buf *dst_mb;
 	unsigned int index;
 
@@ -1234,7 +1233,6 @@ static void mfc_nal_q_handle_frame_input(struct s5p_mfc_ctx *ctx, unsigned int e
 					DecoderOutputStr *pOutStr)
 {
 	struct s5p_mfc_dec *dec = ctx->dec_priv;
-	struct s5p_mfc_dev *dev = ctx->dev;
 	struct s5p_mfc_buf *src_mb;
 	unsigned int index;
 	int deleted = 0;

@@ -187,7 +187,6 @@ static void mfc_handle_frame_copy_timestamp(struct s5p_mfc_ctx *ctx)
 static void mfc_handle_frame_output_move(struct s5p_mfc_ctx *ctx,
 		dma_addr_t dspl_y_addr, unsigned int released_flag)
 {
-	struct s5p_mfc_dev *dev = ctx->dev;
 	struct s5p_mfc_dec *dec = ctx->dec_priv;
 	struct s5p_mfc_buf *ref_mb;
 	int index;

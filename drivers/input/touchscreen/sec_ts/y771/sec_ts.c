@@ -781,6 +781,11 @@ void sec_ts_reinit(struct sec_ts_data *ts)
 					__func__, SEC_TS_CMD_SET_COVERTYPE);
 	}
 
+	ret = sec_ts_glove_mode_enables(ts, 0);
+	if (ret < 0)
+		input_err(true, &ts->client->dev, "%s: Failed to enable glove mode",
+			  __func__);
+
 	ret = sec_ts_i2c_write(ts, SEC_TS_CMD_SET_TOUCHFUNCTION, (u8 *)&(ts->touch_functions), 2);
 	if (ret < 0)
 		input_err(true, &ts->client->dev, "%s: Failed to send command(0x%x)",
@@ -3377,6 +3382,11 @@ int sec_ts_start_device(struct sec_ts_data *ts)
 		}
 	}
 #endif
+
+	ret = sec_ts_glove_mode_enables(ts, 1);
+	if (ret < 0)
+		input_err(true, &ts->client->dev, "%s: Failed to enable glove mode",
+			  __func__);
 
 	if (ts->use_sponge) {
 		ret = sec_ts_set_custom_library(ts);

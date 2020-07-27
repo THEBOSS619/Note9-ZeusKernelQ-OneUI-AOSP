@@ -457,6 +457,10 @@ static inline struct task_struct *task_of(struct sched_entity *se)
 	return container_of(se, struct task_struct, se);
 }
 
+static inline struct rq *rq_of(struct cfs_rq *cfs_rq)
+{
+	return container_of(cfs_rq, struct rq, cfs);
+}
 
 #define entity_is_task(se)	1
 
@@ -3056,7 +3060,9 @@ static inline void update_cfs_shares(struct sched_entity *se)
 
 static inline void cfs_rq_util_change(struct cfs_rq *cfs_rq)
 {
-	if (&this_rq()->cfs == cfs_rq) {
+	struct rq *rq = rq_of(cfs_rq);
+
+	if (&rq->cfs == cfs_rq) {
 		/*
 		 * There are a few boundary cases this might miss but it should
 		 * get called often enough that that should (hopefully) not be
@@ -3073,7 +3079,7 @@ static inline void cfs_rq_util_change(struct cfs_rq *cfs_rq)
 		 *
 		 * See cpu_util().
 		 */
-		cpufreq_update_util(rq_of(cfs_rq), 0);
+		cpufreq_update_util(rq, 0);
 	}
 }
 
@@ -3709,7 +3715,8 @@ int update_rt_rq_load_avg(u64 now, int cpu, struct rt_rq *rt_rq, int running)
 #endif
 	}
 
-	decayed = ___update_load_avg(now, cpu, sa, 0, running, NULL, rt_rq);
+	decayed = ___update_load_avg(now, cpu, sa,
+		scale_load_down(NICE_0_LOAD), running, NULL, rt_rq);
 
 #ifndef CONFIG_64BIT
 	smp_wmb();
@@ -4105,7 +4112,7 @@ place_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int initial)
 	 * little, place the new task so that it fits in the slot that
 	 * stays open at the end.
 	 */
-	if (initial & sched_feat(START_DEBIT))
+	if (initial && sched_feat(START_DEBIT))
 		vruntime += sched_vslice(cfs_rq, se);
 
 	/* sleeps up to a single latency don't count. */
@@ -5469,11 +5476,13 @@ static bool sd_overutilized(struct sched_domain *sd)
 
 static void set_sd_overutilized(struct sched_domain *sd)
 {
+	trace_sched_overutilized(true);
 	sd->shared->overutilized = true;
 }
 
 static void clear_sd_overutilized(struct sched_domain *sd)
 {
+	trace_sched_overutilized(false);
 	sd->shared->overutilized = false;
 }
 
@@ -11639,12 +11648,8 @@ static inline bool nohz_kick_needed(struct rq *rq, bool only_update)
 
 	sd = rcu_dereference(rq->sd);
 	if (sd) {
-		/*
-		 * If there's a CFS task and the current CPU has reduced
-		 * capacity; kick the ILB to see if there's a better CPU to run
-		 * on.
-		 */
-		if (rq->cfs.h_nr_running >= 1 && check_cpu_capacity(rq, sd)) {
+		if ((rq->cfs.h_nr_running >= 1) &&
+				check_cpu_capacity(rq, sd)) {
 			kick = true;
 			goto unlock;
 		}
@@ -11693,14 +11698,15 @@ static __latent_entropy void run_rebalance_domains(struct softirq_action *h)
 	 */
 	nohz_idle_balance(this_rq, idle);
 	update_blocked_averages(this_rq->cpu);
+#ifdef CONFIG_NO_HZ_COMMON
 	if (!test_bit(NOHZ_STATS_KICK, nohz_flags(this_rq->cpu)))
 		rebalance_domains(this_rq, idle);
+	clear_bit(NOHZ_STATS_KICK, nohz_flags(this_rq->cpu));
+#else
+	rebalance_domains(this_rq, idle);
+#endif
 
 	ontime_migration();
-
-#ifdef CONFIG_NO_HZ_COMMON
-	clear_bit(NOHZ_STATS_KICK, nohz_flags(this_rq->cpu));
-#endif
 }
 
 /*

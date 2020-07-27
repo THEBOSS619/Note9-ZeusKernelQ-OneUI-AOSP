@@ -116,6 +116,21 @@ static ssize_t store(struct kobject *kobj, struct attribute *at,
 	return frtattr->store(kobj, buf, count);
 }
 
+static const struct sysfs_ops frt_sysfs_ops = {
+	.show	= show,
+	.store	= store,
+};
+
+static struct attribute *dom_frt_attrs[] = {
+	&coverage_ratio_attr.attr,
+	&active_ratio_attr.attr,
+	NULL
+};
+static struct kobj_type ktype_frt = {
+	.sysfs_ops	= &frt_sysfs_ops,
+	.default_attrs	= dom_frt_attrs,
+};
+
 static ssize_t store_disable_cpufreq(struct kobject *kobj,
 		struct kobj_attribute *attr, const char *buf,
 		size_t count)
@@ -136,21 +151,9 @@ static ssize_t show_disable_cpufreq(struct kobject *kobj,
 static struct kobj_attribute disable_cpufreq_attr =
 __ATTR(disable_cpufreq, 0644, show_disable_cpufreq, store_disable_cpufreq);
 
-static const struct sysfs_ops frt_sysfs_ops = {
-	.show	= show,
-	.store	= store,
-};
-
 static struct attribute *frt_attrs[] = {
-	&coverage_ratio_attr.attr,
-	&active_ratio_attr.attr,
 	&disable_cpufreq_attr.attr,
 	NULL,
-};
-
-static struct kobj_type ktype_frt = {
-	.sysfs_ops	= &frt_sysfs_ops,
-	.default_attrs	= frt_attrs,
 };
 
 static const struct attribute_group frt_group = {
@@ -274,13 +277,14 @@ static int __init frt_sysfs_init(void)
 
 	/* Add frt sysfs node for each coregroup */
 	list_for_each_entry(dom, &frt_list, list) {
-		int ret;
-
-		ret = kobject_init_and_add(&dom->kobj, &ktype_frt,
-				frt_kobj, "coregroup%d", dom->coregroup);
-		if (ret)
+		if (kobject_init_and_add(&dom->kobj, &ktype_frt,
+				frt_kobj, "coregroup%d", dom->coregroup))
 			goto out;
 	}
+
+	/* add frt syfs for global control */
+	if (sysfs_create_group(frt_kobj, &frt_group))
+		goto out;
 
 	return 0;
 
@@ -323,7 +327,7 @@ disable:
 
 static int __init init_frt(void)
 {
-	struct frt_dom *dom, *prev = NULL, *head;
+	struct frt_dom *dom, *prev = NULL, *head = NULL;
 	struct device_node *dn;
 	int cpu, tcpu, cnt = 0;
 
@@ -344,7 +348,7 @@ static int __init init_frt(void)
 			goto put_node;
 		}
 
-		if (cpu == 0)
+		if (head == NULL)
 			head = dom;
 
 		dom->activated_cpus = &activated_mask;
@@ -363,7 +367,6 @@ static int __init init_frt(void)
 
 		frt_set_coverage_ratio(cpu);
 		frt_set_active_ratio(cpu);
-
 		list_add_tail(&dom->list, &frt_list);
 	}
 	frt_sysfs_init();
@@ -680,7 +683,7 @@ accumulate_sum_rt(u64 delta, int cpu, struct sched_avg *sa,
 		sa->load_sum += weight * contrib;
 	}
 	if (running)
-		sa->util_sum += contrib * scale_cpu;
+		sa->util_sum += (u32)(contrib * scale_cpu);
 
 	return periods;
 }
@@ -1365,51 +1368,6 @@ static inline int rt_se_prio(struct sched_rt_entity *rt_se)
 	return rt_task_of(rt_se)->prio;
 }
 
-static void dump_throttled_rt_tasks(struct rt_rq *rt_rq)
-{
-	struct rt_prio_array *array = &rt_rq->active;
-	struct sched_rt_entity *rt_se;
-	char buf[500];
-	char *pos = buf;
-	char *end = buf + sizeof(buf);
-	int idx;
-
-	pos += snprintf(pos, sizeof(buf),
-		"sched: RT throttling activated for rt_rq %p (cpu %d)\n",
-		rt_rq, cpu_of(rq_of_rt_rq(rt_rq)));
-
-	if (bitmap_empty(array->bitmap, MAX_RT_PRIO))
-		goto out;
-
-	pos += snprintf(pos, end - pos, "potential CPU hogs:\n");
-	idx = sched_find_first_bit(array->bitmap);
-	while (idx < MAX_RT_PRIO) {
-		list_for_each_entry(rt_se, array->queue + idx, run_list) {
-			struct task_struct *p;
-
-			if (!rt_entity_is_task(rt_se))
-				continue;
-
-			p = rt_task_of(rt_se);
-			if (pos < end)
-				pos += snprintf(pos, end - pos, "\t%s (%d)\n",
-					p->comm, p->pid);
-		}
-		idx = find_next_bit(array->bitmap, MAX_RT_PRIO, idx + 1);
-	}
-out:
-#ifdef CONFIG_PANIC_ON_RT_THROTTLING
-	/*
-	 * Use pr_err() in the BUG() case since printk_sched() will
-	 * not get flushed and deadlock is not a concern.
-	 */
-	pr_err("%s", buf);
-	BUG();
-#else
-	printk_deferred("%s", buf);
-#endif
-}
-
 static int sched_rt_runtime_exceeded(struct rt_rq *rt_rq)
 {
 	u64 runtime = sched_rt_runtime(rt_rq);
@@ -1433,14 +1391,8 @@ static int sched_rt_runtime_exceeded(struct rt_rq *rt_rq)
 		 * but accrue some time due to boosting.
 		 */
 		if (likely(rt_b->rt_runtime)) {
-			static bool once = false;
-
 			rt_rq->rt_throttled = 1;
-
-			if (!once) {
-				once = true;
-				dump_throttled_rt_tasks(rt_rq);
-			}
+			printk_deferred_once("sched: RT throttling activated\n");
 		} else {
 			/*
 			 * In case we did anyway, make it go away,
@@ -2222,7 +2174,7 @@ void set_task_rq_rt(struct sched_rt_entity *rt_se,
 	n_last_update_time = next->avg.last_update_time;
 #endif
 	__update_load_avg(p_last_update_time, cpu_of(rq_of_rt_rq(prev)),
-		&rt_se->avg, 0, 0, NULL);
+		&rt_se->avg, scale_load_down(NICE_0_LOAD), 0, NULL);
 
 	rt_se->avg.last_update_time = n_last_update_time;
 }
@@ -2260,7 +2212,7 @@ void sync_rt_entity_load_avg(struct sched_rt_entity *rt_se)
 
 	last_update_time = rt_rq_last_update_time(rt_rq);
 	__update_load_avg(last_update_time, cpu_of(rq_of_rt_rq(rt_rq)),
-				&rt_se->avg, 0, 0, NULL);
+		&rt_se->avg, scale_load_down(NICE_0_LOAD), rt_rq->curr == rt_se, NULL);
 }
 
 /*
@@ -2375,8 +2327,8 @@ static void check_preempt_equal_prio(struct rq *rq, struct task_struct *p)
 	 * p is migratable, so let's not schedule it and
 	 * see if it is pushed or pulled somewhere else.
 	 */
-	if (p->nr_cpus_allowed != 1 &&
-	    cpupri_find(&rq->rd->cpupri, p, NULL))
+	if (p->nr_cpus_allowed != 1
+	    && cpupri_find(&rq->rd->cpupri, p, NULL))
 		return;
 
 	/*
@@ -2692,7 +2644,7 @@ void update_rt_load_avg(u64 now, struct sched_rt_entity *rt_se)
 		__update_load_avg(now, cpu, &rt_se->avg, scale_load_down(NICE_0_LOAD),
 			rt_rq->curr == rt_se, NULL);
 
-	update_rt_rq_load_avg(now, cpu, rt_rq, true);
+	update_rt_rq_load_avg(now, cpu, rt_rq, rt_rq->curr == rt_se);
 	propagate_entity_rt_load_avg(rt_se);
 
 	if (entity_is_task(rt_se))
@@ -2823,7 +2775,7 @@ static inline int cpu_selected(int cpu)	{ return (nr_cpu_ids > cpu && cpu >= 0);
 #define rttsk_cpus_allowed(tsk) (&(tsk)->cpus_allowed)
 
 static int find_victim_rt_rq(struct task_struct *task, const struct cpumask *sg_cpus, int *best_cpu) {
-	int i;
+	unsigned int i;
 	unsigned long victim_rtweight, target_rtweight, min_rtweight;
 	unsigned int victim_cpu_cap, min_cpu_cap = arch_scale_cpu_capacity(NULL, task_cpu(task));
 	bool victim_rt = true;
@@ -2920,8 +2872,8 @@ static int find_idle_cpu(struct task_struct *task, int wake_flags)
 	if (unlikely(!dom))
 		return best_cpu;
 
-	cpumask_and(&candidate_cpus, &candidate_cpus, get_activated_cpus());
 	cpumask_and(&candidate_cpus, &task->cpus_allowed, cpu_active_mask);
+	cpumask_and(&candidate_cpus, &candidate_cpus, get_activated_cpus());
 	if (unlikely(cpumask_empty(&candidate_cpus)))
 		cpumask_copy(&candidate_cpus, &task->cpus_allowed);
 
@@ -2929,6 +2881,7 @@ static int find_idle_cpu(struct task_struct *task, int wake_flags)
 		for_each_cpu_and(cpu, &dom->cpus, &candidate_cpus) {
 			if (!idle_cpu(cpu))
 				continue;
+
 			cpu_prio = cpu_rq(cpu)->rt.highest_prio.curr;
 			if (cpu_prio < max_prio)
 				continue;
@@ -2938,7 +2891,7 @@ static int find_idle_cpu(struct task_struct *task, int wake_flags)
 				continue;
 
 			if ((cpu_prio > max_prio) || (cpu_load < min_load) ||
-					(cpu_load == min_load && task_cpu(task) == cpu)) {
+				(cpu_load == min_load && task_cpu(task) == cpu)) {
 				min_load = cpu_load;
 				max_prio = cpu_prio;
 				best_cpu = cpu;
@@ -3055,7 +3008,7 @@ out:
 		best_cpu = task_rq(task)->cpu;
 
 	if (!cpumask_test_cpu(best_cpu, cpu_online_mask)) {
-		trace_sched_fluid_stat(task, &task->rt.avg, cpu, "NOTHING_VALID");
+		trace_sched_fluid_stat(task, &task->rt.avg, best_cpu, "NOTHING_VALID");
 		best_cpu = -1;
 	}
 
@@ -3765,6 +3718,7 @@ prio_changed_rt(struct rq *rq, struct task_struct *p, int oldprio)
 	}
 }
 
+#ifdef CONFIG_POSIX_TIMERS
 static void watchdog(struct rq *rq, struct task_struct *p)
 {
 	unsigned long soft, hard;
@@ -3786,17 +3740,22 @@ static void watchdog(struct rq *rq, struct task_struct *p)
 			p->cputime_expires.sched_exp = p->se.sum_exec_runtime;
 	}
 }
+#else
+static inline void watchdog(struct rq *rq, struct task_struct *p) { }
+#endif
 
 static void task_tick_rt(struct rq *rq, struct task_struct *p, int queued)
 {
 	struct sched_rt_entity *rt_se = &p->rt;
 	u64 now = rq_clock_task(rq);
+	int cpu = cpu_of(rq);
 
 	update_curr_rt(rq);
 
 	for_each_sched_rt_entity(rt_se)
 		update_rt_load_avg(now, rt_se);
 
+	update_rt_rq_load_avg(now, cpu, &rq->rt, rq->curr != NULL);
 	update_activated_cpus();
 	watchdog(rq, p);
 

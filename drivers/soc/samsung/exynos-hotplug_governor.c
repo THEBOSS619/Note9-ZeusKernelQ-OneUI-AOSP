@@ -717,6 +717,9 @@ static bool exynos_hpgov_change_quad(void)
 	heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT) +
 			exynos_hpgov_get_imbal_cpus(BIG);
 
+	if ((heavy_cnt > DUAL) || !heavy_cnt)
+		return true;
+
 	if ((heavy_cnt > TRIPLE) || !heavy_cnt)
 		return true;
 
@@ -725,16 +728,16 @@ static bool exynos_hpgov_change_quad(void)
 
 static bool exynos_hpgov_change_triple(void)
 {
-	int big_heavy_cnt, lit_heavy_cnt;
+	int heavy_cnt;
 
-	/* If system is busy, doesn't change boost mode */
+	/* If system is busy, change triple mode */
 	if (exynos_hpgov_system_busy())
-		return false;
+		return true;
 
-	lit_heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT);
-	big_heavy_cnt = exynos_hpgov_get_imbal_cpus(BIG);
-	if ((big_heavy_cnt == TRIPLE && !lit_heavy_cnt) ||
-		(big_heavy_cnt == DUAL && lit_heavy_cnt == DUAL))
+	heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT) +
+			exynos_hpgov_get_imbal_cpus(BIG);
+
+	if ((heavy_cnt > DUAL) || !heavy_cnt)
 		return true;
 
 	return false;
@@ -782,26 +785,30 @@ static unsigned int exynos_hpgov_get_mode(unsigned int cur_mode)
 
 	switch(cur_mode) {
 	case SINGLE:
-		if (exynos_hpgov_change_quad())
-			target_mode = QUAD;
+		if (exynos_hpgov_change_triple())
+			target_mode = TRIPLE;
 		else if (exynos_hpgov_change_dual())
 			target_mode = DUAL;
 		break;
 	case DUAL:
-		if (exynos_hpgov_change_quad())
-			target_mode = QUAD;
+		if (exynos_hpgov_change_triple())
+			target_mode = TRIPLE;
 		else if (exynos_hpgov_change_single())
 			target_mode = SINGLE;
 		break;
 	case TRIPLE:
 		if (exynos_hpgov_change_quad())
 			target_mode = QUAD;
+		else if (exynos_hpgov_change_dual())
+			target_mode = DUAL;
 		else if (exynos_hpgov_change_single())
 			target_mode = SINGLE;
 		break;
 	case QUAD:
 		if (exynos_hpgov_change_triple())
 			target_mode = TRIPLE;
+		else if (exynos_hpgov_change_dual())
+			target_mode = DUAL;
 		else if (exynos_hpgov_change_single())
 			target_mode = SINGLE;
 		break;
@@ -1152,18 +1159,18 @@ static int __init exynos_hpgov_parse_dt(void)
 	struct device_node *np = of_find_node_by_name(NULL, "hotplug_governor");
 
 	if (arg_overclock == 1) {
-		exynos_hpgov.single_change_ms = 20;
-		exynos_hpgov.dual_change_ms = 15;
-		exynos_hpgov.triple_change_ms = 10;
-		exynos_hpgov.quad_change_ms = 5;
-		exynos_hpgov.big_heavy_thr = 750;
-		exynos_hpgov.lit_heavy_thr = 250;
-		exynos_hpgov.big_idle_thr = 200;
-		exynos_hpgov.lit_idle_thr = 150;
+		exynos_hpgov.single_change_ms = 30;
+		exynos_hpgov.dual_change_ms = 25;
+		exynos_hpgov.triple_change_ms = 20;
+		exynos_hpgov.quad_change_ms = 15;
+		exynos_hpgov.big_heavy_thr = 600;
+		exynos_hpgov.lit_heavy_thr = 200;
+		exynos_hpgov.big_idle_thr = 110;
+		exynos_hpgov.lit_idle_thr = 50;
 		exynos_hpgov.ldsum_heavy_thr = 800;
-		exynos_hpgov.ldsum_enabled = 0;
+		exynos_hpgov.ldsum_enabled = 1;
 		exynos_hpgov.skip_lit_enabled = 0;
-		exynos_hpgov.cl_busy_ratio = 75;
+		exynos_hpgov.cl_busy_ratio = 65;
 		exynos_hpgov.cal_id = ACPM_DVFS_CPUCL1;
 
 		} else {
@@ -1215,8 +1222,8 @@ static int __init exynos_hpgov_parse_dt(void)
 	if (arg_overclock == 1) {
 		exynos_hpgov.maxfreq_table[SINGLE] = max_freq;
 		exynos_hpgov.maxfreq_table[DUAL] = 2496000;
-		exynos_hpgov.maxfreq_table[TRIPLE] = 2106000;
-		exynos_hpgov.maxfreq_table[QUAD] = 1794000;
+		exynos_hpgov.maxfreq_table[TRIPLE] = 2314000;
+		exynos_hpgov.maxfreq_table[QUAD] = 2106000;
 		exynos_hpgov.maxfreq_table[DISABLE] = 2314000;
 
 	} else if (arg_overclock == 2) {

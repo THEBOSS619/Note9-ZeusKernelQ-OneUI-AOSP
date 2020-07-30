@@ -101,7 +101,7 @@ static void __sysmmu_tlb_pinning(struct sysmmu_drvdata *drvdata)
 	writel_relaxed(start_addr, sfrbase + REG_MMU_TLB_MATCH_SVA(1));
 	writel_relaxed(end_addr, sfrbase + REG_MMU_TLB_MATCH_EVA(1));
 
-	pr_info("Set TLB MATCH address for TLB1 Pinning : 0x%x_%x ~ 0x%x_%x\n",
+	pr_debug("Set TLB MATCH address for TLB1 Pinning : 0x%x_%x ~ 0x%x_%x\n",
 			readl_relaxed(sfrbase + REG_MMU_TLB_MATCH_CFG(1)) & 0xf,
 			readl_relaxed(sfrbase + REG_MMU_TLB_MATCH_SVA(1)),
 			upper_addr,
@@ -178,7 +178,7 @@ void pcie_sysmmu_disable(void)
 
 	set_sysmmu_inactive(g_sysmmu_drvdata);
 	__sysmmu_disable_nocount(g_sysmmu_drvdata);
-	pr_info("SysMMU alloc num : %d(Max:%d), lv2_alloc : %d, fault : %d\n",
+	pr_debug("SysMMU alloc num : %d(Max:%d), lv2_alloc : %d, fault : %d\n",
 				alloc_counter, max_req_cnt,
 				lv2table_counter, wrong_pf_cnt);
 }

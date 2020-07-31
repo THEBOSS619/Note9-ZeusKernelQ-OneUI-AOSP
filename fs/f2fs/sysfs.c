@@ -438,13 +438,6 @@ static struct f2fs_attr f2fs_attr_##_name = {			\
 	.offset = offsetof(struct _struct_name, _elname),       \
 }
 
-F2FS_RW_ATTR(GC_THREAD, f2fs_gc_kthread, gc_urgent_sleep_time,
-							urgent_sleep_time);
-F2FS_RW_ATTR(GC_THREAD, f2fs_gc_kthread, gc_min_sleep_time, min_sleep_time);
-F2FS_RW_ATTR(GC_THREAD, f2fs_gc_kthread, gc_max_sleep_time, max_sleep_time);
-F2FS_RW_ATTR(GC_THREAD, f2fs_gc_kthread, gc_no_gc_sleep_time, no_gc_sleep_time);
-F2FS_RW_ATTR(F2FS_SBI, f2fs_sb_info, gc_idle, gc_mode);
-F2FS_RW_ATTR(F2FS_SBI, f2fs_sb_info, gc_urgent, gc_mode);
 F2FS_RW_ATTR(SM_INFO, f2fs_sm_info, reclaim_segments, rec_prefree_segments);
 F2FS_RW_ATTR(SM_INFO, f2fs_sm_info, main_blkaddr, main_blkaddr);
 F2FS_RW_ATTR(DCC_INFO, discard_cmd_control, max_small_discards, max_discards);
@@ -755,14 +748,9 @@ int __init f2fs_init_sysfs(void)
 	if (ret) {
 		kobject_put(&f2fs_feat);
 		kset_unregister(&f2fs_kset);
-<<<<<<< HEAD
-	else
-		f2fs_proc_root = proc_mkdir("fs/f2fs_dev", NULL);
-=======
 	} else {
-		f2fs_proc_root = proc_mkdir("fs/f2fs", NULL);
+		f2fs_proc_root = proc_mkdir("fs/f2fs_dev", NULL);
 	}
->>>>>>> googlesource/upstream-f2fs-stable-linux-4.9.y
 	return ret;
 }
 

@@ -39,10 +39,6 @@
 #include "xattr.h"
 #include "acl.h"
 
-#ifdef CONFIG_EXT4_DLP
-#include "ext4_dlp.h"
-#endif
-
 #include <trace/events/ext4.h>
 /*
  * define how far ahead to read directories while searching them.
@@ -1580,12 +1576,11 @@ static struct dentry *ext4_lookup(struct inode *dir, struct dentry *dentry, unsi
 	inode = NULL;
 	if (bh) {
 		__u32 ino = le32_to_cpu(de->inode);
+		brelse(bh);
 		if (!ext4_valid_inum(dir->i_sb, ino)) {
-			brelse(bh);
 			EXT4_ERROR_INODE(dir, "bad inode number: %u", ino);
 			return ERR_PTR(-EFSCORRUPTED);
 		}
-		brelse(bh);
 		if (unlikely(ino == dir->i_ino)) {
 			EXT4_ERROR_INODE(dir, "'%pd' linked to parent dir",
 					 dentry);
@@ -1594,9 +1589,8 @@ static struct dentry *ext4_lookup(struct inode *dir, struct dentry *dentry, unsi
 		inode = ext4_iget(dir->i_sb, ino, EXT4_IGET_NORMAL);
 		if (inode == ERR_PTR(-ESTALE)) {
 			EXT4_ERROR_INODE(dir,
-					 "deleted inode referenced: %u"
-					 "at parent inode : %lu",
-					 ino, dir->i_ino);
+					 "deleted inode referenced: %u",
+					 ino);
 			return ERR_PTR(-EFSCORRUPTED);
 		}
 		if (!IS_ERR(inode) && ext4_encrypted_inode(dir) &&
@@ -2014,10 +2008,10 @@ static int make_indexed_dir(handle_t *handle, struct ext4_filename *fname,
 
 	retval = ext4_handle_dirty_dx_node(handle, dir, frame->bh);
 	if (retval)
-		goto out_frames;
+		goto out_frames;	
 	retval = ext4_handle_dirty_dirent_node(handle, dir, bh2);
 	if (retval)
-		goto out_frames;
+		goto out_frames;	
 
 	de = do_split(handle,dir, &bh2, frame, &fname->hinfo);
 	if (IS_ERR(de)) {
@@ -2448,18 +2442,6 @@ retry:
 	handle = ext4_journal_current_handle();
 	err = PTR_ERR(inode);
 	if (!IS_ERR(inode)) {
-
-#ifdef CONFIG_EXT4_DLP
-		err = ext4_dlp_create(inode);
-		if (err) {
-			pr_err("DLP %s : setxattr is failed.\n", __func__);
-			clear_nlink(inode);
-			unlock_new_inode(inode);
-			ext4_mark_inode_dirty(handle, inode);
-			iput(inode);
-			goto dlp_out;
-		}
-#endif
 		inode->i_op = &ext4_file_inode_operations;
 		inode->i_fop = &ext4_file_operations;
 		ext4_set_aops(inode);
@@ -2467,11 +2449,6 @@ retry:
 		if (!err && IS_DIRSYNC(dir))
 			ext4_handle_sync(handle);
 	}
-
-#ifdef CONFIG_EXT4_DLP
-dlp_out:
-#endif
-
 	if (handle)
 		ext4_journal_stop(handle);
 	if (err == -ENOSPC && ext4_should_retry_alloc(dir->i_sb, &retries))
@@ -3138,7 +3115,7 @@ static int ext4_symlink(struct inode *dir,
 		 * for transaction commit if we are running out of space
 		 * and thus we deadlock. So we have to stop transaction now
 		 * and restart it when symlink contents is written.
-		 *
+		 * 
 		 * To keep fs consistent in case of crash, we have to put inode
 		 * to orphan list in the mean time.
 		 */
@@ -3684,12 +3661,6 @@ static int ext4_rename(struct inode *old_dir, struct dentry *old_dentry,
 	}
 	retval = 0;
 
-#ifdef CONFIG_EXT4_DLP
-	if (ext4_test_inode_flag(old_dir, EXT4_DLP_FL)) {
-		ext4_dlp_rename(old_dir);
-	}
-#endif
-
 end_rename:
 	brelse(old.dir_bh);
 	brelse(old.bh);
@@ -3845,12 +3816,6 @@ static int ext4_cross_rename(struct inode *old_dir, struct dentry *old_dentry,
 	ext4_update_dir_count(handle, &old);
 	ext4_update_dir_count(handle, &new);
 	retval = 0;
-
-#ifdef CONFIG_EXT4_DLP
-	if (ext4_test_inode_flag(old_dir, EXT4_DLP_FL)) {
-		ext4_dlp_rename(old_dir);
-	}
-#endif
 
 end_rename:
 	brelse(old.dir_bh);

@@ -45,6 +45,7 @@ TRACE_DEFINE_ENUM(CP_SYNC);
 TRACE_DEFINE_ENUM(CP_RECOVERY);
 TRACE_DEFINE_ENUM(CP_DISCARD);
 TRACE_DEFINE_ENUM(CP_TRIMMED);
+TRACE_DEFINE_ENUM(CP_PAUSE);
 
 #define show_block_type(type)						\
 	__print_symbolic(type,						\
@@ -126,7 +127,7 @@ TRACE_DEFINE_ENUM(CP_TRIMMED);
 		{ CP_SYNC,	"Sync" },				\
 		{ CP_RECOVERY,	"Recovery" },				\
 		{ CP_DISCARD,	"Discard" },				\
-		{ CP_UMOUNT,	"Umount" },				\
+		{ CP_PAUSE,	"Pause" },				\
 		{ CP_TRIMMED,	"Trimmed" })
 
 #define show_fsync_cpreason(type)					\
@@ -524,6 +525,37 @@ TRACE_EVENT(f2fs_truncate_partial_nodes,
 		(unsigned int)__entry->nid[2],
 		__entry->depth,
 		__entry->err)
+);
+
+TRACE_EVENT(f2fs_file_write_iter,
+
+	TP_PROTO(struct inode *inode, unsigned long offset,
+		unsigned long length, int ret),
+
+	TP_ARGS(inode, offset, length, ret),
+
+	TP_STRUCT__entry(
+		__field(dev_t,	dev)
+		__field(ino_t,	ino)
+		__field(unsigned long, offset)
+		__field(unsigned long, length)
+		__field(int,	ret)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->offset	= offset;
+		__entry->length	= length;
+		__entry->ret	= ret;
+	),
+
+	TP_printk("dev = (%d,%d), ino = %lu, "
+		"offset = %lu, length = %lu, written(err) = %d",
+		show_dev_ino(__entry),
+		__entry->offset,
+		__entry->length,
+		__entry->ret)
 );
 
 TRACE_EVENT(f2fs_map_blocks,
@@ -990,8 +1022,8 @@ DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
 	),
 
 	TP_fast_assign(
-		__entry->dev		= page->mapping->host->i_sb->s_dev;
-		__entry->ino		= page->mapping->host->i_ino;
+		__entry->dev		= page_file_mapping(page)->host->i_sb->s_dev;
+		__entry->ino		= page_file_mapping(page)->host->i_ino;
 		__entry->index		= page->index;
 		__entry->old_blkaddr	= fio->old_blkaddr;
 		__entry->new_blkaddr	= fio->new_blkaddr;
@@ -1178,10 +1210,11 @@ DECLARE_EVENT_CLASS(f2fs__page,
 	),
 
 	TP_fast_assign(
-		__entry->dev	= page->mapping->host->i_sb->s_dev;
-		__entry->ino	= page->mapping->host->i_ino;
+		__entry->dev	= page_file_mapping(page)->host->i_sb->s_dev;
+		__entry->ino	= page_file_mapping(page)->host->i_ino;
 		__entry->type	= type;
-		__entry->dir	= S_ISDIR(page->mapping->host->i_mode);
+		__entry->dir	=
+			S_ISDIR(page_file_mapping(page)->host->i_mode);
 		__entry->index	= page->index;
 		__entry->dirty	= PageDirty(page);
 		__entry->uptodate = PageUptodate(page);
@@ -1244,6 +1277,32 @@ DEFINE_EVENT(f2fs__page, f2fs_commit_inmem_page,
 	TP_PROTO(struct page *page, int type),
 
 	TP_ARGS(page, type)
+);
+
+TRACE_EVENT(f2fs_filemap_fault,
+
+	TP_PROTO(struct inode *inode, pgoff_t index, unsigned long ret),
+
+	TP_ARGS(inode, index, ret),
+
+	TP_STRUCT__entry(
+		__field(dev_t,	dev)
+		__field(ino_t,	ino)
+		__field(pgoff_t, index)
+		__field(unsigned long, ret)
+	),
+
+	TP_fast_assign(
+		__entry->dev	= inode->i_sb->s_dev;
+		__entry->ino	= inode->i_ino;
+		__entry->index	= index;
+		__entry->ret	= ret;
+	),
+
+	TP_printk("dev = (%d,%d), ino = %lu, index = %lu, ret = %lx",
+		show_dev_ino(__entry),
+		(unsigned long)__entry->index,
+		__entry->ret)
 );
 
 TRACE_EVENT(f2fs_writepages,

@@ -680,7 +680,7 @@ void rcu_user_enter(void)
  * If you add or remove a call to rcu_nmi_exit(), be sure to test
  * with CONFIG_RCU_EQS_DEBUG=y.
  */
-noinstr void rcu_nmi_exit(void)
+void rcu_nmi_exit(void)
 {
 	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
 
@@ -936,7 +936,7 @@ void __rcu_irq_enter_check_tick(void)
  * If you add or remove a call to rcu_nmi_enter(), be sure to test
  * with CONFIG_RCU_EQS_DEBUG=y.
  */
-noinstr void rcu_nmi_enter(void)
+void rcu_nmi_enter(void)
 {
 	long incby = 2;
 	struct rcu_data *rdp = this_cpu_ptr(&rcu_data);
@@ -1033,7 +1033,7 @@ static void rcu_disable_urgency_upon_qs(struct rcu_data *rdp)
 	}
 }
 
-noinstr bool __rcu_is_watching(void)
+bool __rcu_is_watching(void)
 {
 	return !rcu_dynticks_curr_cpu_in_eqs();
 }

@@ -1093,7 +1093,7 @@ tunables_init:
 #endif
 
 	tunables->iowait_boost_enable = policy->iowait_boost_enable;
-	tunables->exp_util = true;
+	tunables->exp_util = false;
 
 	policy->governor_data = sg_policy;
 	sg_policy->tunables = tunables;

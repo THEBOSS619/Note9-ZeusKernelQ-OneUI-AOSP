@@ -1797,7 +1797,7 @@ static struct page *alloc_misplaced_dst_page(struct page *page,
  * window of time. Default here says do not migrate more than 1280M per second.
  */
 static unsigned int migrate_interval_millisecs __read_mostly = 100;
-static unsigned int ratelimit_pages __read_mostly = 128 << (20 - PAGE_SHIFT);
+static unsigned int ratelimit_pages __read_mostly = 256 << (20 - PAGE_SHIFT);
 
 /* Returns true if the node is migrate rate-limited after the update */
 static bool numamigrate_update_ratelimit(pg_data_t *pgdat,

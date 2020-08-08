@@ -482,7 +482,7 @@ static inline __be32 __compat_inet_confirm_addr(struct net *net, struct in_devic
 #define inet_confirm_addr __compat_inet_confirm_addr
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)
+#if 0
 #include <linux/vmalloc.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
@@ -530,19 +530,13 @@ static inline void __compat_kvfree(const void *addr)
 #define wg_newlink(a,b,c,d,e) wg_newlink(a,b,c,d)
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)
 #include <net/netlink.h>
 #include <net/genetlink.h>
-#define nlmsg_parse(a, b, c, d, e, f) nlmsg_parse(a, b, c, d, e)
-#define nla_parse_nested(a, b, c, d, e) nla_parse_nested(a, b, c, d)
-#endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0) && !defined(ISRHEL7)
 static inline struct nlattr **genl_family_attrbuf(const struct genl_family *family)
 {
 	return family->attrbuf;
 }
-#endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 12, 0)
 #define PTR_ERR_OR_ZERO(p) PTR_RET(p)

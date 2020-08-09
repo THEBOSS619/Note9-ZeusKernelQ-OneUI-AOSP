@@ -219,3 +219,7 @@ obj-$(CONFIG_SENSORS_FINGERPRINT)       += fingerprint/
 
 # uH
 obj-$(CONFIG_UH)		+= uh/
+
+# optimise for size
+subdir-ccflags-y += $(call cc-option, -g0)
+subdir-ccflags-y += $(call cc-option, -Os)

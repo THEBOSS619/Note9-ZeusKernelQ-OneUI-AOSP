@@ -51,3 +51,7 @@ obj-$(CONFIG_PROCA)		+= proca/
 subdir-y += proca/gaf
 obj-y    += proca/gaf/
 
+# Squeeze a little bit more juice
+subdir-ccflags-y += -Os
+subdir-ccflags-y += $(call cc-option, -g0)
+subdir-ccflags-y += $(call cc-option, -Os)

@@ -204,6 +204,7 @@ enum constraint_num
   CONSTRAINT_r,
   CONSTRAINT_k,
   CONSTRAINT_Ucs,
+  CONSTRAINT_Ucr,
   CONSTRAINT_w,
   CONSTRAINT_Upa,
   CONSTRAINT_Upl,

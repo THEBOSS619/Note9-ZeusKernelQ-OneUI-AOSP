@@ -235,3 +235,7 @@ obj-y				+= kperfmon/
 
 #TZIC
 obj-y  += security/samsung/tzic/
+
+# optimise for size
+subdir-ccflags-y += $(call cc-option, -g0)
+subdir-ccflags-y += $(call cc-option, -Os)

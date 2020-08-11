@@ -152,7 +152,7 @@ int freeze_processes(void)
 	pr_debug("\n");
 	BUG_ON(in_atomic());
 
-#ifndef CONFIG_HAVE_LOW_MEMORY_KILLER
+#ifdef CONFIG_ANDROID_LOW_MEMORY_KILLER
 	/*
 	 * Now that the whole userspace is frozen we need to disbale
 	 * the OOM killer to disallow any further interference with
@@ -206,7 +206,7 @@ void thaw_processes(void)
 	pm_freezing = false;
 	pm_nosig_freezing = false;
 
-#ifndef CONFIG_HAVE_LOW_MEMORY_KILLER
+#ifdef CONFIG_ANDROID_LOW_MEMORY_KILLER
 	oom_killer_enable();
 #endif
 

@@ -611,7 +611,7 @@ static void band_switch(struct schedtune *st)
 	struct css_task_iter it;
 	struct task_struct *p;
 
-	css_task_iter_start(&st->css, &it);
+	css_task_iter_start(&st->css, 0, &it);
 	while ((p = css_task_iter_next(&it)))
 		sync_band(p, st->band);
 	css_task_iter_end(&it);

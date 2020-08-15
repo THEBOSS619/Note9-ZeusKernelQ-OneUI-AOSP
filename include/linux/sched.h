@@ -618,23 +618,6 @@ struct cpu_itimer {
 	u64 incr;
 };
 
-/**
- * struct prev_cputime - snaphsot of system and user cputime
- * @utime: time spent in user mode
- * @stime: time spent in system mode
- * @lock: protects the above two fields
- *
- * Stores previous user/system time values such that we can guarantee
- * monotonicity.
- */
-struct prev_cputime {
-#ifndef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
-	u64 utime;
-	u64 stime;
-	raw_spinlock_t lock;
-#endif
-};
-
 static inline void prev_cputime_init(struct prev_cputime *prev)
 {
 #ifndef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE

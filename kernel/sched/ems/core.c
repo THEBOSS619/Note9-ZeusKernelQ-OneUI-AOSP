@@ -314,8 +314,10 @@ static int __init init_sysfs(void)
 {
 	ems_kobj = kobject_create_and_add("ems", kernel_kobj);
 
-	sysfs_create_file(ems_kobj, &sched_topology_attr.attr);
-	sysfs_create_file(ems_kobj, &eff_mode_attr.attr);
+	if (sysfs_create_file(ems_kobj, &sched_topology_attr.attr))
+		pr_err("failed to create sched topolgy node\n");
+	if (sysfs_create_file(ems_kobj, &eff_mode_attr.attr))
+		pr_err("failed to create eff mode node\n");
 
 	return 0;
 }

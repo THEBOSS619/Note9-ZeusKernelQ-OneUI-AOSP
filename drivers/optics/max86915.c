@@ -191,14 +191,14 @@
 
 #include "max86915.h"
 
-static int hrm_debug = 1;
-static int hrm_info;
+static int hrm_debug = 0;
+static int hrm_info = 0;
 
 module_param(hrm_debug, int, S_IRUGO | S_IWUSR);
 module_param(hrm_info, int, S_IRUGO | S_IWUSR);
 
 static struct max86915_device_data *max86915_data;
-static u8 agc_debug_enabled = 1;
+static u8 agc_debug_enabled = 0;
 static u8 fifo_full_cnt = DEFAULT_FIFO_CNT;
 
 /* #define DEBUG_HRMSENSOR */

@@ -38,6 +38,9 @@ extern int get_attr_far_branch (rtx_insn *);
 #define HAVE_ATTR_movprfx 1
 extern enum attr_movprfx get_attr_movprfx (rtx_insn *);
 
+#define HAVE_ATTR_sls_length 1
+extern enum attr_sls_length get_attr_sls_length (rtx_insn *);
+
 #define HAVE_ATTR_length 1
 extern int get_attr_length (rtx_insn *);
 extern void shorten_branches (rtx_insn *);

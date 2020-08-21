@@ -714,29 +714,29 @@ static void netpm_net_status_estimator(struct tcp_sock *tp)
 {
 	u32 netpm_rttdiff = 0;
 
-	if (tp->netpm_rtt_min > tp->rcv_rtt_est.rtt)
-		tp->netpm_rtt_min = tp->rcv_rtt_est.rtt;
+	if (tp->netpm_rtt_min > tp->rcv_rtt_est.rtt_us)
+		tp->netpm_rtt_min = tp->rcv_rtt_est.rtt_us;
 
 	if (tp->netpm_srtt != 0) {
 		tp->netpm_srtt -= netpm_rtt_avg(tp);
-		tp->netpm_srtt += tp->rcv_rtt_est.rtt;
+		tp->netpm_srtt += tp->rcv_rtt_est.rtt_us;
 
-		if (tp->rcv_rtt_est.rtt >= netpm_rtt_avg(tp))
-			netpm_rttdiff = tp->rcv_rtt_est.rtt - netpm_rtt_avg(tp);
+		if (tp->rcv_rtt_est.rtt_us >= netpm_rtt_avg(tp))
+			netpm_rttdiff = tp->rcv_rtt_est.rtt_us - netpm_rtt_avg(tp);
 		else
-			netpm_rttdiff = netpm_rtt_avg(tp) - tp->rcv_rtt_est.rtt;
+			netpm_rttdiff = netpm_rtt_avg(tp) - tp->rcv_rtt_est.rtt_us;
 	} else {
-		tp->netpm_srtt = tp->rcv_rtt_est.rtt << NETPM_DEF_SRTT_SCALE;
+		tp->netpm_srtt = tp->rcv_rtt_est.rtt_us << NETPM_DEF_SRTT_SCALE;
 	}
 
 	if (tp->netpm_rttvar != 0) {
 		tp->netpm_rttvar -= netpm_rttvar_avg(tp);
 		tp->netpm_rttvar += netpm_rttdiff;
 	} else {
-		tp->netpm_rttvar = (tp->rcv_rtt_est.rtt << (NETPM_DEF_SRTT_SCALE - 1)) / 2;
+		tp->netpm_rttvar = (tp->rcv_rtt_est.rtt_us << (NETPM_DEF_SRTT_SCALE - 1)) / 2;
 	}
 
-	netpm_debug("%s tp->rcv_rtt_est.rtt = %u\n", __func__, tp->rcv_rtt_est.rtt);
+	netpm_debug("%s tp->rcv_rtt_est.rtt = %u\n", __func__, tp->rcv_rtt_est.rtt_us);
 	netpm_debug("%s tp->rtt_min = %u\n", __func__, tp->netpm_rtt_min);
 	netpm_debug("%s tp->netpm_srtt = %u\n", __func__, netpm_rtt_avg(tp));
 	netpm_debug("%s tp->netpm_rttvar = %u\n", __func__, netpm_rttvar_avg(tp));

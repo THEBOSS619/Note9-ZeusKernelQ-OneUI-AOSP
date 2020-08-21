@@ -47,7 +47,7 @@ struct f2fs_xattr_entry {
 	__u8    e_name_index;
 	__u8    e_name_len;
 	__le16  e_value_size;   /* size of attribute value */
-	char    e_name[0];      /* attribute name */
+	char    e_name[];      /* attribute name */
 };
 
 #define XATTR_HDR(ptr)		((struct f2fs_xattr_header *)(ptr))
@@ -71,6 +71,8 @@ struct f2fs_xattr_entry {
 				entry = XATTR_NEXT_ENTRY(entry))
 #define VALID_XATTR_BLOCK_SIZE	(PAGE_SIZE - sizeof(struct node_footer))
 #define XATTR_PADDING_SIZE	(sizeof(__u32))
+#define XATTR_SIZE(x,i)		(((x) ? VALID_XATTR_BLOCK_SIZE : 0) +	\
+						(inline_xattr_size(i)))
 #define MIN_OFFSET(i)		XATTR_ALIGN(inline_xattr_size(i) +	\
 						VALID_XATTR_BLOCK_SIZE)
 

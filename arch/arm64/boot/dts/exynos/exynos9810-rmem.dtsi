@@ -28,11 +28,6 @@
 			reg = <0x0 0xB8000000 0x200000>;
 		};
 
-		seclog_mem {
-			compatible = "exynos,seclog";
-			reg = <0x0 0xC0000000 0x80000>;
-		};
-
 		video_stream {
 			compatible = "exynos8890-ion,vstream";
 			ion,secure;

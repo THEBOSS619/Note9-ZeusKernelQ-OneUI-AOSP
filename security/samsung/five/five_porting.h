@@ -135,7 +135,7 @@ static inline int integrity_kernel_read(struct file *file, loff_t offset,
 }
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 16, 0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
 #include <linux/fs.h>
 
 static inline bool

@@ -31,7 +31,7 @@
 
 /* Optional reentrant struct support.  Used mostly on platforms with
    very restricted storage.  */
-/* #undef _WANT_REENT_SMALL */
+#define _WANT_REENT_SMALL 1
 
 /* Verify _REENT_CHECK macros allocate memory successfully. */
 #define _REENT_CHECK_VERIFY 1
@@ -89,7 +89,7 @@
 /* #undef _WANT_REENT_GLOBAL_STDIO_STREAMS */
 
 /* Define if small footprint nano-formatted-IO implementation used.  */
-/* #undef _NANO_FORMATTED_IO */
+#define _NANO_FORMATTED_IO 1
 
 /* Define if using retargetable functions for default lock routines.  */
 /* #undef _RETARGETABLE_LOCKING */

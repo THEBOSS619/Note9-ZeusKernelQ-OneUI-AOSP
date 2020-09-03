@@ -692,7 +692,6 @@ KBUILD_CFLAGS	+= $(call cc-disable-warning, address-of-packed-member)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, attribute-alias)
 # Disable noisy GCC 9.1 / Clang warnings
 KBUILD_CFLAGS	+= $(call cc-disable-warning, tautological-compare)
-KBUILD_CFLAGS	+= $(call cc-disable-warning, stringop-overflow)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, misleading-indentation)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, array-bounds)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, sizeof-pointer-memaccess)
@@ -788,8 +787,7 @@ KBUILD_CFLAGS += $(call cc-ifversion, -gt, 0900, \
 			$(call cc-option, -Wno-psabi) \
 			$(call cc-disable-warning,maybe-uninitialized,) \
 			$(call cc-disable-warning,format,) \
-			$(call cc-disable-warning,array-bounds,) \
-			$(call cc-disable-warning,stringop-overflow,))
+			$(call cc-disable-warning,array-bounds,))
 
 # Tell gcc to never replace conditional load with a non-conditional one
 KBUILD_CFLAGS	+= $(call cc-option,--param=allow-store-data-races=0)
@@ -859,7 +857,6 @@ KBUILD_CFLAGS += $(call cc-disable-warning, unused-but-set-variable)
 KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)
 KBUILD_CFLAGS += $(call cc-disable-warning, attribute-alias)
 KBUILD_CFLAGS += $(call cc-disable-warning, packed-not-aligned)
-KBUILD_CFLAGS += $(call cc-disable-warning, stringop-truncation)
 endif
 
 KBUILD_CFLAGS += $(call cc-disable-warning, unused-const-variable)

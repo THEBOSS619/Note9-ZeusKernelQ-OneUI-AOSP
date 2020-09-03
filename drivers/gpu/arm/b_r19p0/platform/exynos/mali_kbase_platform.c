@@ -157,6 +157,14 @@ bool gpu_check_trace_code(int code)
 
 	return gpu_check_trace_level(level);
 }
+
+#else
+static int gpu_trace_level;
+
+void gpu_set_trace_level(int level) {}
+bool gpu_check_trace_level(int level) { return false; }
+bool gpu_check_trace_code(int code) { return 0; }
+
 #endif /* CONFIG_MALI_EXYNOS_TRACE */
 
 void gpu_update_config_data_bool(struct device_node *np, const char *of_string, bool *of_data)

@@ -38,7 +38,7 @@
 #endif
 
 /* The maximum expected length of string in tracepoint descriptor. */
-#define STRLEN_MAX         64 /* bytes */
+#define STRLEN_MAX         15 /* bytes */
 
 /**
  * struct kbase_tlstream - timeline stream structure

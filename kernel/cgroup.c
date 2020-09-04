@@ -66,6 +66,8 @@
 #include <linux/file.h>
 #include <linux/psi.h>
 #include <net/sock.h>
+#include <linux/sched/sysctl.h>
+#include <linux/ioprio.h>
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/cgroup.h>
@@ -197,6 +199,8 @@ static u16 cgrp_dfl_inhibit_ss_mask;
 
 /* some controllers are implicitly enabled on the default hierarchy */
 static unsigned long cgrp_dfl_implicit_ss_mask;
+
+unsigned int sysctl_iosched_boost_top_app = 0;
 
 /* The list of hierarchy roots */
 
@@ -2881,6 +2885,7 @@ static ssize_t __cgroup_procs_write(struct kernfs_open_file *of, char *buf,
 	struct task_struct *tsk;
 	struct cgroup_subsys *ss;
 	struct cgroup *cgrp;
+	struct sched_param param;
 	pid_t pid;
 	int ssid, ret;
 
@@ -2930,6 +2935,26 @@ static ssize_t __cgroup_procs_write(struct kernfs_open_file *of, char *buf,
 	    is_zygote_pid(tsk->parent->pid)) {
 		devfreq_boost_kick_max(DEVFREQ_EXYNOS_MIF, 500);
 	}
+
+	param.sched_priority = 0;
+
+	if (sysctl_iosched_boost_top_app && !ret && !strcmp(of->kn->parent->name, "background")) {
+		sched_setscheduler_nocheck(tsk, SCHED_IDLE, &param);
+		set_task_ioprio(tsk, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_IDLE, 0));
+	} else if (!strcmp(of->kn->parent->name, "foreground")) {
+		set_task_ioprio(tsk, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_RT, 2));
+		param.sched_priority = 1;
+		sched_setscheduler_nocheck(tsk, SCHED_RR|SCHED_RESET_ON_FORK, &param);
+	} else if (!strcmp(of->kn->parent->name, "top-app")) {
+		set_task_ioprio(tsk, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_RT, 1));
+		param.sched_priority = 2;
+		sched_setscheduler_nocheck(tsk, SCHED_RR|SCHED_RESET_ON_FORK, &param);
+	} else {
+		set_task_ioprio(tsk, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_NONE, 0));
+		param.sched_priority = 0;
+		sched_setscheduler_nocheck(tsk, SCHED_NORMAL, &param);
+	}
+
 
 	put_task_struct(tsk);
 	goto out_unlock_threadgroup;

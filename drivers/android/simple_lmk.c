@@ -11,6 +11,8 @@
 #include <linux/oom.h>
 #include <linux/sort.h>
 #include <linux/vmpressure.h>
+#include <linux/cpu_input_boost.h>
+#include <linux/devfreq_boost.h>
 
 /* Needed to prevent Android from thinking there's no LMK and thus rebooting */
 #undef MODULE_PARAM_PREFIX
@@ -184,6 +186,8 @@ static void scan_and_kill(unsigned long pages_needed)
 	/* Hold an RCU read lock while traversing the global process list */
 	rcu_read_lock();
 	for (i = 1; i < ARRAY_SIZE(adjs); i++) {
+		cpu_input_boost_kick_max(100);
+		devfreq_boost_kick_max(DEVFREQ_EXYNOS_MIF, 100);
 		pages_found += find_victims(&nr_found, i);
 		if (pages_found >= pages_needed || nr_found == MAX_VICTIMS)
 			break;
@@ -224,6 +228,8 @@ static void scan_and_kill(unsigned long pages_needed)
 			vtsk->signal->oom_score_adj,
 			victim->size << (PAGE_SHIFT - 10));
 
+		cpu_input_boost_kick_max(100);
+		devfreq_boost_kick_max(DEVFREQ_EXYNOS_MIF, 100);
 
 		/* Count kills */
 		lmk_count[ARRAY_SIZE(adjs) - victim->adj_index - 1]++;

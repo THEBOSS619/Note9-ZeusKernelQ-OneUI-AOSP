@@ -43,7 +43,6 @@ enum five_dmverity_codes {
 	FIVE_DMV_NO_LOOP_BACK_FILE
 };
 
-int __init five_init_dmverity(void);
-bool five_is_dmverity_protected(const struct file *file);
+static inline int __init five_init_dmverity(void) { return 0; }
 
 #endif // __LINUX_FIVE_DMVERITY_H

@@ -294,8 +294,6 @@ int five_appraise_measurement(struct task_struct *task, int func,
 
 	if (!cert) {
 		cause = CAUSE_NO_CERT;
-		if (five_is_dmverity_protected(file))
-			status = FIVE_FILE_DMVERITY;
 		goto out;
 	}
 

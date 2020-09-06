@@ -19,22 +19,22 @@
 
 #include <linux/task_integrity.h>
 
-void five_audit_verbose(struct task_struct *task, struct file *file,
+static inline void five_audit_verbose(struct task_struct *task, struct file *file,
 		const char *op, enum task_integrity_value prev,
-		enum task_integrity_value tint, const char *cause, int result);
-void five_audit_info(struct task_struct *task, struct file *file,
+		enum task_integrity_value tint, const char *cause, int result) {}
+static inline void five_audit_info(struct task_struct *task, struct file *file,
 		const char *op, enum task_integrity_value prev,
-		enum task_integrity_value tint, const char *cause, int result);
-void five_audit_err(struct task_struct *task, struct file *file,
+		enum task_integrity_value tint, const char *cause, int result) {}
+static inline void five_audit_err(struct task_struct *task, struct file *file,
 		const char *op, enum task_integrity_value prev,
-		enum task_integrity_value tint, const char *cause, int result);
-void five_audit_sign_err(struct task_struct *task, struct file *file,
+		enum task_integrity_value tint, const char *cause, int result) {}
+static inline void five_audit_sign_err(struct task_struct *task, struct file *file,
 		const char *op, enum task_integrity_value prev,
-		enum task_integrity_value tint, const char *cause, int result);
-void five_audit_tee_msg(const char *func, const char *cause, int rc,
-							uint32_t origin);
+		enum task_integrity_value tint, const char *cause, int result) {}
+static inline void five_audit_tee_msg(const char *func, const char *cause, int rc,
+							uint32_t origin) {}
 
-void five_audit_hexinfo(struct file *file,
-		const char *msg, char *data, size_t data_length);
+static inline void five_audit_hexinfo(struct file *file,
+		const char *msg, char *data, size_t data_length) {}
 
 #endif

@@ -3089,7 +3089,7 @@ static void get_dev_mem_avail(struct dev_params_struct *data)
 		pages[lru] = global_node_page_state(NR_LRU_BASE + lru);
 
 	for_each_zone(zone)
-		wmark_low += zone->watermark[WMARK_LOW];
+		wmark_low += zone->_watermark[WMARK_LOW];
 
 	available = meminfo.freeram - wmark_low;
 	pagecache = pages[LRU_ACTIVE_FILE] + pages[LRU_INACTIVE_FILE];
@@ -3517,7 +3517,7 @@ static void get_dev_mem_params(struct dev_params_struct *dev_params)
 		pages[lru] = global_node_page_state(NR_LRU_BASE + lru);
 
 	for_each_zone(zone)
-		wmark_low += zone->watermark[WMARK_LOW];
+		wmark_low += zone->_watermark[WMARK_LOW];
 
 	available = meminfo.freeram - wmark_low;
 	pagecache = pages[LRU_ACTIVE_FILE] + pages[LRU_INACTIVE_FILE];

@@ -23,11 +23,6 @@
 			reg = <0x0 0xF0000000 0x9200000>;
 		};
 
-		tima_mem: tima_region@0xB8000000 {
-			compatible = "removed-dma-pool";
-			reg = <0x0 0xB8000000 0x200000>;
-		};
-
 		video_stream {
 			compatible = "exynos8890-ion,vstream";
 			ion,secure;

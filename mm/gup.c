@@ -63,18 +63,19 @@ static bool __need_migrate_cma_page(struct page *page,
 static int __isolate_cma_pinpage(struct page *page)
 {
 	struct zone *zone = page_zone(page);
+	pg_data_t *pgdat = zone->zone_pgdat;
 	struct lruvec *lruvec;
 
-	spin_lock_irq(zone_lru_lock(zone));
+	spin_lock_irq(&pgdat->lru_lock);
 	if (__isolate_lru_page(page, 0) != 0) {
-		spin_unlock_irq(zone_lru_lock(zone));
+		spin_unlock_irq(&pgdat->lru_lock);
 		dump_page(page, "failed to isolate lru page");
 		return -EBUSY;
 	} else {
 		lruvec = mem_cgroup_page_lruvec(page, zone->zone_pgdat);
 		del_page_from_lru_list(page, lruvec, page_lru(page));
 	}
-	spin_unlock_irq(zone_lru_lock(zone));
+	spin_unlock_irq(&pgdat->lru_lock);
 
 	return 0;
 }

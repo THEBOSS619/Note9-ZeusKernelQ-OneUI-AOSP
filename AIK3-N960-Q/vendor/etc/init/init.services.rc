@@ -128,6 +128,9 @@ on init
     chmod 0664 /sys/devices/system/cpu/cpufreq/policy4/schedutil/freqvar_upscale_ratio
 
 on boot
+    # Tune swap
+    write /proc/sys/vm/page-cluster 0
+
     write /dev/cpuset/top-app/cpus 0-7
     write /dev/cpuset/foreground/cpus 0-2,4-7
     write /dev/cpuset/background/cpus 0-1

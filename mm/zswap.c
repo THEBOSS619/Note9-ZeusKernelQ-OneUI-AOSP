@@ -1079,12 +1079,6 @@ reject:
 	return ret;
 }
 
-static void hexdump(char *title, u8 *data, int len)
-{
-	printk("%s: length = %d @ %p\n", title, len, data);
-	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 16, 1, data, len, 1);
-}
-
 /*
  * returns 0 if the page was successfully decompressed
  * return -1 on entry not found or error
@@ -1144,17 +1138,6 @@ static int zswap_frontswap_load(unsigned type, pgoff_t offset,
 		put_cpu_ptr(entry->pool->tfm);
 	}
 #endif
-
-	if (ret) {
-#ifdef CONFIG_ZSWAP_SAME_PAGE_SHARING
-		hexdump("src buffer", src, entry->zhandle->length);
-#else
-		hexdump("src buffer", src, entry->length);
-#endif
-		if (dlen)
-			hexdump("dest buffer", dst, dlen);
-		printk("zswap_comp_op returned %d\n", ret);
-	}
 
 	kunmap_atomic(dst);
 #ifdef CONFIG_ZSWAP_SAME_PAGE_SHARING

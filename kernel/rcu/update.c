@@ -202,8 +202,10 @@ EXPORT_SYMBOL_GPL(rcu_unexpedite_gp);
 void rcu_end_inkernel_boot(void)
 {
 	rcu_unexpedite_gp();
-	if (rcu_normal_after_boot)
+	if (rcu_normal_after_boot) {
 		WRITE_ONCE(rcu_normal, 1);
+		WRITE_ONCE(rcu_expedited, 0);
+	}
 }
 
 #endif /* #ifndef CONFIG_TINY_RCU */

@@ -15,6 +15,13 @@ choice
 	  environment leading to NR_CPUS * HZ number of timer interrupts
 	  per second.
 
+	config HZ_80
+		bool "80 HZ"
+	help
+	  80 Hz is the lowest non-problematic tick rate which theoretically
+	  it should provide the best power efficiency at the cost of mildly
+	  performance penalty.
+
 	config HZ_100
 		bool "100 HZ"
 	help
@@ -55,6 +62,7 @@ endchoice
 
 config HZ
 	int
+	default 80 if HZ_80
 	default 100 if HZ_100
 	default 250 if HZ_250
 	default 300 if HZ_300

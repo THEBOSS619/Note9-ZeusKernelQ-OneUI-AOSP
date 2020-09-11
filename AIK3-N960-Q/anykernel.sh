@@ -85,6 +85,9 @@ fi;
 ui_print "Copying patched vendor fstab";
 cp -f $home/vendor/etc/fstab.samsungexynos9810 /vendor/etc/fstab.samsungexynos9810;
 
+ui_print "Copying zRAM patched fstab";
+cp -f $home/vendor/etc/fstab.enableswap /vendor/etc/fstab.enableswap;
+
 ui_print "Copying vendor script";
 cp -f $home/vendor/etc/init/init.services.rc /vendor/etc/init;
 

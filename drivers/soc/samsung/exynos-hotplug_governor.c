@@ -1168,9 +1168,9 @@ static int __init exynos_hpgov_parse_dt(void)
 		exynos_hpgov.big_idle_thr = 110;
 		exynos_hpgov.lit_idle_thr = 50;
 		exynos_hpgov.ldsum_heavy_thr = 800;
-		exynos_hpgov.ldsum_enabled = 1;
+		exynos_hpgov.ldsum_enabled = 0;
 		exynos_hpgov.skip_lit_enabled = 0;
-		exynos_hpgov.cl_busy_ratio = 65;
+		exynos_hpgov.cl_busy_ratio = 50;
 		exynos_hpgov.cal_id = ACPM_DVFS_CPUCL1;
 
 		} else {

@@ -134,8 +134,8 @@ on init
 
 on boot
     # Tune & enable zram
-    write /proc/sys/vm/page-cluster 1
-    write /proc/sys/vm/swappiness 160
+    write /proc/sys/vm/page-cluster 0
+    write /proc/sys/vm/swappiness 100
     swapon_all /vendor/etc/fstab.enableswap
 
     write /dev/cpuset/top-app/cpus 4-7

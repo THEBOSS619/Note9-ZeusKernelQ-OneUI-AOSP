@@ -395,7 +395,7 @@ init_fail:
 		kfree(bs);
 }
 
-int alloc_bands(void)
+int __init alloc_bands(void)
 {
 	struct task_band *band;
 	int pos, ret, i;

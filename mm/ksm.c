@@ -3179,7 +3179,7 @@ static int __init ksm_init(void)
 	if (err)
 		goto out;
 
-	ksm_thread = kthread_run(ksm_scan_thread, NULL, "ksmd");
+	ksm_thread = kthread_run_perf_critical(ksm_scan_thread, NULL, "ksmd");
 	if (IS_ERR(ksm_thread)) {
 		pr_err("ksm: creating kthread failed\n");
 		err = PTR_ERR(ksm_thread);

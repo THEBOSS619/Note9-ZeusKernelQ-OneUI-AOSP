@@ -541,7 +541,7 @@ static int decon_vsync_thread(void *data)
 
 int decon_create_vsync_thread(struct decon_device *decon)
 {
-	struct sched_param param = { .sched_priority = 20 };
+	struct sched_param param = { .sched_priority = 4 };
 	int ret = 0;
 	char name[16];
 
@@ -565,7 +565,7 @@ int decon_create_vsync_thread(struct decon_device *decon)
 		goto err;
 	}
 
-	sched_setscheduler_nocheck(decon->vsync.thread, SCHED_FIFO, &param);
+	sched_setscheduler_nocheck(decon->vsync.thread, SCHED_NORMAL, &param);
 
 	return 0;
 
@@ -613,7 +613,7 @@ static int decon_fsync_thread(void *data)
 
 int decon_create_fsync_thread(struct decon_device *decon)
 {
-	struct sched_param param = { .sched_priority = 20 };
+	struct sched_param param = { .sched_priority = 4 };
 	char name[16];
 
 	if (decon->dt.out_type != DECON_OUT_DSI) {
@@ -629,7 +629,7 @@ int decon_create_fsync_thread(struct decon_device *decon)
 		return PTR_ERR(decon->fsync.thread);
 	}
 
-	sched_setscheduler_nocheck(decon->fsync.thread, SCHED_FIFO, &param);
+	sched_setscheduler_nocheck(decon->fsync.thread, SCHED_NORMAL, &param);
 
 	return 0;
 }
@@ -1212,7 +1212,7 @@ static int decon_hiber_thread(void *data)
 
 int decon_register_hiber_work(struct decon_device *decon)
 {
-	struct sched_param param;
+	struct sched_param param = { .sched_priority = 4 };
 
 	mutex_init(&decon->hiber.lock);
 
@@ -1231,8 +1231,7 @@ int decon_register_hiber_work(struct decon_device *decon)
 		decon_err("failed to run hibernation thread\n");
 		return PTR_ERR(decon->hiber.thread);
 	}
-	param.sched_priority = 20;
-	sched_setscheduler_nocheck(decon->hiber.thread, SCHED_FIFO, &param);
+	sched_setscheduler_nocheck(decon->hiber.thread, SCHED_NORMAL, &param);
 
 	decon->hiber.init_status = true;
 
@@ -1261,7 +1260,7 @@ static void decon_hiber_handler(struct kthread_work *work)
 
 int decon_register_hiber_work(struct decon_device *decon)
 {
-	struct sched_param param;
+	struct sched_param param = { .sched_priority = 4 };
 
 	mutex_init(&decon->hiber.lock);
 
@@ -1276,8 +1275,7 @@ int decon_register_hiber_work(struct decon_device *decon)
 		decon_err("failed to run hibernation thread\n");
 		return PTR_ERR(decon->hiber.thread);
 	}
-	param.sched_priority = 20;
-	sched_setscheduler_nocheck(decon->hiber.thread, SCHED_FIFO, &param);
+	sched_setscheduler_nocheck(decon->hiber.thread, SCHED_NORMAL, &param);
 	kthread_init_work(&decon->hiber.work, decon_hiber_handler);
 
 	decon->hiber.init_status = true;

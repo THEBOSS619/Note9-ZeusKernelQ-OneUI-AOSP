@@ -258,7 +258,7 @@ static unsigned int ksm_thread_sleep_millisecs = 1500;
 static unsigned int zero_checksum __read_mostly;
 
 /* Whether to merge empty (zeroed) pages with actual zero pages */
-static bool ksm_use_zero_pages __read_mostly;
+static bool ksm_use_zero_pages __read_mostly = 1;
 
 /* Boolean to indicate whether to use deferred timer or not */
 static bool use_deferred_timer = true;
@@ -276,7 +276,7 @@ static int ksm_nr_node_ids = 1;
 #define KSM_RUN_MERGE	1
 #define KSM_RUN_UNMERGE	2
 #define KSM_RUN_OFFLINE	4
-static unsigned long ksm_run = KSM_RUN_STOP;
+static unsigned long ksm_run = KSM_RUN_MERGE;
 static void wait_while_offlining(void);
 
 static DECLARE_WAIT_QUEUE_HEAD(ksm_thread_wait);
@@ -3262,7 +3262,7 @@ static int __init ksm_init(void)
 	/* The correct value depends on page size and endianness */
 	zero_checksum = calc_checksum(ZERO_PAGE(0));
 	/* Default to false for backwards compatibility */
-	ksm_use_zero_pages = false;
+	ksm_use_zero_pages = true;
 
 	err = ksm_slab_init();
 	if (err)

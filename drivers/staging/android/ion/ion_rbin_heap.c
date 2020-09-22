@@ -549,7 +549,7 @@ struct ion_heap *ion_rbin_heap_create(struct ion_platform_heap *data)
 					"%s", "rbin_shrink");
 	rbin_heap = heap;
 
-	sched_setscheduler_nocheck(heap->task, SCHED_FIFO, &param);
+	sched_setscheduler_nocheck(heap->task, SCHED_NORMAL, &param);
 	ion_rbin_heap_cpu_callback(NULL, CPU_UP_PREPARE, NULL);
 	hotcpu_notifier(ion_rbin_heap_cpu_callback, 0);
 

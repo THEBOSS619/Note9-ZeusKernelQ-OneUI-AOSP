@@ -599,6 +599,7 @@ getxattr(struct dentry *d, const char __user *name, void __user *value,
 	if (size) {
 		if (size <= ARRAY_SIZE(kvalue_onstack)) {
 			kvalue = kvalue_onstack;
+			memset(kvalue, 0, size);
 		} else {
 			if (size > XATTR_SIZE_MAX)
 				size = XATTR_SIZE_MAX;

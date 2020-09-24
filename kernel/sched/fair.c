@@ -54,8 +54,8 @@
  * (to see the precise effective timeslice length of your workload,
  *  run vmstat and monitor the context-switches (cs) field)
  */
-unsigned int sysctl_sched_latency = 5000000ULL;
-unsigned int normalized_sysctl_sched_latency = 5000000ULL;
+unsigned int sysctl_sched_latency = 2000000ULL;
+unsigned int normalized_sysctl_sched_latency = 2000000ULL;
 
 unsigned int sysctl_sched_sync_hint_enable = 1;
 unsigned int sysctl_sched_cstate_aware = 1;
@@ -82,8 +82,8 @@ enum sched_tunable_scaling sysctl_sched_tunable_scaling
  * Minimal preemption granularity for CPU-bound tasks:
  * (default: 0.75 msec * (1 + ilog(ncpus)), units: nanoseconds)
  */
-unsigned int sysctl_sched_min_granularity = 500000ULL;
-unsigned int normalized_sysctl_sched_min_granularity = 500000ULL;
+unsigned int sysctl_sched_min_granularity = 200000ULL;
+unsigned int normalized_sysctl_sched_min_granularity = 200000ULL;
 
 /*
  * is kept at sysctl_sched_latency / sysctl_sched_min_granularity
@@ -109,10 +109,10 @@ unsigned int __read_mostly sysctl_sched_energy_aware = 1;
  * and reduces their over-scheduling. Synchronous workloads will still
  * have immediate wakeup/sleep latencies.
  */
-unsigned int sysctl_sched_wakeup_granularity = 1000000UL;
-unsigned int normalized_sysctl_sched_wakeup_granularity = 1000000UL;
+unsigned int sysctl_sched_wakeup_granularity = 200000UL;
+unsigned int normalized_sysctl_sched_wakeup_granularity = 200000UL;
 
-const_debug unsigned int sysctl_sched_migration_cost = 1000000UL;
+const_debug unsigned int sysctl_sched_migration_cost = 5000000UL;
 
 #ifdef CONFIG_SMP
 /*

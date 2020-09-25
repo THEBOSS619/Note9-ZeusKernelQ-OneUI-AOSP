@@ -451,7 +451,7 @@ static void __exynos_hpgov_set_disable(void)
 
 static void __exynos_hpgov_set_enable(void)
 {
-	struct sched_param param = { .sched_priority = 20 };
+	struct sched_param param = { .sched_priority = 4 };
 
 	exynos_hpgov.mode = QUAD;
 	exynos_hpgov.user_mode = DISABLE;
@@ -470,7 +470,7 @@ static void __exynos_hpgov_set_enable(void)
 	}
 
 	set_user_nice(exynos_hpgov.task, MIN_NICE);
-	sched_setscheduler_nocheck(exynos_hpgov.task, SCHED_FIFO, &param);
+	sched_setscheduler_nocheck(exynos_hpgov.task, SCHED_NORMAL, &param);
 	set_cpus_allowed_ptr(exynos_hpgov.task, cpu_coregroup_mask(0));
 
 	if (exynos_hpgov.task)

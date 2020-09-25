@@ -126,11 +126,11 @@ SCHED_FEAT(EXYNOS_MS, false)
  * If disabled, this behaviour will only apply to tasks of the
  * RT class.
  */
-SCHED_FEAT(SCHEDTUNE_BOOST_HOLD_ALL, true)
+SCHED_FEAT(SCHEDTUNE_BOOST_HOLD_ALL, false)
 
 /*
  * Inflate the effective utilization of SchedTune-boosted tasks, which
  * generally leads to usage of higher frequencies.
  * If disabled, boosts will only bias tasks to higher-capacity CPUs.
  */
-SCHED_FEAT(SCHEDTUNE_BOOST_UTIL, true)
+SCHED_FEAT(SCHEDTUNE_BOOST_UTIL, false)

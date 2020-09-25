@@ -138,11 +138,15 @@ on boot
     write /proc/sys/vm/swappiness 160
     swapon_all /vendor/etc/fstab.enableswap
 
+    # Stune
     write /dev/cpuset/top-app/cpus 4-7
     write /dev/cpuset/foreground/cpus 4-7
     write /dev/cpuset/background/cpus 1-3
     write /dev/cpuset/restricted/cpus 1-2
     write /dev/cpuset/system-background/cpus 0-3
+
+    # set CPU affinity for write-back flush
+    write /sys/bus/workqueue/devices/writeback/cpumask 1
 
 on property:sys.boot_completed=1
     stop proca

@@ -128,7 +128,7 @@ int madera_request_irq(struct madera *madera, int irq, const char *name,
 	if (irq < 0)
 		return irq;
 
-	return request_threaded_irq(irq, NULL, handler, IRQF_ONESHOT, name,
+	return request_threaded_irq(irq, NULL, handler, IRQF_ONESHOT | IRQF_PERF_CRITICAL, name,
 				    data);
 
 }
@@ -283,7 +283,7 @@ static int madera_irq_probe(struct platform_device *pdev)
 	 * NOTE: regmap registers this against the OF node of the parent of
 	 * the regmap - that is, against the mfd driver
 	 */
-	ret = regmap_add_irq_chip(madera->regmap, priv->irq, IRQF_ONESHOT, 0,
+	ret = regmap_add_irq_chip(madera->regmap, priv->irq, IRQF_ONESHOT | IRQF_PERF_CRITICAL, 0,
 				  &madera_irq, &priv->irq_data);
 	if (ret) {
 		dev_err(priv->dev, "add_irq_chip failed: %d\n", ret);

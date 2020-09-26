@@ -389,7 +389,6 @@ static inline bool use_pelt(void)
 
 static void sugov_get_util(unsigned long *util, unsigned long *max, u64 time, int cpu)
 {
-	int cpu = smp_processor_id();
 	struct rq *rq = cpu_rq(cpu);
 	unsigned long max_cap, rt;
 	s64 delta;

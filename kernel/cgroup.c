@@ -2951,19 +2951,17 @@ static ssize_t __cgroup_procs_write(struct kernfs_open_file *of, char *buf,
 	param.sched_priority = 0;
 
 	if (sysctl_iosched_boost_top_app && !ret && !strcmp(of->kn->parent->name, "background")) {
-		sched_setscheduler_nocheck(tsk, SCHED_IDLE, &param);
-		set_task_ioprio(tsk, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_IDLE, 0));
+		sched_setscheduler_nocheck(tsk, SCHED_NORMAL, &param);
 	} else if (!strcmp(of->kn->parent->name, "foreground")) {
 		set_task_ioprio(tsk, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_RT, 2));
-		param.sched_priority = 1;
-		sched_setscheduler_nocheck(tsk, SCHED_RR|SCHED_RESET_ON_FORK, &param);
+		param.sched_priority = 10;
+		sched_setscheduler_nocheck(tsk, SCHED_FIFO | SCHED_RR | SCHED_RESET_ON_FORK, &param);
 	} else if (!strcmp(of->kn->parent->name, "top-app")) {
 		set_task_ioprio(tsk, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_RT, 1));
-		param.sched_priority = 2;
-		sched_setscheduler_nocheck(tsk, SCHED_RR|SCHED_RESET_ON_FORK, &param);
+		param.sched_priority = 15;
+		sched_setscheduler_nocheck(tsk, SCHED_FIFO | SCHED_RR | SCHED_RESET_ON_FORK, &param);
 	} else {
-		set_task_ioprio(tsk, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_NONE, 0));
-		param.sched_priority = 0;
+		param.sched_priority = 5;
 		sched_setscheduler_nocheck(tsk, SCHED_NORMAL, &param);
 	}
 

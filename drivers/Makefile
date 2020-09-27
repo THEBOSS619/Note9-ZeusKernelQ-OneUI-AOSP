@@ -231,8 +231,6 @@ obj-$(CONFIG_UH)		+= uh/
 #MPSD driver
 obj-$(CONFIG_MPSD)	+= mpsd/
 
-obj-y				+= kperfmon/
-
 #TZIC
 obj-y  += security/samsung/tzic/
 

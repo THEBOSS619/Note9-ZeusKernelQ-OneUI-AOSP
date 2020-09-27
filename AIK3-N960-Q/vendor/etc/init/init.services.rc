@@ -148,6 +148,12 @@ on boot
     # set CPU affinity for write-back flush
     write /sys/bus/workqueue/devices/writeback/cpumask 1
 
+    # set CPU affinity for irq
+    write /proc/irq/default_smp_affinity f0
+
+    # set custom specific io tune
+    write /proc/sys/kernel/iosched_boost_top_app 1
+
 on property:sys.boot_completed=1
     stop proca
     stop secure_storage

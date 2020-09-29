@@ -581,7 +581,7 @@ static int acpm_ipc_probe(struct platform_device *pdev)
 
 	ret = devm_request_threaded_irq(&pdev->dev, acpm_ipc->irq, acpm_ipc_irq_handler,
 			acpm_ipc_irq_handler_thread,
-			IRQF_ONESHOT,
+			IRQF_ONESHOT | IRQF_PERF_CRITICAL,
 			dev_name(&pdev->dev), acpm_ipc);
 
 	if (ret) {

@@ -2628,7 +2628,6 @@ struct task_struct *cgroup_procs_write_start(char *buf, bool threadgroup)
 	__acquires(&cgroup_threadgroup_rwsem)
 {
 	struct task_struct *tsk;
-	struct sched_param param;
 	pid_t pid;
 
 	if (kstrtoint(strstrip(buf), 0, &pid) || pid < 0)
@@ -2676,32 +2675,6 @@ void cgroup_procs_write_finish(struct task_struct *task)
 {
 	struct cgroup_subsys *ss;
 	int ssid;
-
-	/* This covers boosting for app launches and app transitions */
-	if (!ret && !threadgroup &&
-	    !strcmp(of->kn->parent->name, "top-app") &&
-	    is_zygote_pid(tsk->parent->pid)) {
-		cpu_input_boost_kick_max(250);
-		devfreq_boost_kick_max(DEVFREQ_EXYNOS_MIF, 500);
-	}
-
-	param.sched_priority = 0;
-
-	if (sysctl_iosched_boost_top_app && !ret && !strcmp(of->kn->parent->name, "background")) {
-		sched_setscheduler_nocheck(tsk, SCHED_NORMAL, &param);
-	} else if (!strcmp(of->kn->parent->name, "foreground")) {
-		set_task_ioprio(tsk, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_RT, 2));
-		param.sched_priority = 10;
-		sched_setscheduler_nocheck(tsk, SCHED_FIFO | SCHED_RR | SCHED_RESET_ON_FORK, &param);
-	} else if (!strcmp(of->kn->parent->name, "top-app")) {
-		set_task_ioprio(tsk, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_RT, 1));
-		param.sched_priority = 15;
-		sched_setscheduler_nocheck(tsk, SCHED_FIFO | SCHED_RR | SCHED_RESET_ON_FORK, &param);
-	} else {
-		param.sched_priority = 5;
-		sched_setscheduler_nocheck(tsk, SCHED_NORMAL, &param);
-	}
-
 
 	/* release reference from cgroup_procs_write_start() */
 	put_task_struct(task);
@@ -4454,6 +4427,7 @@ static ssize_t cgroup_procs_write(struct kernfs_open_file *of,
 {
 	struct cgroup *src_cgrp, *dst_cgrp;
 	struct task_struct *task;
+	struct sched_param param;
 	ssize_t ret;
 
 	dst_cgrp = cgroup_kn_lock_live(of->kn, false);
@@ -4477,6 +4451,30 @@ static ssize_t cgroup_procs_write(struct kernfs_open_file *of,
 
 	ret = cgroup_attach_task(dst_cgrp, task, true);
 
+	/* This covers boosting for app launches and app transitions */
+	if (!ret && !strcmp(of->kn->parent->name, "top-app") &&
+	    is_zygote_pid(task->parent->pid)) {
+		cpu_input_boost_kick_max(250);
+		devfreq_boost_kick_max(DEVFREQ_EXYNOS_MIF, 500);
+	}
+
+	param.sched_priority = 0;
+
+	if (sysctl_iosched_boost_top_app && !ret && !strcmp(of->kn->parent->name, "background")) {
+		sched_setscheduler_nocheck(task, SCHED_NORMAL, &param);
+	} else if (!strcmp(of->kn->parent->name, "foreground")) {
+		set_task_ioprio(task, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_RT, 2));
+		param.sched_priority = 10;
+		sched_setscheduler_nocheck(task, SCHED_FIFO | SCHED_RR | SCHED_RESET_ON_FORK, &param);
+	} else if (!strcmp(of->kn->parent->name, "top-app")) {
+		set_task_ioprio(task, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_RT, 1));
+		param.sched_priority = 15;
+		sched_setscheduler_nocheck(task, SCHED_FIFO | SCHED_RR | SCHED_RESET_ON_FORK, &param);
+	} else {
+		param.sched_priority = 5;
+		sched_setscheduler_nocheck(task, SCHED_NORMAL, &param);
+	}
+
 out_finish:
 	cgroup_procs_write_finish(task);
 out_unlock:
@@ -4495,6 +4493,7 @@ static ssize_t cgroup_threads_write(struct kernfs_open_file *of,
 {
 	struct cgroup *src_cgrp, *dst_cgrp;
 	struct task_struct *task;
+	struct sched_param param;
 	ssize_t ret;
 
 	buf = strstrip(buf);
@@ -4525,6 +4524,30 @@ static ssize_t cgroup_threads_write(struct kernfs_open_file *of,
 		goto out_finish;
 
 	ret = cgroup_attach_task(dst_cgrp, task, false);
+
+	/* This covers boosting for app launches and app transitions */
+	if (!ret && !strcmp(of->kn->parent->name, "top-app") &&
+	    is_zygote_pid(task->parent->pid)) {
+		cpu_input_boost_kick_max(250);
+		devfreq_boost_kick_max(DEVFREQ_EXYNOS_MIF, 500);
+	}
+
+	param.sched_priority = 0;
+
+	if (sysctl_iosched_boost_top_app && !ret && !strcmp(of->kn->parent->name, "background")) {
+		sched_setscheduler_nocheck(task, SCHED_NORMAL, &param);
+	} else if (!strcmp(of->kn->parent->name, "foreground")) {
+		set_task_ioprio(task, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_RT, 2));
+		param.sched_priority = 10;
+		sched_setscheduler_nocheck(task, SCHED_FIFO | SCHED_RR | SCHED_RESET_ON_FORK, &param);
+	} else if (!strcmp(of->kn->parent->name, "top-app")) {
+		set_task_ioprio(task, IOPRIO_PRIO_VALUE(IOPRIO_CLASS_RT, 1));
+		param.sched_priority = 15;
+		sched_setscheduler_nocheck(task, SCHED_FIFO | SCHED_RR | SCHED_RESET_ON_FORK, &param);
+	} else {
+		param.sched_priority = 5;
+		sched_setscheduler_nocheck(task, SCHED_NORMAL, &param);
+	}
 
 out_finish:
 	cgroup_procs_write_finish(task);

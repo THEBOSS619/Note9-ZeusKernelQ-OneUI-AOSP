@@ -498,7 +498,7 @@ int decon_register_ext_irq(struct decon_device *decon)
 
 	decon_info("%s: gpio(%d)\n", __func__, decon->res.irq);
 	ret = devm_request_irq(dev, decon->res.irq, decon_ext_irq_handler,
-			IRQF_TRIGGER_RISING, pdev->name, decon);
+			IRQF_TRIGGER_RISING | IRQF_PERF_CRITICAL, pdev->name, decon);
 
 	decon->eint_status = 1;
 

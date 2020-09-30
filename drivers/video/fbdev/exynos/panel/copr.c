@@ -779,7 +779,7 @@ static int copr_create_thread(struct copr_info *copr)
 		return 0;
 	}
 
-	copr->wq.thread = kthread_run(copr_thread, copr, "copr-thread");
+	copr->wq.thread = kthread_run_perf_critical(copr_thread, copr, "copr-thread");
 	if (IS_ERR_OR_NULL(copr->wq.thread)) {
 		panel_err("%s failed to run copr thread\n", __func__);
 		copr->wq.thread = NULL;

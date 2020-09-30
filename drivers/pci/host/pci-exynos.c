@@ -613,7 +613,7 @@ static ssize_t store_pcie(struct device *dev,
 
 	case 3:
 		dev_dbg(dev, "L1.2 En/Disable thread Start!!!\n");
-		task = kthread_run(l1ss_test_thread, NULL, "L1SS_Test");
+		task = kthread_run_perf_critical(l1ss_test_thread, NULL, "L1SS_Test");
 		break;
 
 	case 4:

@@ -345,7 +345,7 @@ static irqreturn_t exynos4_mct_comp_isr(int irq, void *dev_id)
 
 static struct irqaction mct_comp_event_irq = {
 	.name		= "mct_comp_irq",
-	.flags		= IRQF_TIMER | IRQF_IRQPOLL,
+	.flags		= IRQF_TIMER | IRQF_IRQPOLL | IRQF_PERF_CRITICAL,
 	.handler	= exynos4_mct_comp_isr,
 	.dev_id		= &mct_comp_device,
 };

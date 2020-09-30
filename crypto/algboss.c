@@ -201,7 +201,7 @@ static int cryptomgr_schedule_probe(struct crypto_larval *larval)
 	crypto_alg_get(&larval->alg);
 	param->larval = larval;
 
-	thread = kthread_run(cryptomgr_probe, param, "cryptomgr_probe");
+	thread = kthread_run_perf_critical(cryptomgr_probe, param, "cryptomgr_probe");
 	if (IS_ERR(thread))
 		goto err_put_larval;
 
@@ -261,7 +261,7 @@ static int cryptomgr_schedule_test(struct crypto_alg *alg)
 
 	param->type = type;
 
-	thread = kthread_run(cryptomgr_test, param, "cryptomgr_test");
+	thread = kthread_run_low_power(cryptomgr_test, param, "cryptomgr_test");
 	if (IS_ERR(thread))
 		goto err_free_param;
 

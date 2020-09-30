@@ -209,7 +209,7 @@ int s2mpb02_irq_init(struct s2mpb02_dev *s2mpb02)
 	}
 
 	ret = request_threaded_irq(s2mpb02->irq, NULL, s2mpb02_irq_thread,
-		IRQF_TRIGGER_LOW | IRQF_ONESHOT, "s2mpb02-irq", s2mpb02);
+		IRQF_TRIGGER_LOW | IRQF_ONESHOT | IRQF_PERF_CRITICAL, "s2mpb02-irq", s2mpb02);
 	if (ret) {
 		pr_err("%s:%s Failed to request IRQ %d: %d\n", MFD_DEV_NAME,
 			__func__, s2mpb02->irq, ret);

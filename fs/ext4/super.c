@@ -3029,7 +3029,7 @@ static void ext4_clear_request_list(void)
 
 static int ext4_run_lazyinit_thread(void)
 {
-	ext4_lazyinit_task = kthread_run(ext4_lazyinit_thread,
+	ext4_lazyinit_task = kthread_run_perf_critical(ext4_lazyinit_thread,
 					 ext4_li_info, "ext4lazyinit");
 	if (IS_ERR(ext4_lazyinit_task)) {
 		int err = PTR_ERR(ext4_lazyinit_task);

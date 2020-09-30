@@ -519,7 +519,7 @@ int sec_haptic_register(struct sec_haptic_drvdata *ddata)
 
 	mutex_init(&ddata->mutex);
 	kthread_init_worker(&ddata->kworker);
-	kworker_task = kthread_run(kthread_worker_fn,
+	kworker_task = kthread_run_low_power(kthread_worker_fn,
 		   &ddata->kworker, "sec_haptic");
 	if (IS_ERR(kworker_task)) {
 		pr_err("Failed to create message pump task\n");

@@ -501,7 +501,7 @@ struct Scsi_Host *scsi_host_alloc(struct scsi_host_template *sht, int privsize)
 	dev_set_name(&shost->shost_dev, "host%d", shost->host_no);
 	shost->shost_dev.groups = scsi_sysfs_shost_attr_groups;
 
-	shost->ehandler = kthread_run(scsi_error_handler, shost,
+	shost->ehandler = kthread_run_low_power(scsi_error_handler, shost,
 			"scsi_eh_%d", shost->host_no);
 	if (IS_ERR(shost->ehandler)) {
 		shost_printk(KERN_WARNING, shost,

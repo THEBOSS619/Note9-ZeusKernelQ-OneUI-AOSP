@@ -308,7 +308,7 @@ int s2mps18_irq_init(struct s2mps18_dev *s2mps18)
 			MFD_DEV_NAME, __func__, i2c_data);
 
 	ret = request_threaded_irq(s2mps18->irq, NULL, s2mps18_irq_thread,
-				   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+				   IRQF_TRIGGER_LOW | IRQF_ONESHOT | IRQF_PERF_CRITICAL,
 				   "s2mps18-irq", s2mps18);
 
 	if (ret) {

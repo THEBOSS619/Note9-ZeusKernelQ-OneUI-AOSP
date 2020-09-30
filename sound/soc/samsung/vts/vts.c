@@ -2087,7 +2087,7 @@ static int samsung_vts_devm_request_threaded_irq(
 
 	result = devm_request_threaded_irq(dev, data->irq[hw_irq],
 			NULL, thread_fn,
-			IRQF_TRIGGER_RISING | IRQF_ONESHOT, dev->init_name,
+			IRQF_TRIGGER_RISING | IRQF_ONESHOT | IRQF_PERF_CRITICAL, dev->init_name,
 			pdev);
 
 	if (result < 0) {

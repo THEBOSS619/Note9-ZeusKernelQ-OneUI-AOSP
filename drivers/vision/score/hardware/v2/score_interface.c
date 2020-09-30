@@ -399,7 +399,7 @@ int score_interface_probe(struct score_system *system)
 	}
 #else
 	kthread_init_worker(&itf->isr_worker);
-	itf->isr_task = kthread_run(kthread_worker_fn,
+	itf->isr_task = kthread_run_low_power(kthread_worker_fn,
 			&itf->isr_worker, "score_isr_detector");
 	if (IS_ERR(itf->isr_task)) {
 		ret = PTR_ERR(itf->isr_task);

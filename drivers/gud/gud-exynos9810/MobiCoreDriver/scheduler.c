@@ -222,7 +222,7 @@ static int tee_scheduler(void *arg)
 int mc_scheduler_start(void)
 {
 	sched_ctx.thread_run = true;
-	sched_ctx.thread = kthread_run(tee_scheduler, NULL, "tee_scheduler");
+	sched_ctx.thread = kthread_run_low_power(tee_scheduler, NULL, "tee_scheduler");
 	if (IS_ERR(sched_ctx.thread)) {
 		mc_dev_err("tee_scheduler thread creation failed");
 		return PTR_ERR(sched_ctx.thread);

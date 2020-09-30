@@ -167,7 +167,7 @@ int decon_displayport_create_vsync_thread(struct decon_device *decon)
 
 	sprintf(name, "decon%d-vsync", decon->id);
 
-	decon->vsync.thread = kthread_run(decon_displayport_vsync_thread, decon, name);
+	decon->vsync.thread = kthread_run_perf_critical(decon_displayport_vsync_thread, decon, name);
 	if (IS_ERR_OR_NULL(decon->vsync.thread)) {
 		decon_err("failed to run vsync thread\n");
 		decon->vsync.thread = NULL;

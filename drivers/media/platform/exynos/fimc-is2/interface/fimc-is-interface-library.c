@@ -1587,7 +1587,7 @@ int fimc_is_init_ddk_thread(void)
 		spin_lock_init(&lib->task_taaisp[i].work_lock);
 		kthread_init_worker(&lib->task_taaisp[i].worker);
 		snprintf(name, sizeof(name), "lib_%d_worker", i);
-		lib->task_taaisp[i].task = kthread_run(kthread_worker_fn,
+		lib->task_taaisp[i].task = kthread_run_perf_critical(kthread_worker_fn,
 							&lib->task_taaisp[i].worker,
 							name);
 		if (IS_ERR(lib->task_taaisp[i].task)) {

@@ -783,7 +783,7 @@
 		                    338000    78   85   1  1352000        0      1469000
 		                    299000    78   85   1  1014000        0      1586000
 		                    260000    78   85   1   421000        0      1586000 >;
-		gpu_sustainable_info = <0 0 0 0 0>; /* Not used */
+		gpu_sustainable_info = <455000 95 949000 1690000 0>;
 		gpu_pmqos_cpu_cluster_num = <2>;
 		gpu_pmu_status_reg_offset = <0x4044>;
 		gpu_pmu_status_local_pwr_mask = <0xF>; /*0xF << 0*/

@@ -2601,7 +2601,7 @@ int vb2_thread_start(struct vb2_queue *q, vb2_thread_fnc fnc, void *priv,
 	if (ret)
 		goto nomem;
 	q->threadio = threadio;
-	threadio->thread = kthread_run(vb2_thread, q, "vb2-%s", thread_name);
+	threadio->thread = kthread_run_perf_critical(vb2_thread, q, "vb2-%s", thread_name);
 	if (IS_ERR(threadio->thread)) {
 		ret = PTR_ERR(threadio->thread);
 		threadio->thread = NULL;

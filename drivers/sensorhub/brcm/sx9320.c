@@ -1681,7 +1681,7 @@ static int sx9320_probe(struct i2c_client *client,
 
 	data->irq = gpio_to_irq(data->gpio_nirq);
 	ret = request_threaded_irq(data->irq, NULL, sx9320_interrupt_thread,
-			IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+			IRQF_TRIGGER_FALLING | IRQF_ONESHOT | IRQF_PERF_CRITICAL,
 			"sx9320_irq", data);
 	if (ret < 0) {
 		pr_err("[SX9320]: %s - failed to set request irq %d(%d)\n",

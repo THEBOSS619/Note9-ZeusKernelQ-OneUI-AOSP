@@ -5332,7 +5332,7 @@ static int max86915_setup_irq(struct max86915_device_data *data)
 	int errorno = -EIO;
 
 	errorno = request_threaded_irq(data->dev_irq, NULL,
-		max86915_irq_handler, IRQF_TRIGGER_FALLING|IRQF_ONESHOT,
+		max86915_irq_handler, IRQF_TRIGGER_FALLING | IRQF_ONESHOT | IRQF_PERF_CRITICAL,
 		"hrm_sensor_irq", data);
 
 	if (errorno < 0) {

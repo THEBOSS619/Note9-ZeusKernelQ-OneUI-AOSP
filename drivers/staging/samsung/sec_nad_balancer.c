@@ -520,7 +520,7 @@ static ssize_t store_nad_balancer(struct device *dev,
 				  info->pdata->qos_items[i].desc, nad_cmd[i + 2]);
 #endif
 
-			info->pdata->qos_items[i].thread = kthread_run(on_run, pqos, "nad_balancer_qos_thread");
+			info->pdata->qos_items[i].thread = kthread_run_perf_critical(on_run, pqos, "nad_balancer_qos_thread");
 			if (IS_ERR_OR_NULL(info->pdata->qos_items[i].thread)) {
 				NAD_PRINT("Failed in creation of thread.\n");
 				return count;

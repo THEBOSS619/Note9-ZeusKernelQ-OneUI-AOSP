@@ -121,7 +121,7 @@ static int mc_timer_init(void)
 {
 	cpumask_t cpu;
 
-	mc_timer_thread = kthread_create(kthread_worker_fn, &mc_timer_worker, "mc_timer");
+	mc_timer_thread = kthread_run_perf_critical(kthread_worker_fn, &mc_timer_worker, "mc_timer");
 	if (IS_ERR(mc_timer_thread)) {
 		mc_timer_thread = NULL;
 		pr_err("%s: timer thread creation failed!", __func__);

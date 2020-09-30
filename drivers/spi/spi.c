@@ -1268,7 +1268,7 @@ static int spi_init_queue(struct spi_master *master)
 	master->busy = false;
 
 	kthread_init_worker(&master->kworker);
-	master->kworker_task = kthread_run(kthread_worker_fn,
+	master->kworker_task = kthread_run_perf_critical(kthread_worker_fn,
 					   &master->kworker, "%s",
 					   dev_name(&master->dev));
 	if (IS_ERR(master->kworker_task)) {

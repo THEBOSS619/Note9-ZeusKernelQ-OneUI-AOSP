@@ -310,7 +310,7 @@ int fimc_is_sensor_init_sensor_thread(struct fimc_is_device_sensor_peri *sensor_
 		spin_lock_init(&sensor_peri->sensor_work_lock);
 		kthread_init_work(&sensor_peri->sensor_work, fimc_is_sensor_sensor_work_fn);
 		kthread_init_worker(&sensor_peri->sensor_worker);
-		sensor_peri->sensor_task = kthread_run(kthread_worker_fn,
+		sensor_peri->sensor_task = kthread_run_perf_critical(kthread_worker_fn,
 						&sensor_peri->sensor_worker,
 						"fimc_is_sen_sensor_work");
 		if (IS_ERR(sensor_peri->sensor_task)) {
@@ -353,7 +353,7 @@ int fimc_is_sensor_init_mode_change_thread(struct fimc_is_device_sensor_peri *se
 
 	kthread_init_work(&sensor_peri->mode_change_work, fimc_is_sensor_mode_change_work_fn);
 	kthread_init_worker(&sensor_peri->mode_change_worker);
-	sensor_peri->mode_change_task = kthread_run(kthread_worker_fn,
+	sensor_peri->mode_change_task = kthread_run_perf_critical(kthread_worker_fn,
 						&sensor_peri->mode_change_worker,
 						"fimc_is_sensor_mode_change");
 	if (IS_ERR(sensor_peri->mode_change_task)) {

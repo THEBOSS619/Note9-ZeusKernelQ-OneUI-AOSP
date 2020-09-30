@@ -732,7 +732,7 @@ int ss310ap_init_modemctl_device(struct modem_ctl *mc, struct modem_data *pdata)
 #ifdef CONFIG_SOC_EXYNOS8890
 	struct resource *sysram_alive;
 #endif
-	unsigned long flags = IRQF_NO_SUSPEND | IRQF_NO_THREAD;
+	unsigned long flags = IRQF_NO_SUSPEND | IRQF_NO_THREAD | IRQF_PERF_CRITICAL;
 	unsigned int cp_rst_n ;
 
 	mif_err("+++\n");

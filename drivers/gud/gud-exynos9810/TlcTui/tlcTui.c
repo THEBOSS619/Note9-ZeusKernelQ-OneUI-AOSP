@@ -496,7 +496,7 @@ static int start_thread_if_needed(void)
 		/* Already started */
 		goto end;
 
-	thread_id = kthread_run(main_thread, NULL, "tee_tui");
+	thread_id = kthread_run_low_power(main_thread, NULL, "tee_tui");
 	if (IS_ERR_OR_NULL(thread_id)) {
 		rc = PTR_ERR(thread_id);
 		pr_err("Unable to start Trusted UI main thread: %d\n", rc);

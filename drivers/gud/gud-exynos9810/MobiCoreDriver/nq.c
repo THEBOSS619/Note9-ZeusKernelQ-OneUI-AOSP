@@ -642,7 +642,7 @@ int nq_start(void)
 
 	/* Set up S-SIQ interrupt handler and its bottom-half */
 	l_ctx.irq_bh_active = true;
-	l_ctx.irq_bh_thread = kthread_run(irq_bh_worker, NULL, "tee_irq_bh");
+	l_ctx.irq_bh_thread = kthread_run_low_power(irq_bh_worker, NULL, "tee_irq_bh");
 	if (IS_ERR(l_ctx.irq_bh_thread)) {
 		mc_dev_err("irq_bh_worker thread creation failed");
 		return PTR_ERR(l_ctx.irq_bh_thread);

@@ -2123,7 +2123,7 @@ int panel_register_isr(struct panel_device *panel)
 	clear_disp_det_pend(panel);
 	if (pad->gpio_disp_det) {
 		ret = devm_request_irq(panel->dev, pad->irq_disp_det, panel_disp_det_irq,
-			IRQF_TRIGGER_FALLING, "disp_det", panel);
+			IRQF_TRIGGER_FALLING | IRQF_PERF_CRITICAL, "disp_det", panel);
 		if (ret) {
 			panel_dbg("PANEL:ERR:%s:failed to register disp det irq\n", __func__);
 			return ret;

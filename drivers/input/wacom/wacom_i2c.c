@@ -2806,7 +2806,7 @@ static int wacom_request_gpio(struct i2c_client *client,
 {
 	int ret;
 
-	ret = devm_gpio_request(&client->dev, pdata->irq_gpio, "wacom_irq");
+	ret = devm_gpio_request(&client->dev, pdata->irq_gpio | IRQF_PERF_CRITICAL, "wacom_irq");
 	if (ret) {
 		input_err(true, &client->dev,
 			  "unable to request gpio for irq [%d]\n",
@@ -2814,7 +2814,7 @@ static int wacom_request_gpio(struct i2c_client *client,
 		return ret;
 	}
 
-	ret = devm_gpio_request(&client->dev, pdata->pdct_gpio, "wacom_pdct");
+	ret = devm_gpio_request(&client->dev, pdata->pdct_gpio | IRQF_PERF_CRITICAL, "wacom_pdct");
 	if (ret) {
 		input_err(true, &client->dev,
 			  "unable to request gpio for pdct [%d]\n",
@@ -2822,7 +2822,7 @@ static int wacom_request_gpio(struct i2c_client *client,
 		return ret;
 	}
 
-	ret = devm_gpio_request(&client->dev, pdata->fwe_gpio, "wacom_fwe");
+	ret = devm_gpio_request(&client->dev, pdata->fwe_gpio | IRQF_PERF_CRITICAL, "wacom_fwe");
 	if (ret) {
 		input_err(true, &client->dev,
 			  "unable to request gpio for fwe [%d]\n",
@@ -3201,7 +3201,7 @@ static int wacom_i2c_probe(struct i2c_client *client,
 
 	/*Request IRQ */
 	ret = devm_request_threaded_irq(&client->dev, wac_i2c->irq, NULL,
-					wacom_interrupt, IRQF_ONESHOT |
+					wacom_interrupt, IRQF_ONESHOT | IRQF_PERF_CRITICAL |
 					pdata->irq_type,
 					"sec_epen_irq", wac_i2c);
 	if (ret < 0) {
@@ -3214,7 +3214,7 @@ static int wacom_i2c_probe(struct i2c_client *client,
 
 	ret = devm_request_threaded_irq(&client->dev, wac_i2c->irq_pdct, NULL,
 					wacom_interrupt_pdct,
-					IRQF_TRIGGER_FALLING | IRQF_ONESHOT |
+					IRQF_TRIGGER_FALLING | IRQF_ONESHOT| IRQF_PERF_CRITICAL |
 					IRQF_TRIGGER_RISING,
 					"sec_epen_pdct", wac_i2c);
 	if (ret < 0) {

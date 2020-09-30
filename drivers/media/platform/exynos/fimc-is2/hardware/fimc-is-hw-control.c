@@ -606,7 +606,7 @@ static int fimc_is_hardware_init_mshot_thread(struct fimc_is_hw_ip *hw_ip)
 
 	if (hw_ip->mshot_task == NULL) {
 		kthread_init_worker(&hw_ip->mshot_worker);
-		hw_ip->mshot_task = kthread_run(kthread_worker_fn,
+		hw_ip->mshot_task = kthread_run_perf_critical(kthread_worker_fn,
 						&hw_ip->mshot_worker,
 						"mshot_work");
 		if (IS_ERR_OR_NULL(hw_ip->mshot_task)) {

@@ -147,7 +147,7 @@ static void clocksource_watchdog_work(struct work_struct *work)
 	 * If kthread_run fails the next watchdog scan over the
 	 * watchdog_list will find the unstable clock again.
 	 */
-	kthread_run(clocksource_watchdog_kthread, NULL, "kwatchdog");
+	kthread_run_low_power(clocksource_watchdog_kthread, NULL, "kwatchdog");
 }
 
 static void __clocksource_unstable(struct clocksource *cs)

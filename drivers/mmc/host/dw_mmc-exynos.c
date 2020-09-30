@@ -1295,7 +1295,7 @@ static int dw_mci_exynos_request_ext_irq(struct dw_mci *host,
 				devm_request_irq(host->dev, ext_cd_irq, func,
 					IRQF_TRIGGER_RISING |
 					IRQF_TRIGGER_FALLING |
-					IRQF_ONESHOT,
+					IRQF_ONESHOT | IRQF_PERF_CRITICAL,
 					"tflash_det", host) == 0) {
 			 dev_warn(host->dev, "success to request irq for card detect.\n");
 			 enable_irq_wake(ext_cd_irq);

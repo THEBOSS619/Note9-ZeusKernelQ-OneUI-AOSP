@@ -384,7 +384,7 @@ int fimc_is_lib_vra_init_task(struct fimc_is_lib_vra *lib_vra)
 	spin_lock_init(&lib_vra->task_vra.work_lock);
 	kthread_init_worker(&lib_vra->task_vra.worker);
 
-	lib_vra->task_vra.task = kthread_run(kthread_worker_fn,
+	lib_vra->task_vra.task = kthread_run_perf_critical(kthread_worker_fn,
 		&lib_vra->task_vra.worker, "fimc_is_lib_vra");
 	if (IS_ERR(lib_vra->task_vra.task)) {
 		err_lib("failed to create thread for VRA, err(%ld)",

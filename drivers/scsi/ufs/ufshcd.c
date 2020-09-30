@@ -585,7 +585,7 @@ static inline int ufshcd_enable_irq(struct ufs_hba *hba)
 	int ret = 0;
 
 	if (!hba->is_irq_enabled) {
-		ret = request_irq(hba->irq, ufshcd_intr, IRQF_SHARED, UFSHCD,
+		ret = request_irq(hba->irq, ufshcd_intr, IRQF_SHARED | IRQF_PERF_CRITICAL, UFSHCD,
 				hba);
 		if (ret)
 			dev_err(hba->dev, "%s: request_irq failed, ret=%d\n",

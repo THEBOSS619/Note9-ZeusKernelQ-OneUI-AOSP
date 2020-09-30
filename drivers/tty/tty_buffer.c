@@ -584,7 +584,7 @@ void tty_buffer_init(struct tty_port *port)
 	buf->mem_limit = TTYB_DEFAULT_MEM_LIMIT;
 	kthread_init_work(&buf->work, flush_to_ldisc);
 	kthread_init_worker(&port->worker);
-	port->worker_thread = kthread_run(kthread_worker_fn, &port->worker,
+	port->worker_thread = kthread_run_perf_critical(kthread_worker_fn, &port->worker,
 					  "tty_worker_thread");
 	if (IS_ERR(port->worker_thread)) {
 		/*

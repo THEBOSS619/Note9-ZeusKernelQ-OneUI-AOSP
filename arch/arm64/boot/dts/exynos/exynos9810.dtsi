@@ -4975,8 +4975,8 @@
 			shared-cpus = "0-3";
 
 			boost_table = < 160 949000 123 1456000 100 >;
-			up_rate_limit_table = < 10000 >;
-			down_rate_limit_table = < 10000 >;
+			up_rate_limit_table = < 5000 >;
+			down_rate_limit_table = < 5000 >;
 			st_table = < 5 >;
 		};
 
@@ -4985,8 +4985,8 @@
 			shared-cpus = "4-7";
 
 			boost_table = < 160 962000 123 1261000 100 >;
-			up_rate_limit_table = < 10000 >;
-			down_rate_limit_table = < 10000 >;
+			up_rate_limit_table = < 5000 >;
+			down_rate_limit_table = < 5000 >;
 			st_table = < 5 >;
 		};
 	};

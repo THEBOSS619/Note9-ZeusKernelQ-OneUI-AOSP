@@ -233,6 +233,7 @@ extern void exynos_ss_get_softlockup_info(unsigned int cpu, void *info);
 #define exynos_ss_get_hardlockup_info(a, b)	do { } while (0)
 #define exynos_ss_get_softlockup_info(a, b)	do { } while (0)
 #define s3c2410wdt_keepalive_emergency(a, b)	do { } while (0)
+#define s3c2410wdt_set_emergency_reset(a, b)	do { } while (0)
 static inline unsigned int exynos_ss_get_item_paddr(char *name) { return 0; }
 static inline void exynos_ss_save_log(int cpu, unsigned long where) {}
 

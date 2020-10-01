@@ -895,10 +895,10 @@ static int s3c64xx_serial_startup(struct uart_port *port)
 
 	if (ourport->use_default_irq == 1)
 		ret = devm_request_irq(port->dev, port->irq, s3c64xx_serial_handle_irq,
-				IRQF_SHARED, s3c24xx_serial_portname(port), ourport);
+				IRQF_SHARED | IRQF_PERF_CRITICAL, s3c24xx_serial_portname(port), ourport);
 	else
 		ret = request_threaded_irq(port->irq, NULL, s3c64xx_serial_handle_irq,
-				IRQF_ONESHOT, s3c24xx_serial_portname(port), ourport);
+				IRQF_ONESHOT | IRQF_PERF_CRITICAL, s3c24xx_serial_portname(port), ourport);
 
 	if (ret) {
 		dev_err(port->dev, "cannot get irq %d\n", port->irq);

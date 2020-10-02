@@ -235,7 +235,7 @@ int fimc_is_csi_open(struct v4l2_subdev *subdev,
 
 	ret = request_irq(csi->irq,
 			fimc_is_isr_csi,
-			IRQF_SHARED,
+			IRQF_SHARED | IRQF_PERF_CRITICAL,
 			"mipi-csi",
 			csi);
 	if (ret) {

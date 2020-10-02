@@ -619,7 +619,7 @@ void ssp_batch_data_read_task(struct work_struct *work)
 
 		pos += buf_len;
 		residue -= buf_len;
-		pr_info("[SSP_BAT] read batch data (%5d / %5d)\n", pos, big->length);
+		pr_debug("[SSP_BAT] read batch data (%5d / %5d)\n", pos, big->length);
 	}
 
 	// TODO: Do not parse, jut put in to FIFO, and wake_up thread.
@@ -631,10 +631,10 @@ void ssp_batch_data_read_task(struct work_struct *work)
 
 		// PARSE DATA FRAMES, Should run loop
 		ts = get_current_timestamp();
-		pr_info("[SSP] report start %lld\n", ts);
+		pr_debug("[SSP] report start %lld\n", ts);
 		ssp_batch_report(data);
 		ts = get_current_timestamp();
-		pr_info("[SSP] report finish %lld\n", ts);
+		pr_debug("[SSP] report finish %lld\n", ts);
 	}
 
 	vfree(data->batch_event.batch_data);

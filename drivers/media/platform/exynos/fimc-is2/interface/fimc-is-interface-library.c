@@ -1157,7 +1157,7 @@ int fimc_is_register_general_interrupt(struct general_intr_handler info)
 
 		/* Request IRQ */
 		ret = request_threaded_irq(lib->intr_handler[info.id].irq, NULL, fimc_is_general_interrupt_isr,
-			IRQF_TRIGGER_RISING | IRQF_ONESHOT, name, &lib->intr_handler[info.id]);
+			IRQF_TRIGGER_RISING | IRQF_ONESHOT | IRQF_PERF_CRITICAL, name, &lib->intr_handler[info.id]);
 		if (ret) {
 			err("Failed to register %s(%d).", name, lib->intr_handler[info.id].irq);
 			ret = -ENODEV;

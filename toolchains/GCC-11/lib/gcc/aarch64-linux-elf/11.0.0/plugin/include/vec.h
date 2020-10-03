@@ -1540,6 +1540,19 @@ public:
   auto_vec () { this->m_vec = NULL; }
   auto_vec (size_t n) { this->create (n); }
   ~auto_vec () { this->release (); }
+
+  auto_vec (auto_vec&& r)
+    {
+      this->m_vec = r.m_vec;
+      r.m_vec = NULL;
+    }
+  auto_vec& operator= (auto_vec&& r)
+    {
+      this->release ();
+      this->m_vec = r.m_vec;
+      r.m_vec = NULL;
+      return *this;
+    }
 };
 
 

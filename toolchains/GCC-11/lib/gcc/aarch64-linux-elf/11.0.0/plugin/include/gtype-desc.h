@@ -157,6 +157,10 @@ extern void gt_ggc_mx_hash_map_tree_tree_decl_tree_cache_traits_ (void *);
   if (X != NULL) gt_ggc_mx_hash_map_tree_tree_type_tree_cache_traits_ (X);\
   } while (0)
 extern void gt_ggc_mx_hash_map_tree_tree_type_tree_cache_traits_ (void *);
+#define gt_ggc_m_36hash_map_tree_tree_decl_tree_traits_(X) do { \
+  if (X != NULL) gt_ggc_mx_hash_map_tree_tree_decl_tree_traits_ (X);\
+  } while (0)
+extern void gt_ggc_mx_hash_map_tree_tree_decl_tree_traits_ (void *);
 #define gt_ggc_m_12ptr_info_def(X) do { \
   if (X != NULL) gt_ggc_mx_ptr_info_def (X);\
   } while (0)
@@ -489,6 +493,22 @@ extern void gt_ggc_mx_ipa_sra_function_summaries (void *);
   if (X != NULL) gt_ggc_mx_typeinfo (X);\
   } while (0)
 extern void gt_ggc_mx_typeinfo (void *);
+#define gt_ggc_m_27modref_tree_alias_set_type_(X) do { \
+  if (X != NULL) gt_ggc_mx_modref_tree_alias_set_type_ (X);\
+  } while (0)
+extern void gt_ggc_mx_modref_tree_alias_set_type_ (void *);
+#define gt_ggc_m_17modref_tree_tree_(X) do { \
+  if (X != NULL) gt_ggc_mx_modref_tree_tree_ (X);\
+  } while (0)
+extern void gt_ggc_mx_modref_tree_tree_ (void *);
+#define gt_ggc_m_14modref_summary(X) do { \
+  if (X != NULL) gt_ggc_mx_modref_summary (X);\
+  } while (0)
+extern void gt_ggc_mx_modref_summary (void *);
+#define gt_ggc_m_44fast_function_summary_modref_summary__va_gc_(X) do { \
+  if (X != NULL) gt_ggc_mx_fast_function_summary_modref_summary__va_gc_ (X);\
+  } while (0)
+extern void gt_ggc_mx_fast_function_summary_modref_summary__va_gc_ (void *);
 #define gt_ggc_m_11dw_cfi_node(X) do { \
   if (X != NULL) gt_ggc_mx_dw_cfi_node (X);\
   } while (0)
@@ -937,6 +957,10 @@ extern void gt_ggc_mx_vec_condition_va_gc_ (void *);
   if (X != NULL) gt_ggc_mx_vec_size_time_entry_va_gc_ (X);\
   } while (0)
 extern void gt_ggc_mx_vec_size_time_entry_va_gc_ (void *);
+#define gt_ggc_m_37vec_ipa_freqcounting_predicate_va_gc_(X) do { \
+  if (X != NULL) gt_ggc_mx_vec_ipa_freqcounting_predicate_va_gc_ (X);\
+  } while (0)
+extern void gt_ggc_mx_vec_ipa_freqcounting_predicate_va_gc_ (void *);
 #define gt_ggc_m_44fast_function_summary_ipa_fn_summary__va_gc_(X) do { \
   if (X != NULL) gt_ggc_mx_fast_function_summary_ipa_fn_summary__va_gc_ (X);\
   } while (0)
@@ -1097,14 +1121,14 @@ extern void gt_ggc_mx_binding_table_s (void *);
   if (X != NULL) gt_ggc_mx_binding_entry_s (X);\
   } while (0)
 extern void gt_ggc_mx_binding_entry_s (void *);
-#define gt_ggc_m_11cxx_binding(X) do { \
-  if (X != NULL) gt_ggc_mx_cxx_binding (X);\
-  } while (0)
-extern void gt_ggc_mx_cxx_binding (void *);
 #define gt_ggc_m_16cp_binding_level(X) do { \
   if (X != NULL) gt_ggc_mx_cp_binding_level (X);\
   } while (0)
 extern void gt_ggc_mx_cp_binding_level (void *);
+#define gt_ggc_m_11cxx_binding(X) do { \
+  if (X != NULL) gt_ggc_mx_cxx_binding (X);\
+  } while (0)
+extern void gt_ggc_mx_cxx_binding (void *);
 #define gt_ggc_m_27vec_cp_class_binding_va_gc_(X) do { \
   if (X != NULL) gt_ggc_mx_vec_cp_class_binding_va_gc_ (X);\
   } while (0)
@@ -1514,6 +1538,10 @@ extern void gt_pch_nx_hash_map_tree_tree_decl_tree_cache_traits_ (void *);
   if (X != NULL) gt_pch_nx_hash_map_tree_tree_type_tree_cache_traits_ (X);\
   } while (0)
 extern void gt_pch_nx_hash_map_tree_tree_type_tree_cache_traits_ (void *);
+#define gt_pch_n_36hash_map_tree_tree_decl_tree_traits_(X) do { \
+  if (X != NULL) gt_pch_nx_hash_map_tree_tree_decl_tree_traits_ (X);\
+  } while (0)
+extern void gt_pch_nx_hash_map_tree_tree_decl_tree_traits_ (void *);
 #define gt_pch_n_12ptr_info_def(X) do { \
   if (X != NULL) gt_pch_nx_ptr_info_def (X);\
   } while (0)
@@ -1846,6 +1874,22 @@ extern void gt_pch_nx_ipa_sra_function_summaries (void *);
   if (X != NULL) gt_pch_nx_typeinfo (X);\
   } while (0)
 extern void gt_pch_nx_typeinfo (void *);
+#define gt_pch_n_27modref_tree_alias_set_type_(X) do { \
+  if (X != NULL) gt_pch_nx_modref_tree_alias_set_type_ (X);\
+  } while (0)
+extern void gt_pch_nx_modref_tree_alias_set_type_ (void *);
+#define gt_pch_n_17modref_tree_tree_(X) do { \
+  if (X != NULL) gt_pch_nx_modref_tree_tree_ (X);\
+  } while (0)
+extern void gt_pch_nx_modref_tree_tree_ (void *);
+#define gt_pch_n_14modref_summary(X) do { \
+  if (X != NULL) gt_pch_nx_modref_summary (X);\
+  } while (0)
+extern void gt_pch_nx_modref_summary (void *);
+#define gt_pch_n_44fast_function_summary_modref_summary__va_gc_(X) do { \
+  if (X != NULL) gt_pch_nx_fast_function_summary_modref_summary__va_gc_ (X);\
+  } while (0)
+extern void gt_pch_nx_fast_function_summary_modref_summary__va_gc_ (void *);
 #define gt_pch_n_11dw_cfi_node(X) do { \
   if (X != NULL) gt_pch_nx_dw_cfi_node (X);\
   } while (0)
@@ -2294,6 +2338,10 @@ extern void gt_pch_nx_vec_condition_va_gc_ (void *);
   if (X != NULL) gt_pch_nx_vec_size_time_entry_va_gc_ (X);\
   } while (0)
 extern void gt_pch_nx_vec_size_time_entry_va_gc_ (void *);
+#define gt_pch_n_37vec_ipa_freqcounting_predicate_va_gc_(X) do { \
+  if (X != NULL) gt_pch_nx_vec_ipa_freqcounting_predicate_va_gc_ (X);\
+  } while (0)
+extern void gt_pch_nx_vec_ipa_freqcounting_predicate_va_gc_ (void *);
 #define gt_pch_n_44fast_function_summary_ipa_fn_summary__va_gc_(X) do { \
   if (X != NULL) gt_pch_nx_fast_function_summary_ipa_fn_summary__va_gc_ (X);\
   } while (0)
@@ -2454,14 +2502,14 @@ extern void gt_pch_nx_binding_table_s (void *);
   if (X != NULL) gt_pch_nx_binding_entry_s (X);\
   } while (0)
 extern void gt_pch_nx_binding_entry_s (void *);
-#define gt_pch_n_11cxx_binding(X) do { \
-  if (X != NULL) gt_pch_nx_cxx_binding (X);\
-  } while (0)
-extern void gt_pch_nx_cxx_binding (void *);
 #define gt_pch_n_16cp_binding_level(X) do { \
   if (X != NULL) gt_pch_nx_cp_binding_level (X);\
   } while (0)
 extern void gt_pch_nx_cp_binding_level (void *);
+#define gt_pch_n_11cxx_binding(X) do { \
+  if (X != NULL) gt_pch_nx_cxx_binding (X);\
+  } while (0)
+extern void gt_pch_nx_cxx_binding (void *);
 #define gt_pch_n_27vec_cp_class_binding_va_gc_(X) do { \
   if (X != NULL) gt_pch_nx_vec_cp_class_binding_va_gc_ (X);\
   } while (0)
@@ -2891,6 +2939,8 @@ extern void gt_pch_p_42hash_map_tree_tree_decl_tree_cache_traits_
     (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_42hash_map_tree_tree_type_tree_cache_traits_
     (void *, void *, gt_pointer_operator, void *);
+extern void gt_pch_p_36hash_map_tree_tree_decl_tree_traits_
+    (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_12ptr_info_def
     (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_14range_info_def
@@ -3056,6 +3106,14 @@ extern void gt_pch_p_26vec_isra_param_desc_va_gc_
 extern void gt_pch_p_26ipa_sra_function_summaries
     (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_8typeinfo
+    (void *, void *, gt_pointer_operator, void *);
+extern void gt_pch_p_27modref_tree_alias_set_type_
+    (void *, void *, gt_pointer_operator, void *);
+extern void gt_pch_p_17modref_tree_tree_
+    (void *, void *, gt_pointer_operator, void *);
+extern void gt_pch_p_14modref_summary
+    (void *, void *, gt_pointer_operator, void *);
+extern void gt_pch_p_44fast_function_summary_modref_summary__va_gc_
     (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_11dw_cfi_node
     (void *, void *, gt_pointer_operator, void *);
@@ -3311,6 +3369,8 @@ extern void gt_pch_p_20vec_condition_va_gc_
     (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_26vec_size_time_entry_va_gc_
     (void *, void *, gt_pointer_operator, void *);
+extern void gt_pch_p_37vec_ipa_freqcounting_predicate_va_gc_
+    (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_44fast_function_summary_ipa_fn_summary__va_gc_
     (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_13tree_type_map
@@ -3391,9 +3451,9 @@ extern void gt_pch_p_15binding_table_s
     (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_15binding_entry_s
     (void *, void *, gt_pointer_operator, void *);
-extern void gt_pch_p_11cxx_binding
-    (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_16cp_binding_level
+    (void *, void *, gt_pointer_operator, void *);
+extern void gt_pch_p_11cxx_binding
     (void *, void *, gt_pointer_operator, void *);
 extern void gt_pch_p_27vec_cp_class_binding_va_gc_
     (void *, void *, gt_pointer_operator, void *);

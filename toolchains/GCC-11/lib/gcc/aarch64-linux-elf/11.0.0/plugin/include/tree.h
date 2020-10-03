@@ -921,7 +921,8 @@ extern void omp_clause_range_check_failed (const_tree, const char *, int,
   (TREE_CHECK (NODE, PARM_DECL)->decl_common.decl_nonshareable_flag)
 
 /* In a CALL_EXPR, means that the call is the jump from a thunk to the
-   thunked-to function.  */
+   thunked-to function.  Be careful to avoid using this macro when one of the
+   next two applies instead.  */
 #define CALL_FROM_THUNK_P(NODE) (CALL_EXPR_CHECK (NODE)->base.protected_flag)
 
 /* In a CALL_EXPR, if the function being called is BUILT_IN_ALLOCA, means that
@@ -929,6 +930,12 @@ extern void omp_clause_range_check_failed (const_tree, const char *, int,
    function being called is BUILT_IN_MEMCPY, means that it has been built for
    the assignment of a variable-sized object.  */
 #define CALL_ALLOCA_FOR_VAR_P(NODE) \
+  (CALL_EXPR_CHECK (NODE)->base.protected_flag)
+
+/* In a CALL_EXPR, if the function being called is DECL_IS_OPERATOR_NEW_P or
+   DECL_IS_OPERATOR_DELETE_P, true for allocator calls from C++ new or delete
+   expressions.  */
+#define CALL_FROM_NEW_OR_DELETE_P(NODE) \
   (CALL_EXPR_CHECK (NODE)->base.protected_flag)
 
 /* Used in classes in C++.  */
@@ -3067,9 +3074,6 @@ set_function_decl_type (tree decl, function_decl_type t, bool set)
 #define DECL_IS_OPERATOR_DELETE_P(NODE) \
   (FUNCTION_DECL_CHECK (NODE)->function_decl.decl_type == OPERATOR_DELETE)
 
-#define DECL_IS_REPLACEABLE_OPERATOR_DELETE_P(NODE) \
-  (DECL_IS_OPERATOR_DELETE_P (NODE) && DECL_IS_REPLACEABLE_OPERATOR (NODE))
-
 #define DECL_SET_IS_OPERATOR_DELETE(NODE, VAL) \
   set_function_decl_type (FUNCTION_DECL_CHECK (NODE), OPERATOR_DELETE, VAL)
 
@@ -3272,8 +3276,10 @@ extern vec<tree, va_gc> **decl_debug_args_insert (tree);
 #define TREE_OPTIMIZATION_BASE_OPTABS(NODE) \
   (OPTIMIZATION_NODE_CHECK (NODE)->optimization.base_optabs)
 
-/* Return a tree node that encapsulates the optimization options in OPTS.  */
-extern tree build_optimization_node (struct gcc_options *opts);
+/* Return a tree node that encapsulates the optimization options in OPTS
+   and OPTS_SET.  */
+extern tree build_optimization_node (struct gcc_options *opts,
+				     struct gcc_options *opts_set);
 
 #define TREE_TARGET_OPTION(NODE) \
   (TARGET_OPTION_NODE_CHECK (NODE)->target_option.opts)
@@ -3281,8 +3287,10 @@ extern tree build_optimization_node (struct gcc_options *opts);
 #define TREE_TARGET_GLOBALS(NODE) \
   (TARGET_OPTION_NODE_CHECK (NODE)->target_option.globals)
 
-/* Return a tree node that encapsulates the target options in OPTS.  */
-extern tree build_target_option_node (struct gcc_options *opts);
+/* Return a tree node that encapsulates the target options in OPTS and
+   OPTS_SET.  */
+extern tree build_target_option_node (struct gcc_options *opts,
+				      struct gcc_options *opts_set);
 
 extern void prepare_target_option_nodes_for_pch (void);
 
@@ -5347,7 +5355,8 @@ enum access_mode
   access_none = 0,
   access_read_only = 1,
   access_write_only = 2,
-  access_read_write = access_read_only | access_write_only
+  access_read_write = access_read_only | access_write_only,
+  access_deferred = 4
 };
 
 #define tree_map_eq tree_map_base_eq
@@ -5452,6 +5461,11 @@ typedef hash_map<tree,tree,decl_tree_cache_traits> decl_tree_cache_map;
 struct type_tree_cache_traits
   : simple_cache_map_traits<tree_type_hash, tree> { };
 typedef hash_map<tree,tree,type_tree_cache_traits> type_tree_cache_map;
+
+/* Similarly to decl_tree_cache_map, but without caching.  */
+struct decl_tree_traits
+  : simple_hashmap_traits<tree_decl_hash, tree> { };
+typedef hash_map<tree,tree,decl_tree_traits> decl_tree_map;
 
 /* Initialize the abstract argument list iterator object ITER with the
    arguments from CALL_EXPR node EXP.  */

@@ -991,6 +991,13 @@
 #endif
 
 
+/* Define to 1 if we found a declaration for 'mallinfo2', otherwise define to
+   0. */
+#ifndef USED_FOR_TARGET
+#define HAVE_DECL_MALLINFO2 0
+#endif
+
+
 /* Define to 1 if we found a declaration for 'malloc', otherwise define to 0.
    */
 #ifndef USED_FOR_TARGET
@@ -1663,6 +1670,12 @@
 /* Define to 1 if you have the `mallinfo' function. */
 #ifndef USED_FOR_TARGET
 #define HAVE_MALLINFO 1
+#endif
+
+
+/* Define to 1 if you have the `mallinfo2' function. */
+#ifndef USED_FOR_TARGET
+/* #undef HAVE_MALLINFO2 */
 #endif
 
 

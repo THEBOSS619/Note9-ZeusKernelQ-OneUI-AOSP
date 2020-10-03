@@ -6452,7 +6452,9 @@
 #define HAVE_tlsdesc_small_di ((TARGET_TLS_DESC) && (ptr_mode == DImode))
 #define HAVE_get_thread_pointerdi 1
 #define HAVE_stack_protect_set 1
+#define HAVE_stack_protect_combined_set 1
 #define HAVE_stack_protect_test 1
+#define HAVE_stack_protect_combined_test 1
 #define HAVE_doloop_end (optimize > 0 && flag_modulo_sched)
 #define HAVE_despeculate_copyqi 1
 #define HAVE_despeculate_copyhi 1
@@ -9080,8 +9082,8 @@ extern rtx        gen_blockage                                       (void);
 extern rtx        gen_probe_stack_range                              (rtx, rtx, rtx);
 extern rtx        gen_probe_sve_stack_clash_si                       (rtx, rtx, rtx, rtx, rtx);
 extern rtx        gen_probe_sve_stack_clash_di                       (rtx, rtx, rtx, rtx, rtx);
-extern rtx        gen_reg_stack_protect_address_si                   (rtx);
-extern rtx        gen_reg_stack_protect_address_di                   (rtx);
+extern rtx        gen_reg_stack_protect_address_si                   (rtx, rtx);
+extern rtx        gen_reg_stack_protect_address_di                   (rtx, rtx);
 extern rtx        gen_stack_protect_set_si                           (rtx, rtx);
 extern rtx        gen_stack_protect_set_di                           (rtx, rtx);
 extern rtx        gen_stack_protect_test_si                          (rtx, rtx);
@@ -15650,7 +15652,9 @@ extern rtx        gen_tlsdesc_small_si                               (rtx);
 extern rtx        gen_tlsdesc_small_di                               (rtx);
 extern rtx        gen_get_thread_pointerdi                           (rtx);
 extern rtx        gen_stack_protect_set                              (rtx, rtx);
+extern rtx        gen_stack_protect_combined_set                     (rtx, rtx);
 extern rtx        gen_stack_protect_test                             (rtx, rtx, rtx);
+extern rtx        gen_stack_protect_combined_test                    (rtx, rtx, rtx);
 extern rtx        gen_doloop_end                                     (rtx, rtx);
 extern rtx        gen_despeculate_copyqi                             (rtx, rtx, rtx);
 extern rtx        gen_despeculate_copyhi                             (rtx, rtx, rtx);

@@ -1687,6 +1687,11 @@ config FUTEX
 	  support for "fast userspace mutexes".  The resulting kernel may not
 	  run glibc-based applications correctly.
 
+config FUTEX_PI
+	bool
+	depends on FUTEX && RT_MUTEXES
+	default y
+
 config HAVE_FUTEX_CMPXCHG
 	bool
 	depends on FUTEX

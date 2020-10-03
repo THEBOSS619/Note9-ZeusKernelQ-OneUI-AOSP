@@ -42,6 +42,8 @@ static unsigned short input_boost_duration __read_mostly =
 static unsigned short wake_boost_duration __read_mostly =
 	CONFIG_WAKE_BOOST_DURATION_MS;
 
+static bool dynamic_eas_boost __read_mostly = 1;
+
 module_param(input_boost_freq_lp, uint, 0644);
 module_param(input_boost_freq_hp, uint, 0644);
 module_param(max_boost_freq_lp, uint, 0644);
@@ -50,6 +52,7 @@ module_param(idle_min_freq_lp, uint, 0644);
 module_param(idle_min_freq_hp, uint, 0644);
 module_param(remove_input_boost_freq_lp, uint, 0644);
 module_param(remove_input_boost_freq_perf, uint, 0644);
+module_param(dynamic_eas_boost, uint, 0644);
 
 module_param(input_boost_duration, short, 0644);
 module_param(wake_boost_duration, short, 0644);
@@ -312,15 +315,19 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 	if (test_bit(SCREEN_OFF, &b->state)) {
 		policy->min = get_min_freq(policy);
 		clear_stune_boost(b);
-		sysctl_sched_energy_aware = 1;
+		if (dynamic_eas_boost)
+			sysctl_sched_energy_aware = 1;
 		return NOTIFY_OK;
 	}
 
 	/* Boost CPU to max frequency for max boost */
 	if (test_bit(MAX_BOOST, &b->state)) {
-		sysctl_sched_energy_aware = 0;
 		policy->min = get_max_boost_freq(policy);
 		update_stune_boost(b, stune_boost);
+		if (dynamic_eas_boost)
+			sysctl_sched_energy_aware = 0;
+		else
+			sysctl_sched_energy_aware = 1;
 		return NOTIFY_OK;
 	}
 

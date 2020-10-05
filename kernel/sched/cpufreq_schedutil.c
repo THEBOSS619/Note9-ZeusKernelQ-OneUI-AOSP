@@ -313,11 +313,7 @@ static unsigned int get_next_freq(struct sugov_policy *sg_policy,
 	RV_DECLARE(rv);
 #endif
 
-	if (is_display_on())
-		freq = (freq + (freq >> 1)) * util / max;
-	
-	if (!is_display_on())
-		freq = (freq + (freq >> 5)) * util / max;
+	freq = (freq + (freq >> 1)) * util / max;
 
 	if (sg_policy->tunables->exp_util)
 		freq = (freq + (freq >> 2)) * int_sqrt(util * 100 / max) / 10;

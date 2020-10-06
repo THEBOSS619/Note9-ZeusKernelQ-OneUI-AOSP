@@ -125,7 +125,7 @@
 			sec,regulator_dvdd = "tsp_io";
 			sec,regulator_avdd = "tsp_avdd";
 			sec,regulator_boot_on;
-			//sec,always_lpmode = <1>;
+			sec,always_lpmode = <1>;
 			sec,tclm_level = <2 2 2>; /* To be supported tclm for each firmware */
 				      /* <crown crown_v2 crown_v1> */
 			sec,afe_base = <0x0302 0x0211 0x0122>; /* To be supported tclm for each firmware */

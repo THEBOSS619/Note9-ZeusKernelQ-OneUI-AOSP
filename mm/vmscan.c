@@ -48,6 +48,8 @@
 #include <linux/printk.h>
 #include <linux/dax.h>
 #include <linux/psi.h>
+#include <linux/cpu_input_boost.h>
+#include <linux/devfreq_boost.h>
 
 #include <asm/tlbflush.h>
 #include <asm/div64.h>
@@ -3875,6 +3877,10 @@ void wakeup_kswapd(struct zone *zone, gfp_t gfp_flags, int order,
 
 	if (!cpuset_zone_allowed(zone, gfp_flags))
 		return;
+
+	devfreq_boost_kick_max(DEVFREQ_EXYNOS_MIF, 100);
+	cpu_input_boost_kick_max(100);
+
 	pgdat = zone->zone_pgdat;
 	pgdat->kswapd_classzone_idx = max(pgdat->kswapd_classzone_idx, classzone_idx);
 	pgdat->kswapd_order = max(pgdat->kswapd_order, order);

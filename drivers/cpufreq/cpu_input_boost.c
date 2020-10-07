@@ -289,7 +289,7 @@ static int cpu_thread(void *data)
 	struct boost_drv *b = data;
 	unsigned long old_state = 0;
 
-	sched_setscheduler_nocheck(current, SCHED_FIFO, &param);
+	sched_setscheduler_nocheck(current, SCHED_NORMAL, &param);
 
 	while (1) {
 		bool should_stop = false;

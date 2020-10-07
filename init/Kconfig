@@ -712,10 +712,18 @@ config PELT_UTIL_HALFLIFE_16
 	  configuration using 32ms.
 
 config PELT_UTIL_HALFLIFE_12
-	bool "12 ms, very fast"
+	bool "12 ms, fast"
 	help
 	  A 12ms PELT half-life is suggested for mobile/interactive workloads
 	  where tasks usually run with a 60/90Hz activation cadence.
+
+	  If not sure, use the default of 32 ms
+
+config PELT_UTIL_HALFLIFE_10
+	bool "10 ms, very fast"
+	help
+	  A 10ms PELT half-life is suggested for scheduler that have 10ms scheduling
+	  periods to be syncornized along with schedutil govrner rate limits.
 
 	  If not sure, use the default of 32 ms
 

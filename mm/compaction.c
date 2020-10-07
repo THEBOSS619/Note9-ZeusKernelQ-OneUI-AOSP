@@ -2841,7 +2841,7 @@ static int kcompactd(void *p)
 	const struct cpumask *cpumask = cpumask_of_node(pgdat->node_id);
 	struct sched_param param = { .sched_priority = 1 };
 
-	sched_setscheduler(current, SCHED_FIFO, &param);
+	sched_setscheduler(current, SCHED_NORMAL, &param);
 
 	if (!cpumask_empty(cpumask))
 		set_cpus_allowed_ptr(tsk, cpumask);

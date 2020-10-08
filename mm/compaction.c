@@ -23,6 +23,7 @@
 #include <linux/psi.h>
 #include <linux/cpu_input_boost.h>
 #include <linux/devfreq_boost.h>
+#include <linux/ems_service.h>
 #include "internal.h"
 
 #ifdef CONFIG_COMPACTION
@@ -67,6 +68,9 @@ static const unsigned int HPAGE_FRAG_CHECK_INTERVAL_MSEC = 500;
 #else
 #define COMPACTION_HPAGE_ORDER	(PMD_SHIFT - PAGE_SHIFT)
 #endif
+
+static struct kpp kpp_ta;
+static struct kpp kpp_fg;
 
 static unsigned long release_freepages(struct list_head *freelist)
 {
@@ -2743,6 +2747,8 @@ static void kcompactd_do_work(pg_data_t *pgdat)
 
 	devfreq_boost_kick_max(DEVFREQ_EXYNOS_MIF, 100);
 	cpu_input_boost_kick_max(100);
+	kpp_request(STUNE_TOPAPP, &kpp_ta, 1);
+	kpp_request(STUNE_FOREGROUND, &kpp_fg, 1);
 
 	for (zoneid = 0; zoneid <= cc.classzone_idx; zoneid++) {
 		int status;

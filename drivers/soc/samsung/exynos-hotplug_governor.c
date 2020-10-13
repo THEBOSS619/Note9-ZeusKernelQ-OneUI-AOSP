@@ -730,9 +730,9 @@ static bool exynos_hpgov_change_triple(void)
 {
 	int heavy_cnt;
 
-	/* If system is busy, change triple mode */
+	/* If system is busy, doesn't change boost mode */
 	if (exynos_hpgov_system_busy())
-		return true;
+		return false;
 
 	heavy_cnt = exynos_hpgov_get_imbal_cpus(LIT) +
 			exynos_hpgov_get_imbal_cpus(BIG);
@@ -1164,13 +1164,13 @@ static int __init exynos_hpgov_parse_dt(void)
 		exynos_hpgov.triple_change_ms = 20;
 		exynos_hpgov.quad_change_ms = 15;
 		exynos_hpgov.big_heavy_thr = 600;
-		exynos_hpgov.lit_heavy_thr = 200;
+		exynos_hpgov.lit_heavy_thr = 150;
 		exynos_hpgov.big_idle_thr = 110;
 		exynos_hpgov.lit_idle_thr = 50;
 		exynos_hpgov.ldsum_heavy_thr = 800;
 		exynos_hpgov.ldsum_enabled = 0;
 		exynos_hpgov.skip_lit_enabled = 0;
-		exynos_hpgov.cl_busy_ratio = 50;
+		exynos_hpgov.cl_busy_ratio = 65;
 		exynos_hpgov.cal_id = ACPM_DVFS_CPUCL1;
 
 		} else {
